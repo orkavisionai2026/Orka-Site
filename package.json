@@ -1,0 +1,21 @@
+{
+  "name": "orka-vision-v2",
+  "version": "1.0.0",
+  "description": "Orka Vision V2 — single-page cinematic site with Three.js orca particle system, scroll-driven scenes, and a static preview server (HTTP range, gzip, CSP/HSTS).",
+  "main": "preview.js",
+  "scripts": {
+    "start": "node preview.js",
+    "dev": "node preview.js",
+    "optimize-images": "node optimize-images.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "sharp": "^0.34.5"
+  }
+}

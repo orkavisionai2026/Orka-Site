@@ -1,0 +1,18 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# Development backups (created during iterations)
+index.backup-*.html
+index.before-*.html
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Server logs
+*.log
