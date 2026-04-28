@@ -157,16 +157,28 @@ http.createServer((req, res) => {
       return;
     }
 
-    // ── Gzip compression for compressible text resources ───────────────
+    // ── Compression for text resources (brotli preferred, gzip fallback) ──
     const acceptEncoding = req.headers['accept-encoding'] || '';
-    const canGzip = COMPRESSIBLE.has(type) && acceptEncoding.includes('gzip');
+    const canCompress = COMPRESSIBLE.has(type);
+    const wantsBr   = canCompress && acceptEncoding.includes('br');
+    const wantsGzip = canCompress && acceptEncoding.includes('gzip');
 
-    if (canGzip) {
+    if (wantsBr) {
+      res.writeHead(200, {
+        ...baseHeaders,
+        'Content-Encoding': 'br',
+        'Vary': 'Accept-Encoding',
+      });
+      fs.createReadStream(filePath)
+        .pipe(zlib.createBrotliCompress({ params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 6 } }))
+        .pipe(res);
+      return;
+    }
+    if (wantsGzip) {
       res.writeHead(200, {
         ...baseHeaders,
         'Content-Encoding': 'gzip',
         'Vary': 'Accept-Encoding',
-        // Content-Length unknown after compression — omit it
       });
       fs.createReadStream(filePath).pipe(zlib.createGzip({ level: 6 })).pipe(res);
       return;
@@ -180,7 +192,7 @@ http.createServer((req, res) => {
 }).listen(PORT, HOST, () => {
   console.log(`\nORKA V2 preview → http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}`);
   console.log('  ✓ HTTP Range support  (video seeking)');
-  console.log('  ✓ Gzip compression    (HTML/CSS/JS)');
+  console.log('  ✓ Brotli + Gzip       (HTML/CSS/JS)');
   console.log('  ✓ Security headers    (CSP, HSTS, X-Frame-Options…)');
   console.log('  ✓ Cache-Control       (assets: 1y immutable, HTML: no-store)\n');
 });

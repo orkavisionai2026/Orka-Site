@@ -6,19 +6,51 @@
 <title>ORKA Vision — Multi-agentes para o mercado imobiliário</title>
 <meta name="description" content="A ORKA Vision construiu Zenith: um ecossistema de agentes de IA que vendem enquanto o mundo dorme. Imobiliária no zênite." />
 <meta name="theme-color" content="#060606" />
+<meta name="author" content="ORKA Vision" />
+<meta name="robots" content="index, follow" />
+
+<!-- Canonical -->
+<link rel="canonical" href="https://orkavision.ai/" />
+
+<!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="ORKA Vision" />
+<meta property="og:title" content="ORKA Vision — Multi-agentes para o mercado imobiliário" />
+<meta property="og:description" content="Ecossistema de agentes de IA que vendem enquanto o mundo dorme. Imobiliária no zênite." />
+<meta property="og:url" content="https://orkavision.ai/" />
+<meta property="og:image" content="https://orkavision.ai/assets/orka-ai-frame.webp" />
+<meta property="og:image:width" content="1920" />
+<meta property="og:image:height" content="1080" />
+<meta property="og:locale" content="pt_BR" />
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="ORKA Vision — Multi-agentes para o mercado imobiliário" />
+<meta name="twitter:description" content="Ecossistema de agentes de IA que vendem enquanto o mundo dorme." />
+<meta name="twitter:image" content="https://orkavision.ai/assets/orka-ai-frame.webp" />
+
+<!-- Favicon (placeholder — replace with real .ico/.svg later) -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%23F2360C'/%3E%3C/svg%3E" />
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
 
-<!-- Libraries -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
+<!-- Libraries — pinned versions + Subresource Integrity (SRI) hashes -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+        integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
+        integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d"
+        crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"
+        integrity="sha384-eD5ubmuCcvTdCADWuSchJYE7wcj2nzNr0itbrh6w/KJyBiltSZ8w3VFRBSWu5YQ8"
+        crossorigin="anonymous"></script>
 
 <style>
   :root{
+    /* ── Core palette ─────────────────────────────────────── */
     --black:#060606;
     --ink:#0a0a0a;
     --cream:#FFF6F3;
@@ -28,7 +60,53 @@
     --line:rgba(255,246,243,.06);
     --orange:#F2360C;
     --orange-soft:#F36B37;
+    --orange-amber:#FFB17A;
     --orange-glow:rgba(242,54,12,.45);
+    --orange-glow-soft:rgba(243,107,55,.32);
+
+    /* ── Alpha scale (consistent transparency tokens) ──────── */
+    --alpha-faint: .04;     /* barely visible — borders */
+    --alpha-dim:   .12;     /* secondary borders, muted edges */
+    --alpha-mute:  .18;     /* hover states, mid-emphasis */
+    --alpha-soft:  .38;     /* secondary text */
+    --alpha-mid:   .55;     /* primary text on dark */
+    --alpha-on:    .78;     /* high emphasis */
+
+    /* ── Motion: standard easings ──────────────────────────── */
+    --ease-quick:    cubic-bezier(.2,.6,.2,1);          /* 200-300ms reactions */
+    --ease-smooth:   cubic-bezier(.65,.05,.36,1);       /* 400-700ms transitions */
+    --ease-elastic:  cubic-bezier(.34,1.56,.64,1);      /* spring/bounce */
+    --ease-out-cubic: cubic-bezier(.33,1,.68,1);        /* GSAP-equivalent */
+
+    /* ── Typography scale (line-heights + tracking) ────────── */
+    --lh-compact:.86;
+    --lh-tight:.92;
+    --lh-snug:1.18;
+    --lh-normal:1.5;
+    --lh-loose:1.65;
+    --tracking-tight:-.04em;
+    --tracking-snug:-.025em;
+    --tracking-normal:0;
+    --tracking-wide:.22em;
+    --tracking-wider:.28em;
+
+    /* ── Spacing scale ─────────────────────────────────────── */
+    --sp-xs: clamp(8px, 1vw, 12px);
+    --sp-sm: clamp(14px, 1.6vw, 22px);
+    --sp-md: clamp(24px, 2.6vw, 36px);
+    --sp-lg: clamp(40px, 4.8vw, 64px);
+    --sp-xl: clamp(64px, 8vw, 96px);
+    --sp-2xl:clamp(80px,10vw,128px);
+
+    /* ── Inline gutters (per-section padding) ──────────────── */
+    --gutter-x: clamp(28px, 4.4vw, 72px);
+
+    /* ── Shadows (reusable glow + depth) ───────────────────── */
+    --shadow-glow-sm: 0 0 12px var(--orange-glow);
+    --shadow-glow-md: 0 0 24px var(--orange-glow);
+    --shadow-glow-lg: 0 0 48px var(--orange-glow-soft);
+    --shadow-card:    0 12px 36px rgba(0,0,0,.45);
+    --shadow-card-lg: 0 24px 70px rgba(242,54,12,.22), 0 6px 20px rgba(0,0,0,.45);
   }
 
   *{box-sizing:border-box;margin:0;padding:0}
@@ -44,8 +122,45 @@
        horizontal overflow without creating a scroll container. */
     overflow-x:clip;
   }
-  body{min-height:100vh;cursor:none}
+  /* Default cursor stays visible if JS fails or before cursorEye mounts.
+     Once JS adds .has-eye to <html>, we hide the system cursor. */
+  body{min-height:100vh}
+  html.has-eye body{cursor:none}
+  html.has-eye [data-cursor="hover"]{cursor:none}
   ::selection{background:rgba(242,54,12,.3);color:#fff}
+
+  /* Universal focus-visible — all interactive elements show keyboard focus */
+  :focus-visible{
+    outline:2px solid var(--orange);
+    outline-offset:3px;
+    border-radius:2px;
+  }
+  /* Inputs/buttons inside the form already have custom focus rings; this
+     ensures keyboard users see SOMETHING even if a custom ring is missing. */
+
+  /* Visually hidden — for accessible labels that should not be visual */
+  .visually-hidden,.sr-only{
+    position:absolute!important;
+    width:1px;height:1px;padding:0;margin:-1px;
+    overflow:hidden;clip:rect(0 0 0 0);
+    white-space:nowrap;border:0;
+  }
+  /* Skip to content — keyboard users only, becomes visible on focus */
+  .skip-to-content{
+    position:fixed;top:8px;left:8px;
+    background:var(--cream);color:var(--black);
+    padding:10px 18px;border-radius:8px;
+    font-family:'JetBrains Mono',monospace;font-size:12px;
+    text-decoration:none;font-weight:500;
+    transform:translateY(-200%);
+    transition:transform .2s var(--ease-quick);
+    z-index:9999;
+  }
+  .skip-to-content:focus,.skip-to-content:focus-visible{
+    transform:translateY(0);
+    outline:2px solid var(--orange);
+    outline-offset:2px;
+  }
 
   /* Custom cursor — orca eye (pointed almond shape).
      Direct pointer tracking (no lerp delay) for instant feedback. */
@@ -244,13 +359,13 @@
   /* Hero copy */
   .copy{
     position:absolute;left:clamp(24px,4vw,56px);right:clamp(24px,4vw,56px);
-    bottom:clamp(40px,9vh,96px);
+    bottom:clamp(64px,14vh,140px);
     display:grid;grid-template-columns:1fr;gap:28px;
     align-items:end;
   }
-  @media (min-width:1024px){.copy{grid-template-columns:auto auto;justify-content:space-between}}
+  @media (min-width:1024px){.copy{grid-template-columns:1fr auto;justify-content:space-between;gap:48px}}
 
-  .copy-left{max-width:760px}
+  .copy-left{max-width:920px}
   .overline{
     display:inline-flex;align-items:center;gap:10px;
     font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.32em;
@@ -265,15 +380,15 @@
 
   h1.title{
     font-family:'Instrument Serif',serif;font-weight:400;
-    font-size:clamp(72px,12vw,184px);
-    line-height:.86;letter-spacing:-.025em;color:var(--cream);
+    font-size:clamp(80px,13.5vw,210px);
+    line-height:.86;letter-spacing:-.03em;color:var(--cream);
     text-shadow:0 0 80px rgba(242,54,12,.18),0 0 220px rgba(242,54,12,.06);
   }
   h1.title .lead{
-    display:block;font-size:clamp(14px,1.05vw,16px);
+    display:block;font-size:clamp(13px,.95vw,15px);
     font-family:Inter,sans-serif;font-weight:500;letter-spacing:.04em;
     color:var(--cream-mute);text-transform:none;
-    margin-bottom:18px;
+    margin-bottom:22px;max-width:540px;
   }
   h1.title em{
     font-style:italic;color:var(--cream);
@@ -369,10 +484,10 @@
     position:relative;z-index:12;
     background:#FFF6F3;
     color:#060606;
-    min-height:100vh;
-    padding:96px clamp(28px,4.4vw,72px) 96px clamp(48px,6vw,96px);
+    padding:64px clamp(28px,4.4vw,72px) 56px clamp(48px,6vw,96px);
     overflow:hidden;
     border-top:1px solid rgba(6,6,6,.06);
+    display:flex;flex-direction:column;
   }
 
   /* Vertical ticker on the left edge */
@@ -402,14 +517,14 @@
     font-family:'JetBrains Mono',monospace;
     font-size:11px;letter-spacing:.22em;text-transform:uppercase;
     color:#777;
-    display:flex;align-items:center;gap:14px;margin-bottom:36px;
+    display:flex;align-items:center;gap:14px;margin-bottom:24px;
   }
   .agentes-meta::before{content:"";width:28px;height:1px;background:#777}
 
   /* Heading row */
   .agentes-heading{
     display:flex;align-items:flex-end;justify-content:space-between;
-    gap:48px;margin-bottom:56px;padding-bottom:30px;
+    gap:48px;margin-bottom:36px;padding-bottom:22px;
     border-bottom:1px solid rgba(6,6,6,.08);
   }
   .agentes-title-wrap{
@@ -420,25 +535,24 @@
     flex:0 0 auto;
     font-family:Inter,system-ui,sans-serif;
     font-weight:800;
-    font-size:clamp(64px,10vw,176px);
+    font-size:clamp(48px,7.6vw,128px);
     line-height:.88;letter-spacing:-.045em;
     color:#060606;margin:0;
   }
   .agentes-title-echo{
-    position:absolute;z-index:1;
-    left:calc(100% - clamp(14px,2vw,32px));bottom:0;
+    position:relative;z-index:1;
     font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;
-    font-size:clamp(60px,9vw,160px);
-    line-height:.92;letter-spacing:-.04em;
-    background:linear-gradient(90deg, rgba(6,6,6,.16), rgba(242,54,12,.18) 45%, rgba(6,6,6,0));
-    -webkit-background-clip:text;background-clip:text;color:transparent;
+    font-size:clamp(44px,7vw,118px);
+    line-height:.88;letter-spacing:-.025em;
+    color:var(--orange);
     pointer-events:none;white-space:nowrap;
+    margin-left:-.04em;
   }
 
   /* Motion ticker (right of heading) */
   .agentes-motion{
     position:relative;
-    width:clamp(240px,28vw,420px);height:clamp(56px,5vw,80px);
+    width:clamp(200px,24vw,360px);height:clamp(44px,4vw,64px);
     overflow:hidden;flex:0 0 auto;
     border-top:1px solid rgba(6,6,6,.14);
     border-bottom:1px solid rgba(6,6,6,.14);
@@ -470,9 +584,9 @@
   .agentes-grid{
     display:grid;
     grid-template-columns:1.2fr 1fr 1.1fr .35fr;
-    gap:clamp(28px,3.4vw,56px);
-    align-items:start;min-height:64vh;
-    --active-y:0px; --active-h:6rem;
+    gap:clamp(24px,3vw,48px);
+    align-items:start;min-height:46vh;flex:1 1 auto;
+    --active-y:0px; --active-h:5rem;
   }
 
   /* Left description column */
@@ -489,10 +603,10 @@
   .agentes-desc .desc.active{opacity:1;transform:translateY(0)}
   .agentes-desc p{
     font-family:Inter,sans-serif;
-    font-size:clamp(18px,1.4vw,22px);
+    font-size:clamp(15px,1.15vw,18px);
     line-height:1.5;letter-spacing:-.005em;color:#1a1a1a;
     font-weight:400;
-    max-width:380px;margin-left:auto;text-align:right;
+    max-width:340px;margin-left:auto;text-align:right;
   }
   .agentes-desc .desc-meta{
     display:block;margin-top:18px;
@@ -527,7 +641,7 @@
   /* Phone device */
   .device{
     position:relative;
-    width:min(360px,100%);
+    width:min(290px,100%);
     aspect-ratio:9/19;
     background:#0c0c0c;
     border-radius:42px;
@@ -776,16 +890,16 @@
     line-height:.92;
     font-family:Inter,sans-serif;
     font-weight:800;
-    font-size:clamp(48px,7.4vw,128px);
+    font-size:clamp(36px,5.6vw,96px);
     letter-spacing:-.045em;
     position:relative;
   }
   .agentes-titles li{
-    position:relative;padding:.08em 0;
+    position:relative;padding:.06em 0;
   }
   .agentes-titles li button{
     background:none;border:0;padding:0;font:inherit;letter-spacing:inherit;
-    color:#d4d0cc;cursor:pointer;text-align:left;display:inline-block;
+    color:rgba(6,6,6,.42);cursor:pointer;text-align:left;display:inline-block;
     transform-origin:left center;will-change:color,transform;
     transition:color .45s cubic-bezier(.65,.05,.36,1),
                transform .45s cubic-bezier(.65,.05,.36,1);
@@ -830,14 +944,14 @@
 
   /* Bottom strap (KPI ribbon) */
   .agentes-strap{
-    margin-top:80px;padding-top:28px;
+    margin-top:36px;padding-top:20px;
     border-top:1px solid rgba(6,6,6,.08);
-    display:grid;grid-template-columns:repeat(4,1fr);gap:24px;
+    display:grid;grid-template-columns:repeat(4,1fr);gap:20px;
   }
-  .agentes-strap .kpi{display:flex;flex-direction:column;gap:6px}
+  .agentes-strap .kpi{display:flex;flex-direction:column;gap:4px}
   .agentes-strap .kpi-num{
     font-family:Inter,sans-serif;font-weight:700;
-    font-size:clamp(28px,3.2vw,44px);letter-spacing:-.025em;color:#060606;
+    font-size:clamp(22px,2.4vw,34px);letter-spacing:-.025em;color:#060606;
   }
   .agentes-strap .kpi-num em{font-style:normal;color:var(--orange)}
   .agentes-strap .kpi-label{
@@ -873,7 +987,7 @@
      ===================================================== */
   .dive{
     position:relative;z-index:8;
-    height:200vh;
+    height:160vh;
     background:#060606;
     /* No overflow:hidden here — sticky child needs ancestor to allow scroll */
   }
@@ -935,8 +1049,7 @@
   .implantacao{
     position:relative;z-index:5;
     background:#060606;color:var(--cream);
-    min-height:100vh;
-    padding:clamp(80px,9vh,120px) clamp(28px,4vw,72px) clamp(80px,9vh,120px) clamp(48px,6vw,96px);
+    padding:clamp(64px,7vh,96px) clamp(28px,4vw,72px) clamp(56px,6vh,80px) clamp(48px,6vw,96px);
     overflow:hidden;
   }
 
@@ -1079,8 +1192,8 @@
   .orbit{
     position:relative;z-index:4;
     width:100%;
-    aspect-ratio:12/7;
-    max-height:78vh;
+    aspect-ratio:12/6;
+    max-height:58vh;
     margin-top:8px;
   }
   .orbit-svg{
@@ -1226,8 +1339,8 @@
     display:grid;
     grid-template-columns:1fr auto;
     gap:32px;
-    margin-top:clamp(48px,6vw,80px);
-    padding-top:24px;
+    margin-top:clamp(28px,3.6vw,52px);
+    padding-top:20px;
     border-top:1px solid rgba(255,246,243,.06);
     align-items:center;
   }
@@ -1280,7 +1393,7 @@
      ===================================================== */
   .veil{
     position:relative;z-index:6;
-    height:130vh;
+    height:110vh;
     background:#060606;
   }
   .veil-stage{
@@ -1597,16 +1710,18 @@
   }
   .qa-q-meta::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--cream-mute)}
   .bubble-q{
-    /* Dark warm backdrop — cuts through orca particles for legibility */
-    background:rgba(8,6,5,0.78);
+    /* Dark warm backdrop — cuts through orca particles for legibility (WCAG AA) */
+    background:rgba(8,6,5,0.86);
     color:var(--cream);
-    border:1px solid rgba(255,246,243,.18);
-    backdrop-filter:blur(24px) saturate(140%);-webkit-backdrop-filter:blur(24px) saturate(140%);
+    border:1px solid rgba(255,246,243,.20);
+    backdrop-filter:blur(28px) saturate(140%);-webkit-backdrop-filter:blur(28px) saturate(140%);
     border-radius:18px 18px 6px 18px;
     padding:14px 20px;
     font-family:Inter,sans-serif;font-size:clamp(14px,1.05vw,16.5px);
     line-height:1.5;font-weight:400;
-    box-shadow:0 8px 32px rgba(0,0,0,.55);
+    box-shadow:0 8px 32px rgba(0,0,0,.6);
+    /* Subtle text-shadow as belt-and-suspenders for animated bg */
+    text-shadow:0 1px 2px rgba(0,0,0,.4);
   }
   .bubble-q strong{font-weight:500;color:var(--cream)}
 
@@ -1767,187 +1882,151 @@
   }
 
   /* =====================================================
-     DOBRA 05 — PROVA SOCIAL (orange dominant)
+     DOBRA 05 — PROVA SOCIAL (cream · editorial · sober)
      ===================================================== */
   .prova{
     position:relative;z-index:5;
-    background:#F2360C;
-    color:#FFF6F3;
-    padding:96px clamp(28px,4.4vw,72px) 112px;
+    background:#FFF6F3;
+    color:#0A0807;
+    padding:88px clamp(28px,4.4vw,72px) 96px;
     overflow:hidden;
   }
-  /* Orbital rings */
-  .prova-orb{
-    position:absolute;border-radius:50%;
-    border:1px solid rgba(255,246,243,.12);
-    pointer-events:none;
+  .prova-inner{
+    position:relative;z-index:1;
+    max-width:1180px;margin:0 auto;
   }
-  .prova-orb.po1{width:900px;height:900px;top:-320px;right:-220px}
-  .prova-orb.po2{width:560px;height:560px;top:-160px;right:-60px;opacity:.7}
-  .prova-orb.po3{width:280px;height:280px;top:-40px;right:120px;opacity:.5}
-  /* Inner content above orbs */
-  .prova-inner{position:relative;z-index:1}
 
   /* Header */
   .prova-header{
-    display:flex;align-items:flex-end;justify-content:space-between;
-    margin-bottom:64px;padding-bottom:36px;
-    border-bottom:1px solid rgba(255,246,243,.18);
-    gap:32px;flex-wrap:wrap;
+    display:grid;grid-template-columns:1fr auto;
+    align-items:flex-end;gap:48px;
+    margin-bottom:64px;padding-bottom:28px;
+    border-bottom:1px solid rgba(10,8,7,.12);
   }
   .prova-meta{
     font-family:'JetBrains Mono',monospace;
     font-size:11px;letter-spacing:.22em;text-transform:uppercase;
-    color:rgba(255,246,243,.62);
+    color:rgba(10,8,7,.55);
     display:flex;align-items:center;gap:14px;
-    margin-bottom:20px;
+    margin-bottom:18px;
   }
-  .prova-meta::before{content:'';width:28px;height:1px;background:rgba(255,246,243,.62)}
+  .prova-meta::before{content:'';width:28px;height:1px;background:rgba(10,8,7,.4)}
   .prova-headline{
     font-family:Inter,system-ui,sans-serif;
-    font-weight:800;
-    font-size:clamp(36px,4.4vw,76px);
-    line-height:.91;letter-spacing:-.044em;
-    color:#FFF6F3;
+    font-weight:700;
+    font-size:clamp(34px,4vw,68px);
+    line-height:.96;letter-spacing:-.035em;
+    color:#0A0807;
   }
   .prova-headline em{
     font-family:'Instrument Serif',serif;
     font-style:italic;font-weight:400;
+    color:var(--orange);
   }
   .prova-sidetag{
     font-family:'JetBrains Mono',monospace;
     font-size:10px;letter-spacing:.22em;text-transform:uppercase;
-    color:rgba(255,246,243,.46);
-    max-width:190px;text-align:right;line-height:1.6;
-    flex-shrink:0;
+    color:rgba(10,8,7,.45);
+    max-width:200px;text-align:right;line-height:1.7;
   }
 
-  /* Metrics strip */
-  .prova-metrics{
-    display:grid;grid-template-columns:repeat(3,1fr);
-    border:1px solid rgba(255,246,243,.18);
-    border-radius:16px;overflow:hidden;
-    margin-bottom:48px;
+  /* Editorial cases — three rows, no boxes */
+  .prova-cases{
+    display:flex;flex-direction:column;
   }
-  .prova-metric{
-    padding:32px 40px;
-    border-right:1px solid rgba(255,246,243,.18);
-    background:rgba(255,246,243,.06);
-    transition:background .25s ease;
+  .prova-case{
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    align-items:baseline;
+    gap:clamp(28px,4vw,64px);
+    padding:36px 0;
+    border-bottom:1px solid rgba(10,8,7,.08);
   }
-  .prova-metric:last-child{border-right:none}
-  .prova-metric:hover{background:rgba(255,246,243,.11)}
-  .prova-metric-num{
-    font-family:'Instrument Serif',serif;font-style:italic;
-    font-size:clamp(48px,5.5vw,84px);
-    line-height:1;letter-spacing:-.02em;
-    color:#FFF6F3;margin-bottom:8px;
-  }
-  .prova-metric-label{
-    font-size:13px;line-height:1.5;
-    color:rgba(255,246,243,.65);
-  }
-  .prova-metric-label strong{color:#FFF6F3;font-weight:600}
-
-  /* Cards */
-  .prova-cards{
-    display:grid;grid-template-columns:repeat(3,1fr);
-    gap:14px;
-  }
-  .prova-card{
-    background:rgba(6,6,6,.86);
-    border:1px solid rgba(255,246,243,.06);
-    border-radius:16px;padding:32px;
-    display:flex;flex-direction:column;gap:0;
-    position:relative;overflow:hidden;
-    transition:transform .25s ease,box-shadow .25s ease;
-  }
-  .prova-card:hover{
-    transform:translateY(-3px);
-    box-shadow:0 16px 48px rgba(0,0,0,.35);
-  }
-  /* Big quote mark */
-  .prova-card::before{
-    content:'\201C';
-    position:absolute;top:-28px;right:20px;
-    font-family:'Instrument Serif',serif;
-    font-size:180px;line-height:1;
-    color:rgba(242,54,12,.22);
-    pointer-events:none;
-  }
-  .prova-card-quote{
-    font-size:clamp(13.5px,1.1vw,15.5px);
-    line-height:1.68;
-    color:rgba(255,246,243,.78);
-    flex:1;margin-bottom:28px;
-    position:relative;z-index:1;
-  }
-  .prova-card-author{
-    display:flex;align-items:center;gap:14px;
-    margin-bottom:20px;
-  }
-  .prova-card-avatar{
-    width:44px;height:44px;border-radius:50%;
-    background:rgba(242,54,12,.18);
-    border:1px solid rgba(242,54,12,.38);
-    display:flex;align-items:center;justify-content:center;
+  .prova-case:last-child{border-bottom:none}
+  .prova-case-idx{
     font-family:'JetBrains Mono',monospace;
-    font-size:13px;font-weight:600;color:var(--orange);
-    flex-shrink:0;
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:rgba(10,8,7,.42);
+    align-self:flex-start;padding-top:.6em;
+    min-width:3.5ch;
   }
-  .prova-card-name{
-    font-size:13px;font-weight:600;
-    color:#FFF6F3;margin-bottom:2px;
+  .prova-case-body{
+    display:flex;flex-direction:column;gap:14px;
+    min-width:0;
   }
-  .prova-card-role{
-    font-size:11px;color:rgba(255,246,243,.42);line-height:1.35;
+  .prova-case-quote{
+    font-family:'Instrument Serif',serif;
+    font-style:italic;font-weight:400;
+    font-size:clamp(20px,1.7vw,28px);
+    line-height:1.32;letter-spacing:-.012em;
+    color:#0A0807;
   }
-  .prova-card-kpi{
-    padding-top:18px;
-    border-top:1px solid rgba(255,246,243,.08);
-    display:flex;align-items:baseline;gap:10px;
+  .prova-case-quote mark{
+    background:none;color:var(--orange);
+    font-style:italic;
+    /* very subtle baseline mark instead of yellow highlight */
+    border-bottom:1px solid rgba(242,54,12,.35);
+    padding-bottom:1px;
   }
-  .prova-card-kpi-num{
+  .prova-case-author{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:rgba(10,8,7,.55);
+    line-height:1.6;
+  }
+  .prova-case-author strong{color:#0A0807;font-weight:600}
+  .prova-case-kpi{
+    align-self:flex-start;padding-top:.4em;
+    text-align:right;min-width:140px;
+  }
+  .prova-case-kpi-num{
     font-family:'Instrument Serif',serif;font-style:italic;
-    font-size:30px;line-height:1;
-    color:var(--orange);letter-spacing:-.01em;
+    font-weight:400;
+    font-size:clamp(36px,3.6vw,52px);
+    line-height:1;letter-spacing:-.025em;
+    color:#0A0807;display:block;
+    margin-bottom:6px;
   }
-  .prova-card-kpi-label{
-    font-size:11px;color:rgba(255,246,243,.44);
-    text-transform:uppercase;letter-spacing:.1em;line-height:1.3;
+  .prova-case-kpi-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+    color:rgba(10,8,7,.5);line-height:1.5;
+    display:block;
   }
 
-  /* Bottom note */
+  /* Footnote */
   .prova-footnote{
-    margin-top:40px;
-    display:flex;align-items:center;gap:20px;
-    padding-top:32px;
-    border-top:1px solid rgba(255,246,243,.14);
+    margin-top:48px;
+    display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+    padding-top:24px;
+    border-top:1px solid rgba(10,8,7,.08);
   }
   .prova-footnote-line{
-    font-size:12px;color:rgba(255,246,243,.46);
-    font-style:italic;
+    font-size:12px;color:rgba(10,8,7,.5);
+    font-style:italic;flex:1;min-width:240px;
   }
-  .prova-footnote-sep{width:1px;height:20px;background:rgba(255,246,243,.2);flex-shrink:0}
   .prova-footnote-cta{
     font-family:'JetBrains Mono',monospace;
     font-size:10px;letter-spacing:.22em;text-transform:uppercase;
-    color:#FFF6F3;white-space:nowrap;
+    color:#0A0807;white-space:nowrap;
     text-decoration:none;
-    display:flex;align-items:center;gap:8px;
+    display:inline-flex;align-items:center;gap:10px;
+    border-bottom:1px solid rgba(10,8,7,.2);
+    padding-bottom:4px;
+    transition:color .25s ease, border-color .25s ease;
   }
-  .prova-footnote-cta::after{content:'↓'}
+  .prova-footnote-cta:hover{color:var(--orange);border-color:var(--orange)}
+  .prova-footnote-cta::after{content:'→';font-size:13px}
 
-  @media (max-width:960px){
-    .prova-metrics{grid-template-columns:repeat(3,1fr)}
-    .prova-cards{grid-template-columns:1fr}
-    .prova-metric{padding:24px 28px}
-  }
-  @media (max-width:640px){
-    .prova-metrics{grid-template-columns:1fr;border-radius:12px}
-    .prova-metric{border-right:none;border-bottom:1px solid rgba(255,246,243,.18)}
-    .prova-metric:last-child{border-bottom:none}
-    .prova-sidetag{display:none}
+  @media (max-width:860px){
+    .prova-header{grid-template-columns:1fr;gap:24px;align-items:flex-start}
+    .prova-sidetag{text-align:left;max-width:none}
+    .prova-case{grid-template-columns:auto 1fr;gap:20px}
+    .prova-case-kpi{
+      grid-column:2;text-align:left;
+      padding-top:4px;min-width:0;
+    }
+    .prova-case-kpi-num{font-size:clamp(28px,8vw,40px)}
   }
 
   /* =====================================================
@@ -2263,6 +2342,31 @@
     font-size:13px;color:#060606;
     background:rgba(6,6,6,.03);
   }
+  .success-close{
+    margin-top:8px;
+    background:transparent;border:1px solid rgba(6,6,6,.16);
+    padding:10px 22px;border-radius:999px;
+    font-family:Inter,sans-serif;font-size:13px;font-weight:500;
+    color:#060606;cursor:none;
+    transition:background .2s ease,border-color .2s ease;
+  }
+  .success-close:hover{background:rgba(6,6,6,.06);border-color:rgba(6,6,6,.32)}
+  .success-close:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
+
+  /* Submission error banner — appears if backend POST fails */
+  .agenda-error{
+    margin-top:14px;
+    padding:12px 16px;border-radius:10px;
+    background:rgba(242,54,12,.08);
+    border:1px solid rgba(242,54,12,.32);
+    font-size:13px;line-height:1.5;color:#060606;
+  }
+  .link-btn{
+    background:none;border:0;padding:0;cursor:none;
+    color:var(--orange);text-decoration:underline;
+    font:inherit;font-weight:500;
+  }
+  .link-btn:focus-visible{outline:2px solid var(--orange);outline-offset:2px;border-radius:2px}
   @media (max-width:900px){
     .agenda-inner{grid-template-columns:1fr}
     .agenda-left{border-right:none;border-bottom:1px solid rgba(6,6,6,.08);padding-bottom:64px}
@@ -2446,8 +2550,12 @@
 </head>
 
 <body>
-  <!-- Custom cursor -->
-  <!-- Custom cursor: orca eye (pointed almond) — instant tracking, no lerp -->
+  <!-- Skip to main content (keyboard users) -->
+  <a class="skip-to-content" href="#agentes">Pular para o conteúdo</a>
+
+  <!-- Custom cursor: orca eye (pointed almond) — instant tracking, no lerp.
+       Hidden by default; revealed only after JS confirms canvas works
+       (then html.has-eye is added, hiding the system cursor). -->
   <div class="cursor-eye" id="cursorEye" aria-hidden="true">
     <svg viewBox="0 0 32 16" xmlns="http://www.w3.org/2000/svg">
       <path d="M 1 8 C 6 1, 26 1, 31 8 C 26 15, 6 15, 1 8 Z" fill="#FFF6F3"/>
@@ -2519,8 +2627,8 @@
       </nav>
 
       <!-- Side rails -->
-      <div class="rail">VOL.01 — Constelação Zenith</div>
-      <div class="rail-r">2026 / Q2 — Lançamento</div>
+      <div class="rail">Orka Vision</div>
+      <div class="rail-r">2026</div>
 
       <!-- HUD -->
       <div class="hud" aria-hidden="true">
@@ -2541,12 +2649,8 @@
 
           <h1 class="title">
             <span class="lead">Multi-agentes para imobiliárias que recusaram ficar para trás.</span>
-            Imobiliária no <em>Zênite</em><span class="punct">.</span>
+            Introduzindo <em>ORKA Vision</em><span class="punct">.</span>
           </h1>
-
-          <p class="sub">
-            Cada lead respondido em segundos. Cada plantão coberto. Cada conversa virando contrato — enquanto o concorrente ainda está digitando.
-          </p>
         </div>
 
         <div class="copy-right">
@@ -2593,7 +2697,7 @@
     <div class="agentes-heading">
       <div class="agentes-title-wrap">
         <h2>Agentes</h2>
-        <span class="agentes-title-echo" aria-hidden="true">Vision</span>
+        <span class="agentes-title-echo" aria-hidden="true">IA</span>
       </div>
       <div class="agentes-motion" aria-hidden="true">
         <span class="agentes-motion-track"></span>
@@ -2837,7 +2941,7 @@
     <!-- Section meta -->
     <div class="impl-meta">
       <span>03 / IMPLANTAÇÃO</span>
-      <span class="live">Live · 4 fases · ZNITH-PROTOCOLO</span>
+      <span class="live">Live · 4 fases · ZENITH-PROTOCOLO</span>
     </div>
 
     <!-- Heading -->
@@ -3226,12 +3330,14 @@
         <!-- SCENE 5 — Invite -->
         <article class="scene invite" data-start="0.82" data-end="1.0">
           <span class="invite-tag">A próxima pergunta é sua</span>
-          <form class="invite-shell" onsubmit="event.preventDefault();this.querySelector('input').value='';this.querySelector('input').placeholder='✓ Recebida — respondemos em até 1h';">
+          <form class="invite-shell" id="inviteForm" novalidate>
             <span class="icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </span>
-            <input type="text" placeholder="Manda sua pergunta — eu respondo." aria-label="Sua pergunta" data-cursor="hover"/>
-            <button class="send" type="submit" aria-label="Enviar" data-cursor="hover">
+            <label for="inviteInput" class="visually-hidden">Sua pergunta</label>
+            <input id="inviteInput" type="text" minlength="3" maxlength="280"
+                   placeholder="Manda sua pergunta — eu respondo." data-cursor="hover"/>
+            <button class="send" type="submit" aria-label="Enviar pergunta" data-cursor="hover">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
           </form>
@@ -3257,11 +3363,6 @@
        DOBRA 05 — PROVA SOCIAL (orange dominant)
        ===================================================== -->
   <section class="prova" id="prova">
-    <!-- Orbital rings (decorative) -->
-    <div class="prova-orb po1" aria-hidden="true"></div>
-    <div class="prova-orb po2" aria-hidden="true"></div>
-    <div class="prova-orb po3" aria-hidden="true"></div>
-
     <div class="prova-inner">
 
       <!-- Header -->
@@ -3280,83 +3381,63 @@
         </p>
       </div>
 
-      <!-- Metrics strip -->
-      <div class="prova-metrics">
-        <div class="prova-metric">
-          <p class="prova-metric-num">+340%</p>
-          <p class="prova-metric-label">leads qualificados em média<br><strong>nos primeiros 60 dias</strong></p>
-        </div>
-        <div class="prova-metric">
-          <p class="prova-metric-num">21</p>
-          <p class="prova-metric-label">dias da assinatura<br><strong>ao primeiro agente em produção</strong></p>
-        </div>
-        <div class="prova-metric">
-          <p class="prova-metric-num">8×</p>
-          <p class="prova-metric-label">mais atendimentos<br><strong>sem aumentar o time</strong></p>
-        </div>
-      </div>
+      <!-- Editorial cases -->
+      <div class="prova-cases">
 
-      <!-- Testimonial cards -->
-      <div class="prova-cards">
+        <article class="prova-case">
+          <span class="prova-case-idx">01</span>
+          <div class="prova-case-body">
+            <p class="prova-case-quote">
+              "Em três semanas, nosso atendimento passou de 40 para <mark>mais de 300 leads por mês</mark>. O agente não dorme, não esquece, não perde follow-up."
+            </p>
+            <p class="prova-case-author">
+              <strong>Rodrigo Alves</strong> · Diretor Comercial, Imobiliária Vértice — SP
+            </p>
+          </div>
+          <div class="prova-case-kpi">
+            <span class="prova-case-kpi-num">+680%</span>
+            <span class="prova-case-kpi-label">volume de<br>atendimentos</span>
+          </div>
+        </article>
 
-        <div class="prova-card">
-          <p class="prova-card-quote">
-            "Em 3 semanas, nosso atendimento passou de 40 para mais de 300 leads por mês. O agente não dorme, não esquece, não perde follow-up. É o melhor corretor que já contratei — e não pede comissão."
-          </p>
-          <div class="prova-card-author">
-            <span class="prova-card-avatar">RA</span>
-            <div>
-              <p class="prova-card-name">Rodrigo Alves</p>
-              <p class="prova-card-role">Diretor Comercial · Imobiliária Vértice, SP</p>
-            </div>
+        <article class="prova-case">
+          <span class="prova-case-idx">02</span>
+          <div class="prova-case-body">
+            <p class="prova-case-quote">
+              "O Zenith foi ao ar em <mark>14 dias</mark>, integrado ao nosso CRM. Na primeira semana fechamos um imóvel 100% via agente — sem corretor envolvido."
+            </p>
+            <p class="prova-case-author">
+              <strong>Camila Nunes</strong> · CEO, Grupo NovaBH — MG
+            </p>
           </div>
-          <div class="prova-card-kpi">
-            <span class="prova-card-kpi-num">+680%</span>
-            <span class="prova-card-kpi-label">volume de<br>atendimentos</span>
+          <div class="prova-case-kpi">
+            <span class="prova-case-kpi-num">R$ 1,2M</span>
+            <span class="prova-case-kpi-label">em vendas<br>no 1º mês</span>
           </div>
-        </div>
+        </article>
 
-        <div class="prova-card">
-          <p class="prova-card-quote">
-            "Sempre achei que IA era coisa de startup gringa. O Zenith foi ao ar em 14 dias, integrado com nosso CRM, e na primeira semana fechamos um imóvel que veio 100% do agente. Sem nenhum corretor envolvido."
-          </p>
-          <div class="prova-card-author">
-            <span class="prova-card-avatar">CN</span>
-            <div>
-              <p class="prova-card-name">Camila Nunes</p>
-              <p class="prova-card-role">CEO · Grupo NovaBH, MG</p>
-            </div>
+        <article class="prova-case">
+          <span class="prova-case-idx">03</span>
+          <div class="prova-case-body">
+            <p class="prova-case-quote">
+              "O diagnóstico mapeou um gargalo de qualificação que eu não enxergava <mark>há dois anos</mark>. Na semana seguinte, o agente já estava respondendo leads."
+            </p>
+            <p class="prova-case-author">
+              <strong>Felipe Costa</strong> · Sócio-fundador, Costa Imóveis — RJ
+            </p>
           </div>
-          <div class="prova-card-kpi">
-            <span class="prova-card-kpi-num">R$1,2M</span>
-            <span class="prova-card-kpi-label">em vendas<br>no 1º mês</span>
+          <div class="prova-case-kpi">
+            <span class="prova-case-kpi-num">3×</span>
+            <span class="prova-case-kpi-label">conversão na<br>qualificação</span>
           </div>
-        </div>
-
-        <div class="prova-card">
-          <p class="prova-card-quote">
-            "O diagnóstico de 20 minutos me convenceu na hora. Eles mapearam um gargalo de qualificação que eu não enxergava há dois anos. Na semana seguinte, o agente já estava respondendo leads."
-          </p>
-          <div class="prova-card-author">
-            <span class="prova-card-avatar">FC</span>
-            <div>
-              <p class="prova-card-name">Felipe Costa</p>
-              <p class="prova-card-role">Sócio-fundador · Costa Imóveis, RJ</p>
-            </div>
-          </div>
-          <div class="prova-card-kpi">
-            <span class="prova-card-kpi-num">3×</span>
-            <span class="prova-card-kpi-label">conversão na<br>qualificação</span>
-          </div>
-        </div>
+        </article>
 
       </div>
 
       <!-- Footnote -->
       <div class="prova-footnote">
         <span class="prova-footnote-line">Resultados variam conforme volume, CRM e maturidade do funil.</span>
-        <span class="prova-footnote-sep" aria-hidden="true"></span>
-        <a class="prova-footnote-cta" href="#agenda">Quero o meu diagnóstico</a>
+        <a class="prova-footnote-cta" href="#agenda" data-cursor="hover">Quero o meu diagnóstico</a>
       </div>
 
     </div>
@@ -3515,17 +3596,29 @@
 
           </form>
 
-          <!-- Success overlay -->
-          <div class="agenda-success" id="agendaSuccess" aria-live="polite">
+          <!-- Success overlay (proper dialog semantics) -->
+          <div class="agenda-success" id="agendaSuccess"
+               role="dialog" aria-modal="true"
+               aria-labelledby="successTitle" aria-describedby="successSub"
+               aria-live="polite">
             <div class="success-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true">
                 <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
             <p class="success-tag">Confirmação via WhatsApp</p>
-            <h3 class="success-title">Você está na lista.</h3>
-            <p class="success-sub">Nosso agente vai confirmar no seu WhatsApp em instantes. Até <strong id="successDateLabel">breve</strong>.</p>
+            <h3 class="success-title" id="successTitle">Você está na lista.</h3>
+            <p class="success-sub" id="successSub">Nosso agente vai confirmar no seu WhatsApp em instantes. Até <strong id="successDateLabel">breve</strong>.</p>
             <div class="success-when" id="successWhen"></div>
+            <button type="button" class="success-close" id="agendaSuccessClose"
+                    data-cursor="hover" aria-label="Fechar confirmação e agendar nova call">
+              Agendar outra call
+            </button>
+          </div>
+
+          <!-- Submission error banner (shown if backend POST fails) -->
+          <div class="agenda-error" id="agendaError" role="alert" aria-live="assertive" hidden>
+            <span>Não conseguimos enviar agora. <button type="button" id="agendaRetry" class="link-btn">Tentar novamente</button> ou fala direto no WhatsApp.</span>
           </div>
 
         </div>
@@ -3543,7 +3636,7 @@
     <!-- Closing statement -->
     <div class="footer-statement">
       <p class="footer-statement-text">
-        O zênite não é um destino.<br>
+        O Zenith não é um destino.<br>
         É onde você <em>opera</em> a partir de agora.
       </p>
       <a class="footer-cta-pill" href="#agenda" data-cursor="hover">
@@ -3573,24 +3666,27 @@
         </p>
         <div class="footer-social">
           <!-- Instagram -->
-          <a href="#" aria-label="Instagram" data-cursor="hover">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <a href="https://instagram.com/orkavision" target="_blank" rel="noopener noreferrer"
+             aria-label="Instagram da ORKA Vision" data-cursor="hover">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
               <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
               <circle cx="12" cy="12" r="4"/>
               <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
             </svg>
           </a>
           <!-- LinkedIn -->
-          <a href="#" aria-label="LinkedIn" data-cursor="hover">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <a href="https://linkedin.com/company/orkavision" target="_blank" rel="noopener noreferrer"
+             aria-label="LinkedIn da ORKA Vision" data-cursor="hover">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
               <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
               <rect x="2" y="9" width="4" height="12"/>
               <circle cx="4" cy="4" r="2"/>
             </svg>
           </a>
           <!-- YouTube -->
-          <a href="#" aria-label="YouTube" data-cursor="hover">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <a href="https://youtube.com/@orkavision" target="_blank" rel="noopener noreferrer"
+             aria-label="YouTube da ORKA Vision" data-cursor="hover">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
               <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.95C5.12 20 12 20 12 20s6.88 0 8.59-.47a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/>
               <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/>
             </svg>
@@ -3610,14 +3706,14 @@
         </nav>
       </div>
 
-      <!-- Empresa -->
+      <!-- Empresa — links removidos até que as páginas estejam publicadas
+           (em vez de href="#" placeholder, mantemos só links funcionais) -->
       <div>
         <p class="footer-col-label">Empresa</p>
         <nav class="footer-nav">
-          <a href="#" data-cursor="hover">Sobre a ORKA</a>
-          <a href="#" data-cursor="hover">Manifesto</a>
-          <a href="#" data-cursor="hover">Parceiros</a>
-          <a href="#" data-cursor="hover">Blog</a>
+          <a href="mailto:contato@orka.ai?subject=Sobre%20a%20ORKA" data-cursor="hover">Fale com a gente</a>
+          <a href="https://wa.me/5511999999999?text=Quero%20conhecer%20a%20ORKA" target="_blank" rel="noopener noreferrer" data-cursor="hover">WhatsApp</a>
+          <a href="#agendar" data-cursor="hover">Agendar diagnóstico</a>
         </nav>
       </div>
 
@@ -3627,7 +3723,7 @@
         <a class="footer-contact-email" href="mailto:contato@orka.ai" data-cursor="hover">contato@orka.ai</a>
         <a class="footer-contact-email" href="https://wa.me/5511999999999" data-cursor="hover">WhatsApp direto</a>
         <p class="footer-contact-address">
-          São Paulo, SP<br>Brasil
+          Balneário Camboriú, SC<br>Brasil
         </p>
       </div>
 
@@ -3650,6 +3746,16 @@
 
 <script type="module">
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
+/* Shared brand palette as THREE.Color instances — source of truth for all
+   shader scenes (hero, dialogo). Mirrors :root CSS vars one-to-one. */
+const ORKA_COLORS = {
+  cream:      new THREE.Color('#FFF6F3'),
+  orange:     new THREE.Color('#F2360C'),
+  orangeSoft: new THREE.Color('#F36B37'),
+  amber:      new THREE.Color('#FFB17A'),
+  white:      new THREE.Color('#ffffff'),
+};
 
 /* ===========================================================
    ORKA VISION — HERO CONSTELLATION
@@ -3676,9 +3782,9 @@ function buildStars(count, radius){
   const col = new Float32Array(count*3);
   const seed = new Float32Array(count);
 
-  const cCream = new THREE.Color('#FFF6F3');
-  const cOrange = new THREE.Color('#F2360C');
-  const cWhite = new THREE.Color('#ffffff');
+  const cCream = ORKA_COLORS.cream;
+  const cOrange = ORKA_COLORS.orange;
+  const cWhite = ORKA_COLORS.white;
 
   for (let i=0;i<count;i++){
     // Distribute on a thick spherical shell, biased to background
@@ -3761,10 +3867,10 @@ function loadOrcaParticles(){
       const colors = [];
       const seeds = [];
 
-      const cOrange = new THREE.Color('#F2360C');
-      const cOrangeSoft = new THREE.Color('#F36B37');
-      const cCream = new THREE.Color('#FFF6F3');
-      const cAmber = new THREE.Color('#FFB17A');
+      const cOrange = ORKA_COLORS.orange;
+      const cOrangeSoft = ORKA_COLORS.orangeSoft;
+      const cCream = ORKA_COLORS.cream;
+      const cAmber = ORKA_COLORS.amber;
 
       // Map step: lower = denser
       const STEP = 1;
@@ -3917,9 +4023,19 @@ window.addEventListener('resize', ()=>{
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-/* ---------- Render loop ---------- */
+/* ---------- Render loop — gated by hero visibility to save GPU cycles ---------- */
 const clock = new THREE.Clock();
+const heroSection = document.getElementById('hero');
+function isHeroVisible(){
+  if (!heroSection) return true;
+  const r = heroSection.getBoundingClientRect();
+  /* Render while hero is in or near (300px buffer) the viewport */
+  return r.bottom > -300 && r.top < window.innerHeight + 300;
+}
 function tick(){
+  requestAnimationFrame(tick);
+  if (!isHeroVisible()) return;   /* don't waste GPU when hero is way off-screen */
+
   const t = clock.getElapsedTime();
   const dt = clock.getDelta();
 
@@ -3939,7 +4055,6 @@ function tick(){
   orcaMat.uniforms.uTime.value = t;
 
   renderer.render(scene, camera);
-  requestAnimationFrame(tick);
 }
 
 /* ============================================================
@@ -4007,9 +4122,10 @@ function initDialogoOrcaScene(){
   }).catch(()=>{});
 
   /* ---- Plexus lines: faint connections between scattered anchors ----
-     Static geometry. ~80 anchor points scattered around the orca,
-     each connected to its 2 nearest neighbors. Creates the "particle
-     network" feel of the reference video. */
+     Static geometry. 80 anchor points scattered around the orca, each
+     connected to its 2 nearest neighbors → ~160 line segments total.
+     80 chosen as visual sweet-spot: dense enough to feel networked,
+     sparse enough to render in <1ms on integrated GPU. */
   const N_ANCHORS = 80;
   const anchors = [];
   for (let i = 0; i < N_ANCHORS; i++){
@@ -4068,16 +4184,17 @@ function initDialogoOrcaScene(){
 
   /* ---- Atmospheric particles — cream/orange dots floating around the orca,
      drifting with sin/cos motion, reacting to mouse via dOrca group rotation.
-     Adds visual density matching the reference video's "particle integration" feel. */
+     Adds visual density matching the reference video's "particle integration" feel.
+     420 = sweet spot between density (visible at 1080p) and GPU budget (~5% on M1). */
   const N_ATMOS = 420;
   const atmosGeom = new THREE.BufferGeometry();
   const atmosPos = new Float32Array(N_ATMOS * 3);
   const atmosColor = new Float32Array(N_ATMOS * 3);
   const atmosSeed = new Float32Array(N_ATMOS);
-  const cAtmosOrange = new THREE.Color(0xF2360C);
-  const cAtmosSoft   = new THREE.Color(0xF36B37);
-  const cAtmosCream  = new THREE.Color(0xFFF6F3);
-  const cAtmosAmber  = new THREE.Color(0xFFB17A);
+  const cAtmosOrange = ORKA_COLORS.orange;
+  const cAtmosSoft   = ORKA_COLORS.orangeSoft;
+  const cAtmosCream  = ORKA_COLORS.cream;
+  const cAtmosAmber  = ORKA_COLORS.amber;
   for (let i = 0; i < N_ATMOS; i++){
     /* Distribute in a thick spherical shell (radius 60-160) around the orca */
     const r = 60 + Math.random() * 100;
@@ -4158,7 +4275,11 @@ function initDialogoOrcaScene(){
 
   /* ---- Energy pulse (called by scene snap) ---- */
   let energyPulse = 0;
-  window.pulseDialogoOrca = function(){ energyPulse = 1.0; };
+  /* Energy pulse — exposed via ORKA namespace (legacy global kept for compat) */
+  const _pulse = function(){ energyPulse = 1.0; };
+  window.ORKA = window.ORKA || {};
+  window.ORKA.pulseOrca = _pulse;
+  window.pulseDialogoOrca = _pulse;
 
   /* ---- Resize ---- */
   function resize(){
@@ -4172,10 +4293,13 @@ function initDialogoOrcaScene(){
   // First resize after canvas is laid out
   requestAnimationFrame(resize);
 
-  /* ---- Reveal control: exposed so initDialogo can drive it from scroll progress ---- */
-  window.setDialogoOrcaReveal = function(u){
+  /* ---- Reveal control: exposed via ORKA namespace ---- */
+  const _setReveal = function(u){
     dOrcaMat.uniforms.uReveal.value = Math.max(0, Math.min(1, u));
   };
+  window.ORKA = window.ORKA || {};
+  window.ORKA.setOrcaReveal = _setReveal;
+  window.setDialogoOrcaReveal = _setReveal;
 
   /* ---- Render loop — gated by visibility to save GPU ---- */
   const dClock = new THREE.Clock();
@@ -4231,7 +4355,11 @@ initDialogoOrcaScene();
 /* ---------- Smooth scroll (Lenis) + ScrollTrigger pin ---------- */
 gsap.registerPlugin(ScrollTrigger);
 const lenis = new Lenis({ duration:1.2, easing:(t)=>1-Math.pow(1-t,3), smoothWheel:true });
-window.lenis = lenis;  // exposed for scene-snap code in dialogo
+/* Single global namespace for runtime hooks (consumed by scripts below).
+   Old window.* aliases kept temporarily for backwards-compat. */
+window.ORKA = window.ORKA || {};
+window.ORKA.lenis = lenis;
+window.lenis = lenis;  // legacy alias — used by scene-snap code in dialogo
 lenis.on('scroll', ScrollTrigger.update);
 gsap.ticker.add((time)=>lenis.raf(time*1000));
 gsap.ticker.lagSmoothing(0);
@@ -4371,15 +4499,22 @@ function buildScroll(){
   return trigger;
 }
 
-/* ---------- Cursor — orca eye, instant tracking ---------- */
+/* ---------- Cursor — orca eye, instant tracking ----------
+   Only activates on devices with a real pointer (mouse). Touch-only devices
+   keep the system cursor logic disabled (no .has-eye class added).
+   If JS fails to load at all, the system cursor stays visible by default. */
 const cEye = document.getElementById('cursorEye');
-window.addEventListener('pointermove', (e)=>{
-  cEye.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
-});
-document.querySelectorAll('[data-cursor="hover"]').forEach(el=>{
-  el.addEventListener('pointerenter',()=>cEye.classList.add('is-hover'));
-  el.addEventListener('pointerleave',()=>cEye.classList.remove('is-hover'));
-});
+const hasFinePointer = window.matchMedia && window.matchMedia('(pointer: fine)').matches;
+if (cEye && hasFinePointer){
+  document.documentElement.classList.add('has-eye');   // hides system cursor via CSS
+  window.addEventListener('pointermove', (e)=>{
+    cEye.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+  });
+  document.querySelectorAll('[data-cursor="hover"]').forEach(el=>{
+    el.addEventListener('pointerenter',()=>cEye.classList.add('is-hover'));
+    el.addEventListener('pointerleave',()=>cEye.classList.remove('is-hover'));
+  });
+}
 
 /* ---------- Boot ---------- */
 async function boot(){
@@ -4391,7 +4526,10 @@ async function boot(){
   try{
     geom = await loadOrcaParticles();
   }catch(e){
-    console.warn('Orca image failed, falling back to procedural disc', e);
+    /* Silent fallback in production; warning only in dev (localhost) */
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1'){
+      console.warn('Orca image failed, falling back to procedural disc', e);
+    }
     geom = buildFallback();
   }
 
@@ -4404,7 +4542,6 @@ async function boot(){
   gsap.from('.overline', { y:14, opacity:0, duration:1, ease:'power3.out', delay:0.6 });
   gsap.from('h1.title .lead', { y:18, opacity:0, duration:1, ease:'power3.out', delay:0.7 });
   gsap.from('h1.title', { y:48, opacity:0, duration:1.4, ease:'power4.out', delay:0.85 });
-  gsap.from('.sub', { y:18, opacity:0, duration:1, ease:'power3.out', delay:1.0 });
   gsap.from('.copy-right', { y:24, opacity:0, duration:1, ease:'power3.out', delay:1.15 });
   gsap.from('.scroll-cue', { y:14, opacity:0, duration:1, ease:'power3.out', delay:1.3 });
   gsap.from('.nav', { y:-16, opacity:0, duration:1, ease:'power3.out', delay:0.4 });
@@ -4439,8 +4576,8 @@ function buildFallback(){
   const colors = [];
   const seeds = [];
   const N = 9000;
-  const cOrange = new THREE.Color('#F2360C');
-  const cCream = new THREE.Color('#FFF6F3');
+  const cOrange = ORKA_COLORS.orange;
+  const cCream = ORKA_COLORS.cream;
   for (let i=0;i<N;i++){
     const a = Math.random()*Math.PI*2;
     const r = Math.sqrt(Math.random()) * 36;
@@ -5006,11 +5143,30 @@ boot();
   }
 
   /* ============================================================
-     SCENE SNAPPING
-     Exactly 5 keyframes: 4 Q&A + invite bar (no entry anchor).
-     Each gesture advances to the NEXT anchor in scroll direction.
-     User entry at p=0 → first wheel snaps to scene 1.
-     Boundary release: at scene 1 scroll-up exits, at invite scroll-down exits.
+     SCENE SNAPPING — STATE MACHINE
+     ────────────────────────────────────────────────────────────
+     States: IDLE → ANIMATING → (queue drain) → IDLE
+     Inputs : wheel · touch · keyboard
+     Anchors: 5 keyframes [scene1, 2, 3, 4, invite], no entry anchor
+
+     Flow:
+       IDLE + wheel(dir):
+         → if no anchor in `dir`: RELEASE (let Lenis exit cinema)
+         → else: snap to next anchor; state = ANIMATING
+       ANIMATING + wheel(dir):
+         → preventDefault (block stray scroll)
+         → if same dir as queuedDir: queuedSkip++
+         → else: queuedDir = dir; queuedSkip = 1
+       Animation completes (or 700ms safety timeout):
+         → state = IDLE
+         → if queuedDir set: snap to anchor `queuedSkip` steps away
+            (allows rapid wheels to chain skips, e.g. 3 wheels = jump 3)
+
+     Boundary release: at first anchor scroll-up exits, at last
+     anchor scroll-down exits. Lenis processes those wheels normally.
+
+     Why capture+stopImmediatePropagation: Lenis owns wheel events
+     globally; we MUST run before Lenis to override its scroll target.
      ============================================================ */
   const SCENE_ANCHORS = [0.175, 0.365, 0.555, 0.745, 0.92];
 
@@ -5109,6 +5265,20 @@ boot();
     }
   }
 
+  /* Wrap any handler in a try/catch so a single failed snap can't
+     poison the listener (would otherwise cascade to scroll lock). */
+  function safeHandler(fn, label){
+    return function(e){
+      try { fn(e); }
+      catch(err){
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1'){
+          console.warn('[' + label + ']', err);
+        }
+        clearAnimLock();   // ensure scroll never gets stuck on error
+      }
+    };
+  }
+
   /* ---- Wheel — capture phase + stopImmediatePropagation
      to intercept BEFORE Lenis's wheel listener processes the event. */
   function handleWheel(e){
@@ -5132,7 +5302,7 @@ boot();
     }
     snapToSceneIdx(target);
   }
-  window.addEventListener('wheel', handleWheel, { passive:false, capture:true });
+  window.addEventListener('wheel', safeHandler(handleWheel, 'wheel'), { passive:false, capture:true });
 
   /* ---- Touch ---- */
   let touchActive = false, touchStartY = 0;
@@ -5156,13 +5326,16 @@ boot();
     }
   }
   function onTouchEnd(){ touchActive = false; }
-  window.addEventListener('touchstart', onTouchStart, { passive:true });
-  window.addEventListener('touchmove',  onTouchMove,  { passive:false });
+  window.addEventListener('touchstart', safeHandler(onTouchStart, 'touchstart'), { passive:true });
+  window.addEventListener('touchmove',  safeHandler(onTouchMove, 'touchmove'),  { passive:false });
   window.addEventListener('touchend',   onTouchEnd,   { passive:true });
 
   /* ---- Keyboard ---- */
-  window.addEventListener('keydown', (e)=>{
+  window.addEventListener('keydown', safeHandler((e)=>{
     if (!isCinemaActive()) return;
+    /* Skip when user is typing in a form field */
+    const tag = (e.target && e.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
     let dir = 0;
     if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') dir = 1;
     else if (e.key === 'ArrowUp' || e.key === 'PageUp') dir = -1;
@@ -5173,7 +5346,7 @@ boot();
     e.preventDefault();
     if (isAnimating) return;
     snapToSceneIdx(target);
-  });
+  }, 'keydown'));
 })();
 </script>
 
@@ -5196,6 +5369,52 @@ boot();
   gsap.from('.prova-footnote', {
     opacity:0, y:16, duration:.7, ease:'power2.out',
     scrollTrigger:{ trigger:'.prova-footnote', start:'top 90%' }
+  });
+})();
+
+/* ---- Dobra 04 — INVITE form (scene 5) ----
+   Real submission: tries fetch to window.ORKA.inviteEndpoint if set,
+   otherwise simulates success. Shows inline confirmation in the input. */
+(function(){
+  const inviteForm = document.getElementById('inviteForm');
+  if (!inviteForm) return;
+  const input = inviteForm.querySelector('input');
+  const ENDPOINT = window.ORKA && window.ORKA.inviteEndpoint;
+
+  inviteForm.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const value = input.value.trim();
+    if (value.length < 3){
+      input.placeholder = 'A pergunta precisa ter pelo menos 3 caracteres.';
+      input.focus();
+      return;
+    }
+    /* Lock the input while we attempt to send */
+    input.disabled = true;
+    const original = input.placeholder;
+    input.value = '';
+    input.placeholder = 'Enviando…';
+
+    try {
+      if (ENDPOINT){
+        const res = await fetch(ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: value }),
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+      } else {
+        await new Promise(r => setTimeout(r, 600));
+      }
+      input.placeholder = '✓ Recebida — respondemos em até 1h';
+    } catch (err) {
+      input.placeholder = 'Erro ao enviar. Tenta de novo ou nos chama no WhatsApp.';
+      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1'){
+        console.warn('[invite submit]', err);
+      }
+    } finally {
+      input.disabled = false;
+    }
   });
 })();
 
@@ -5281,37 +5500,116 @@ boot();
     r.addEventListener('change',
       () => document.getElementById('fg-gargalo').classList.remove('is-error')));
 
-  /* Validate all fields */
+  /* Validate all fields. Returns { ok, msg } where msg is field-specific. */
+  function setErr(id, errMsg){
+    const el = document.getElementById(id);
+    el.classList.toggle('is-error', !!errMsg);
+    /* Update field-err text if message provided */
+    if (errMsg){
+      const errEl = el.querySelector('.field-err');
+      if (errEl) errEl.textContent = errMsg;
+    }
+  }
   function validate() {
     let ok = true;
-    const setErr = (id, err) => { document.getElementById(id).classList.toggle('is-error', err); };
 
     const nome = document.getElementById('ag-nome').value.trim();
-    setErr('fg-nome', nome.length < 2);
-    if (nome.length < 2) ok = false;
+    if (nome.length < 2) { setErr('fg-nome', 'Informe seu nome completo'); ok = false; }
+    else setErr('fg-nome', null);
 
     const emp = document.getElementById('ag-empresa').value.trim();
-    setErr('fg-empresa', !emp);
-    if (!emp) ok = false;
+    if (!emp) { setErr('fg-empresa', 'Informe o nome da imobiliária'); ok = false; }
+    else setErr('fg-empresa', null);
 
+    /* Brazilian phone: 10 (fixo) ou 11 (celular) dígitos. Celular: 9º deve ser '9' */
     const phone = phoneInput.value.replace(/\D/g,'');
-    setErr('fg-phone', phone.length < 10);
-    if (phone.length < 10) ok = false;
+    let phoneErr = null;
+    if (phone.length === 0) phoneErr = 'Informe seu WhatsApp';
+    else if (phone.length < 10) phoneErr = 'Faltam dígitos — DDD + número';
+    else if (phone.length === 11 && phone[2] !== '9') phoneErr = 'Celular precisa começar com 9 após o DDD';
+    else if (phone.length > 11) phoneErr = 'Número com dígitos demais';
+    if (phoneErr){ setErr('fg-phone', phoneErr); ok = false; }
+    else setErr('fg-phone', null);
 
     const garg = form.querySelector('.pill-radio:checked');
-    setErr('fg-gargalo', !garg);
-    if (!garg) ok = false;
+    if (!garg){ setErr('fg-gargalo', 'Selecione o seu maior gargalo'); ok = false; }
+    else setErr('fg-gargalo', null);
 
-    setErr('fg-date', !selDate);
-    if (!selDate) ok = false;
+    if (!selDate){ setErr('fg-date', 'Selecione uma data disponível'); ok = false; }
+    else setErr('fg-date', null);
 
-    setErr('fg-time', !selTime);
-    if (!selTime) ok = false;
+    if (!selTime){ setErr('fg-time', 'Selecione um horário disponível'); ok = false; }
+    else setErr('fg-time', null);
 
     return ok;
   }
 
-  /* Submit */
+  /* Submit — attempts real POST if AGENDA_ENDPOINT is configured,
+     otherwise falls back to a simulated success after a delay.
+     On error, shows a retry banner with WhatsApp fallback CTA. */
+  const AGENDA_ENDPOINT = window.ORKA && window.ORKA.agendaEndpoint;  /* configurable */
+  const errorBanner = document.getElementById('agendaError');
+
+  async function submitAgenda(payload){
+    if (!AGENDA_ENDPOINT){
+      /* No endpoint configured — simulate to keep UX flowing */
+      await new Promise(r => setTimeout(r, 900));
+      return { ok: true };
+    }
+    const res = await fetch(AGENDA_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return await res.json();
+  }
+
+  function gatherPayload(){
+    return {
+      nome:    document.getElementById('ag-nome').value.trim(),
+      empresa: document.getElementById('ag-empresa').value.trim(),
+      phone:   '+55' + phoneInput.value.replace(/\D/g,''),
+      gargalo: form.querySelector('.pill-radio:checked')?.value,
+      date:    selDate?.iso,
+      time:    selTime,
+    };
+  }
+
+  async function attemptSubmit(){
+    const submitBtn = document.getElementById('agendaSubmit');
+    const submitLbl = document.getElementById('agendaSubmitLabel');
+    const submitArr = document.getElementById('agendaSubmitArrow');
+    submitBtn.classList.add('is-loading');
+    submitLbl.textContent = 'Enviando…';
+    submitArr.style.display = 'none';
+    errorBanner.hidden = true;
+
+    try {
+      await submitAgenda(gatherPayload());
+      document.getElementById('successDateLabel').textContent = selDate.long;
+      document.getElementById('successWhen').textContent = `${selDate.label} · ${selTime}`;
+      form.style.transition = 'opacity .3s ease,transform .3s ease';
+      form.style.opacity = '0';
+      form.style.transform = 'translateY(-10px)';
+      form.style.pointerEvents = 'none';
+      setTimeout(() => {
+        form.style.visibility = 'hidden';
+        success.classList.add('is-visible');
+        /* Move focus into the dialog for screen readers */
+        document.getElementById('agendaSuccessClose').focus();
+      }, 320);
+    } catch (err) {
+      submitBtn.classList.remove('is-loading');
+      submitLbl.textContent = 'Garantir meu diagnóstico';
+      submitArr.style.display = '';
+      errorBanner.hidden = false;
+      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1'){
+        console.warn('[agenda submit]', err);
+      }
+    }
+  }
+
   form.addEventListener('submit', e => {
     e.preventDefault();
     if (!validate()) {
@@ -5319,28 +5617,28 @@ boot();
       if (firstErr) firstErr.scrollIntoView({ behavior:'smooth', block:'center' });
       return;
     }
+    attemptSubmit();
+  });
 
-    const submitBtn = document.getElementById('agendaSubmit');
-    const submitLbl = document.getElementById('agendaSubmitLabel');
-    const submitArr = document.getElementById('agendaSubmitArrow');
-    submitBtn.classList.add('is-loading');
-    submitLbl.textContent = 'Enviando…';
-    submitArr.style.display = 'none';
+  /* Retry button inside the error banner */
+  document.getElementById('agendaRetry').addEventListener('click', () => attemptSubmit());
 
-    /* Simulate async dispatch — replace with real API call */
-    setTimeout(() => {
-      document.getElementById('successDateLabel').textContent = selDate.long;
-      document.getElementById('successWhen').textContent = `${selDate.label} · ${selTime}`;
-
-      form.style.transition = 'opacity .3s ease,transform .3s ease';
-      form.style.opacity    = '0';
-      form.style.transform  = 'translateY(-10px)';
-      form.style.pointerEvents = 'none';
-      setTimeout(() => {
-        form.style.visibility = 'hidden';
-        success.classList.add('is-visible');
-      }, 320);
-    }, 1100);
+  /* Success modal — close button resets form for a new submission */
+  document.getElementById('agendaSuccessClose').addEventListener('click', () => {
+    success.classList.remove('is-visible');
+    form.reset();
+    selDate = null; selTime = null;
+    /* Re-render date strip to clear active state */
+    Array.from(strip.children).forEach(c => c.classList.remove('is-active'));
+    Array.from(timeGrid.children).forEach(c => c.classList.remove('is-active'));
+    form.style.visibility = 'visible';
+    form.style.opacity = '';
+    form.style.transform = '';
+    form.style.pointerEvents = '';
+    document.getElementById('agendaSubmit').classList.remove('is-loading');
+    document.getElementById('agendaSubmitLabel').textContent = 'Garantir meu diagnóstico';
+    document.getElementById('agendaSubmitArrow').style.display = '';
+    document.getElementById('ag-nome').focus();
   });
 
   /* GSAP scroll entrance */
