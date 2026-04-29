@@ -289,57 +289,32 @@
     padding:6px 4px 6px 0;
     isolation:isolate;
   }
-  /* Breathing cream halo behind the logo (always running).
-     Two animations: a one-shot fade-in (0→.45 baseline) followed by
-     an infinite breathe (.45 ⇄ 1 peak). Split this way so each cycle
-     starts cleanly at the baseline (no flash-back-to-zero per loop). */
-  .brand::before{
-    content:"";position:absolute;
-    left:-12px;top:50%;
-    width:calc(100% + 24px);height:64px;
-    transform:translateY(-50%);
-    z-index:-1;pointer-events:none;
-    border-radius:40px;
-    background:radial-gradient(ellipse 60% 100% at 28% 50%,
-      rgba(255,246,243,.22) 0%,
-      transparent 62%);
-    filter:blur(10px);
-    opacity:0;
-    animation:
-      brand-halo-in 1s ease 1.6s forwards,
-      brand-breathe 5s ease-in-out 2.6s infinite;
+  /* Logo treatment: minimalist — orange wordmark stands on its own.
+     Two stacked images (orange default, cream on top at opacity 0)
+     cross-fade on hover for a smooth color swap. */
+  .brand-logo-stack{
+    position:relative;display:inline-block;
+    height:36px;line-height:0;
+    transition:transform .5s ease;
   }
-  /* Orange hover-glow — separate pseudo so transition isn't fighting
-     with ::before's breathing animation. Sits in the same place,
-     only fades in on :hover. */
-  .brand::after{
-    content:"";position:absolute;
-    left:-12px;top:50%;
-    width:calc(100% + 24px);height:64px;
-    transform:translateY(-50%);
-    z-index:-1;pointer-events:none;
-    border-radius:40px;
-    background:radial-gradient(ellipse 75% 110% at 28% 50%,
-      rgba(242,54,12,.55) 0%,
-      rgba(243,107,55,.22) 32%,
-      transparent 62%);
-    filter:blur(12px);
-    opacity:0;
-    transition:opacity .45s cubic-bezier(.65,.05,.36,1);
-  }
-  .brand:hover::after{ opacity:1 }
   .brand-logo{
     height:36px;width:auto;display:block;
-    /* Scan-reveal on first paint. */
-    clip-path:inset(0 100% 0 0);
-    animation:brand-scan 1.2s cubic-bezier(.65,.05,.36,1) .35s forwards;
-    transition:transform .5s ease, filter .4s ease;
-    filter:drop-shadow(0 0 0 transparent);
+    transition:opacity .5s ease-in-out;
   }
-  .brand:hover .brand-logo{
+  /* The orange logo carries the cinematic scan reveal on first paint. */
+  .brand-logo--orange{
+    animation:brand-scan 1.2s cubic-bezier(.65,.05,.36,1) .35s both;
+  }
+  .brand-logo--cream{
+    position:absolute;top:0;left:0;
+    opacity:0;
+    pointer-events:none;
+  }
+  .brand:hover .brand-logo-stack{
     transform:translateY(-1px);
-    filter:drop-shadow(0 0 6px rgba(255,246,243,.25));
   }
+  .brand:hover .brand-logo--orange{ opacity:0 }
+  .brand:hover .brand-logo--cream{  opacity:1 }
   /* Scan beam — orange vertical line that travels along the reveal,
      visible only during the first 1.2s. Synced to the clip-path. */
   .brand-scan{
@@ -388,25 +363,17 @@
     from{ opacity:0; transform:translateX(-6px); }
     to  { opacity:1; transform:none; }
   }
-  /* One-shot fade-in: 0 → baseline once the scan reveal completes. */
-  @keyframes brand-halo-in{
-    from { opacity:0; }
-    to   { opacity:.45; }
-  }
-  /* Breathing loop — oscillates between baseline and peak. Reinforces
-     ESTADO VIVO. */
-  @keyframes brand-breathe{
-    0%, 100% { opacity:.45; }
-    50%      { opacity:1;   }
-  }
   @media (prefers-reduced-motion:reduce){
     .brand-logo,.brand-meta{ animation:none; clip-path:none; opacity:1; }
-    .brand::before{ animation:none; opacity:1; }
     .brand-scan{ display:none; }
     .brand-pulse{ animation:none; }
   }
+  /* Group nav links + CTA on the right (epiminds layout) */
+  .nav-right{
+    display:flex;align-items:center;gap:clamp(20px,2.6vw,40px);
+  }
   .nav-links{
-    display:none;gap:42px;
+    display:none;gap:30px;
     font-family:'JetBrains Mono',monospace;
     font-size:11px;letter-spacing:.22em;
     text-transform:uppercase;
@@ -459,68 +426,59 @@
   .rail-r .rail-sep{color:var(--orange);opacity:.85}
   @media (max-width:880px){.rail-r{display:none}}
 
-  /* Hero copy */
+  /* Hero copy — epiminds layout: bottom-left, eyebrow + inline title + CTA */
   .copy{
     position:absolute;left:clamp(24px,4vw,56px);right:clamp(24px,4vw,56px);
-    bottom:clamp(64px,14vh,140px);
-    display:grid;grid-template-columns:1fr;gap:28px;
-    align-items:end;
+    bottom:clamp(40px,8vh,80px);
+    display:flex;flex-direction:column;gap:14px;
+    align-items:flex-start;
   }
-  @media (min-width:1024px){.copy{grid-template-columns:1fr auto;justify-content:space-between;gap:48px}}
-
-  .copy-left{max-width:920px}
-  .overline{
-    display:inline-flex;align-items:center;gap:10px;
-    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.32em;
-    text-transform:uppercase;color:var(--cream-mute);
-    margin-bottom:24px;
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--cream-mute);margin:0;
   }
-  .overline .pip{
-    width:6px;height:6px;border-radius:50%;background:var(--orange);
-    box-shadow:0 0 12px var(--orange-glow);animation:pulse 1.6s ease-in-out infinite;
+  /* Title row: title + primary CTA grouped on the LEFT (cluster);
+     secondary "dive" CTA pushed to the FAR RIGHT via margin-left:auto. */
+  .copy-row{
+    display:flex;align-items:flex-end;gap:clamp(18px,2.4vw,36px);
+    flex-wrap:nowrap;width:100%;
   }
-  .overline .sep{color:var(--cream-dim)}
+  .copy-cluster{
+    display:flex;align-items:baseline;
+    gap:clamp(14px,2vw,28px);
+    flex-wrap:nowrap;
+  }
+  .copy-row .hero-dive-cta{ margin-left:auto }
 
   h1.title{
-    font-family:'Instrument Serif',serif;font-weight:400;
-    font-size:clamp(80px,13.5vw,210px);
-    line-height:.86;letter-spacing:-.03em;color:var(--cream);
-    text-shadow:0 0 80px rgba(242,54,12,.18),0 0 220px rgba(242,54,12,.06);
+    /* Instrument Serif italic — closer to the epiminds "Introducing Lucy."
+       feel. Contained size so the headline doesn't dominate the viewport. */
+    font-family:'Instrument Serif',serif;font-weight:400;font-style:italic;
+    font-size:clamp(38px,4.8vw,72px);
+    line-height:1.05;letter-spacing:-.015em;color:var(--cream);
+    text-shadow:0 0 80px rgba(242,54,12,.18);
+    margin:0;
+    white-space:nowrap;
   }
-  /* Editorial kicker — chapter-style ruler + serif italic, sits above
-     the headline as a single warm line of context. */
-  h1.title .lead{
-    display:flex;align-items:baseline;gap:14px;
-    font-size:clamp(14px,1vw,17px);line-height:1.4;
-    font-family:Inter,sans-serif;font-weight:400;letter-spacing:.005em;
-    color:var(--cream);text-transform:none;
-    margin-bottom:28px;max-width:600px;
-    text-shadow:none;
-  }
-  h1.title .lead::before{
-    content:"";flex:0 0 auto;
-    width:28px;height:1px;background:var(--orange);
-    align-self:center;
-    box-shadow:0 0 10px var(--orange-glow);
-  }
-  h1.title .lead em{
-    /* Stay on Inter so optical size matches the surrounding sentence;
-       only italic + warm color call attention to the word. */
-    font-family:Inter,sans-serif;font-style:italic;font-weight:500;
-    color:var(--orange-soft);
-    background:none;-webkit-text-fill-color:initial;
-    text-shadow:none;
-    font-size:1em;
-  }
-  /* "Introduzindo" — small italic kicker above the dominant ORKA Vision */
+  /* "Introduzindo" — same family/style as ORKA, just slightly muted */
   h1.title .title-intro{
-    display:block;
+    display:inline;
     font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;
-    font-size:clamp(28px,3vw,52px);
-    line-height:1;letter-spacing:-.01em;
+    font-size:.78em;
+    letter-spacing:-.005em;
     color:var(--cream-mute);
-    margin-bottom:.04em;
+    margin-right:.16em;
+    vertical-align:baseline;
     text-shadow:none;
+  }
+  h1.title em{
+    /* ORKA — italic dominant, only slightly bigger than Introduzindo,
+       with the warm gradient fill from the original design. */
+    font-style:italic;
+    background:linear-gradient(180deg,var(--cream) 30%, var(--orange-soft) 130%);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
   }
   h1.title em{
     font-style:italic;color:var(--cream);
@@ -530,19 +488,90 @@
   }
   h1.title .punct{color:var(--orange)}
 
-  .sub{
-    margin-top:24px;max-width:480px;
-    font-size:clamp(15px,1.05vw,17px);line-height:1.55;
-    color:var(--cream-soft);font-weight:300;
+  /* Hero CTA — compact cream pill, sits next to the title baseline */
+  .hero-cta{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:9px 6px 9px 16px;border-radius:999px;
+    background:var(--cream);color:var(--black);text-decoration:none;
+    font-family:Inter,sans-serif;font-weight:600;font-size:11px;
+    letter-spacing:.05em;text-transform:uppercase;
+    transition:all .4s cubic-bezier(.25,.8,.25,1);
+    flex-shrink:0;margin-bottom:.4em;
+    box-shadow:0 0 0 1px rgba(255,246,243,.08), 0 6px 22px rgba(255,246,243,.05);
   }
-
-  .copy-right{
-    display:flex;flex-direction:column;align-items:flex-start;gap:18px;
-    max-width:300px;
+  .hero-cta:hover{
+    background:var(--orange);color:#fff;
+    box-shadow:0 0 0 1px rgba(242,54,12,.4), 0 10px 28px rgba(242,54,12,.35);
+    transform:translateY(-1px);
   }
-  @media (min-width:1024px){.copy-right{align-items:flex-end;text-align:right}}
+  .hero-cta-arrow{
+    width:22px;height:22px;border-radius:50%;
+    background:var(--black);color:var(--cream);
+    display:inline-flex;align-items:center;justify-content:center;
+    transition:transform .35s ease;
+  }
+  .hero-cta:hover .hero-cta-arrow{transform:rotate(45deg);background:var(--cream);color:var(--orange)}
+  .hero-cta-arrow svg{width:9px;height:9px}
 
+  /* Secondary "Mergulhar no site" — small, dark, discrete pill on the right */
+  .hero-dive-cta{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:9px 14px 9px 16px;border-radius:999px;
+    background:rgba(6,6,6,.55);
+    border:1px solid rgba(255,246,243,.14);
+    color:var(--cream-soft);text-decoration:none;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    transition:all .35s ease;
+    flex-shrink:0;margin-bottom:.6em;
+    white-space:nowrap;
+  }
+  .hero-dive-cta:hover{
+    background:rgba(6,6,6,.85);
+    color:var(--cream);
+    border-color:rgba(255,246,243,.32);
+    transform:translateY(-1px);
+  }
+  .hero-dive-cta svg{
+    width:11px;height:11px;
+    color:var(--orange);
+    transition:transform .35s ease;
+  }
+  .hero-dive-cta:hover svg{transform:translateY(2px)}
+
+  /* Floating SaaS items orbiting the orca (moved here from dobra 4) */
+  .hero-items{
+    position:absolute;inset:0;z-index:3;
+    pointer-events:none;
+    --mx:0;--my:0;
+    transform:translate3d(
+      calc(var(--mx) * 14px),
+      calc(var(--my) * 10px),
+      0);
+    transition:transform .35s cubic-bezier(.2,.6,.2,1);
+  }
+  /* In hero, items are visible by default (no scene gating) */
+  .hero-items .d-item{ opacity:.85; transition:opacity .8s ease-out }
+  /* Slightly smaller than dobra 4 — let the orca dominate */
+  .hero-items .d-item svg{
+    width:clamp(48px,5.4vw,80px);
+  }
+  /* Entrance fade-in after the orca is partially revealed */
+  .hero-items .d-item{
+    opacity:0;
+    animation:hero-item-in 1.2s ease-out 1.6s forwards;
+  }
+  .hero-items .d-item:nth-child(2){animation-delay:1.75s}
+  .hero-items .d-item:nth-child(3){animation-delay:1.9s}
+  .hero-items .d-item:nth-child(4){animation-delay:2.05s}
+  .hero-items .d-item:nth-child(5){animation-delay:2.2s}
+  @keyframes hero-item-in{
+    from{ opacity:0; transform:translate3d(0,8px,0) scale(.95); }
+    to  { opacity:.85; transform:translate3d(0,0,0) scale(1); }
+  }
   .cta{
+    /* legacy, no longer used in hero — keep for future */
     display:inline-flex;align-items:center;gap:14px;
     padding:14px 8px 14px 26px;border-radius:999px;
     background:var(--cream);color:var(--black);text-decoration:none;
@@ -1292,15 +1321,19 @@
   /* Cosmic atmosphere */
   .cosmos{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
   .cosmos-stars{position:absolute;inset:0}
+  /* Nebulas — repositioned so neither crosses the implantacao's
+     top boundary (avoids the visible "orange light cut" at the
+     dive→implantacao seam). Top nebula now sits in the upper-middle
+     of the section, far enough that its blur ramp is fully inside. */
   .cosmos-nebula{
-    position:absolute;width:60vw;height:60vw;max-width:900px;max-height:900px;
-    top:-25%;right:-15%;
-    background:radial-gradient(circle, rgba(242,54,12,.10) 0%, rgba(242,54,12,.04) 40%, transparent 70%);
+    position:absolute;width:60vw;height:60vw;max-width:780px;max-height:780px;
+    top:18%;right:-10%;
+    background:radial-gradient(circle, rgba(242,54,12,.08) 0%, rgba(242,54,12,.03) 40%, transparent 70%);
     filter:blur(40px);
   }
   .cosmos-nebula.b{
-    top:auto;bottom:-30%;right:auto;left:-10%;
-    background:radial-gradient(circle, rgba(243,107,55,.08) 0%, rgba(242,54,12,.02) 50%, transparent 80%);
+    top:auto;bottom:-20%;right:auto;left:-8%;
+    background:radial-gradient(circle, rgba(243,107,55,.07) 0%, rgba(242,54,12,.02) 50%, transparent 80%);
   }
   .cosmos-rings{position:absolute;inset:0}
   .ring{
@@ -1308,7 +1341,9 @@
     border:1px dashed rgba(255,246,243,.08);
     animation:ring-spin 60s linear infinite;
   }
-  .ring.r1{width:780px;height:780px;top:-40%;right:-12%;border-color:rgba(242,54,12,.12)}
+  /* r1 moved down so its arc no longer crosses the implantacao's top
+     boundary (was creating a visible orange dashed line at the seam). */
+  .ring.r1{width:780px;height:780px;top:18%;right:-12%;border-color:rgba(242,54,12,.10)}
   .ring.r2{width:480px;height:480px;bottom:-30%;left:-8%;animation-duration:90s;animation-direction:reverse}
   .ring.r3{
     width:1200px;height:1200px;top:50%;left:50%;
@@ -1336,8 +1371,11 @@
   /* Vignette */
   .impl-vignette{
     position:absolute;inset:0;z-index:2;pointer-events:none;
-    background:
-      linear-gradient(to bottom, rgba(6,6,6,.7) 0%, transparent 14%, transparent 86%, rgba(6,6,6,.85) 100%);
+    /* Both top + bottom vignettes removed — they were creating visible
+       seam cuts (dark wash on top of next/previous section). The veil's
+       own .veil-overlay already drives the dark transition into dobra 4
+       progressively, so this static gradient is redundant. */
+    background:transparent;
   }
 
   /* Background giant "03" ghost */
@@ -1652,19 +1690,13 @@
     opacity:0;
     will-change:opacity;
   }
-  /* Subtle warm "horizon" haze at top — matches dobra 3's atmosphere */
+  /* Horizon wash disabled — it was anchored at top:0 of the veil and
+     created a visible warm line at the seam from dobra 3.
+     Element kept (JS still references it) but rendered invisible. */
   .veil-horizon{
-    position:absolute;top:0;left:50%;
-    width:140%;height:30vh;
-    transform:translateX(-50%);
-    background:radial-gradient(ellipse 70% 100% at 50% 0%,
-      rgba(243,107,55,0.08) 0%,
-      rgba(242,54,12,0.03) 30%,
-      transparent 65%);
-    pointer-events:none;z-index:3;
-    filter:blur(20px);
-    opacity:1;
-    will-change:opacity;
+    position:absolute;top:0;left:0;right:0;height:0;
+    pointer-events:none;
+    display:none;
   }
   @media (prefers-reduced-motion:reduce){
     .veil-stars{ animation:none!important }
@@ -1682,7 +1714,10 @@
      ===================================================== */
   .dialogo{
     position:relative;z-index:7;  /* above .veil (z:6) so it covers veil's tail */
-    background:#000;color:var(--cream);
+    /* Match implantacao/veil bg (#060606) so the seam between dobra 3
+       and dobra 4 is invisible — pure #000 was creating a subtle but
+       visible tone difference (the "break line"). */
+    background:#060606;color:var(--cream);
     height:500vh;height:500svh;
     width:100%;
     --scroll:0;
@@ -1696,28 +1731,33 @@
     height:100vh;height:100svh;
     width:100%;
     overflow:hidden;
-    background:#000;
+    background:#060606;
     isolation:isolate;
   }
 
+  /* Cosmic starfield behind the orca (continuity from dobra 3).
+     Sits below the canvas (z:0) so the orca particles still dominate. */
+  .dialogo-stars{
+    position:absolute;inset:-6% -2%;
+    width:104%;height:112%;
+    z-index:0;pointer-events:none;
+    opacity:.85;
+  }
   /* Full-bleed canvas — Three.js orca particle constellation */
   .dialogo-orca-canvas{
     position:absolute;inset:0;
     width:100%;height:100%;
-    z-index:0;
-    background:#000;
+    z-index:1;
+    background:transparent;
     display:block;
   }
 
-  /* Preroll overlay — black, fades out as cinema engages.
-     Hides the orca during the moment the sticky takes over from veil. */
+  /* Preroll overlay disabled — was hiding the cosmic starfield while
+     the cinema hadn't engaged yet, creating a black seam between
+     dobra 3 and dobra 4. The orca's uReveal animation already handles
+     the particle assembly gracefully without needing a black curtain. */
   .dialogo-preroll{
-    position:absolute;inset:0;
-    z-index:5;            /* above items (1) and orca (0), below scenes (6) */
-    background:#000;
-    opacity:1;
-    pointer-events:none;
-    will-change:opacity;
+    display:none;
   }
 
   /* Floating ecosystem items — orbit the central orca */
@@ -2833,60 +2873,107 @@
     <!-- UI Layer -->
     <div class="ui">
 
-      <!-- Top nav -->
+      <!-- Top nav (epiminds layout: brand left, links + CTA right) -->
       <nav class="nav">
         <a href="#" class="brand" data-cursor="hover" aria-label="ORKA Vision — voltar ao topo">
           <span class="brand-scan" aria-hidden="true"></span>
-          <img class="brand-logo" src="assets/orka-logo-h.webp" alt="ORKA" width="800" height="210" />
+          <span class="brand-logo-stack">
+            <img class="brand-logo brand-logo--orange" src="assets/orka-logo-h-orange.webp" alt="ORKA" width="800" height="210" />
+            <img class="brand-logo brand-logo--cream" src="assets/orka-logo-h.webp" alt="" aria-hidden="true" width="800" height="210" />
+          </span>
           <span class="brand-meta" aria-hidden="true">
             <span class="brand-pulse"></span>
             <span class="brand-tag">vision<sup>™</sup></span>
           </span>
         </a>
 
-        <div class="nav-links">
-          <a href="#zenith" data-cursor="hover">Zenith</a>
-          <a href="#agentes" data-cursor="hover">Agentes</a>
-          <a href="#metodo" data-cursor="hover">Método</a>
-          <a href="#provas" data-cursor="hover">Provas</a>
-        </div>
+        <div class="nav-right">
+          <div class="nav-links">
+            <a href="#zenith" data-cursor="hover">Zenith</a>
+            <a href="#agentes" data-cursor="hover">Agentes</a>
+            <a href="#metodo" data-cursor="hover">Método</a>
+            <a href="#provas" data-cursor="hover">Provas</a>
+          </div>
 
-        <a href="#agendar" class="nav-cta" data-cursor="hover">
-          <span>Agendar diagnóstico</span>
-          <span class="nav-cta-icon" aria-hidden="true">
-            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 9 L9 3 M5 3 H9 V7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>
-        </a>
-      </nav>
-
-      <!-- Side rail (right) — combined brand + year -->
-      <div class="rail-r">Orka Vision <span class="rail-sep" aria-hidden="true">·</span> 2026</div>
-
-      <!-- HUD -->
-      <div class="hud" aria-hidden="true">
-        <div class="row">SISTEMA <span class="val" id="hudSys">ORCA-001</span></div>
-        <div class="row">SINAL <span class="val" id="hudSig">98%</span></div>
-        <div class="row">ESTADO <span class="val" style="color:var(--orange)">VIVO</span></div>
-      </div>
-
-      <!-- Hero copy -->
-      <div class="copy">
-        <div class="copy-left">
-          <h1 class="title">
-            <span class="lead">Multi-agentes para imobiliárias que <em>recusaram</em> ficar para trás.</span>
-            <span class="title-intro">Introduzindo</span>
-            <em>ORKA Vision</em><span class="punct">.</span>
-          </h1>
-        </div>
-
-        <div class="copy-right">
-          <a href="#agentes" class="cta" data-cursor="hover">
-            <span>Mergulhar no site</span>
-            <span class="cta-arrow" aria-hidden="true">
-              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3 V9 M3 6 L6 9 L9 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <a href="#agendar" class="nav-cta" data-cursor="hover">
+            <span>Agendar diagnóstico</span>
+            <span class="nav-cta-icon" aria-hidden="true">
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 9 L9 3 M5 3 H9 V7" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </span>
           </a>
         </div>
+      </nav>
+
+      <!-- Hero copy (epiminds layout: bottom-left eyebrow + inline title + CTA) -->
+      <div class="copy">
+        <p class="hero-eyebrow">Multi-agentes para o mercado imobiliário</p>
+        <div class="copy-row">
+          <div class="copy-cluster">
+            <h1 class="title">
+              <span class="title-intro">Introduzindo</span>
+              <em>ORKA</em><span class="punct">.</span>
+            </h1>
+            <a href="#agendar" class="hero-cta" data-cursor="hover">
+              <span>Agendar diagnóstico</span>
+              <span class="hero-cta-arrow" aria-hidden="true">
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 9 L9 3 M5 3 H9 V7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </a>
+          </div>
+          <a href="#agentes" class="hero-dive-cta" data-cursor="hover">
+            <span>Mergulhar no site</span>
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3 V9 M3 6 L6 9 L9 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Floating SaaS items (moved here from dobra 4) — orbit the orca -->
+      <div class="hero-items" aria-hidden="true">
+        <span class="d-item d-item-bot" style="--depth:.18">
+          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="14" y="22" width="36" height="30" rx="6"/>
+            <line x1="32" y1="14" x2="32" y2="22"/>
+            <circle cx="32" cy="12" r="2.2" fill="currentColor"/>
+            <circle cx="25" cy="36" r="2.6" fill="currentColor"/>
+            <circle cx="39" cy="36" r="2.6" fill="currentColor"/>
+            <line x1="22" y1="46" x2="42" y2="46"/>
+            <line x1="14" y1="32" x2="10" y2="32"/>
+            <line x1="50" y1="32" x2="54" y2="32"/>
+          </svg>
+        </span>
+        <span class="d-item d-item-funnel" style="--depth:.22">
+          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 12 L56 12 L40 32 L40 50 L24 56 L24 32 Z"/>
+            <line x1="14" y1="20" x2="50" y2="20"/>
+            <line x1="20" y1="26" x2="44" y2="26"/>
+          </svg>
+        </span>
+        <span class="d-item d-item-chat" style="--depth:.16">
+          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 16 L50 16 Q54 16 54 20 L54 38 Q54 42 50 42 L28 42 L18 52 L18 42 Q14 42 14 38 L14 20 Q14 16 18 16 Z"/>
+            <circle cx="24" cy="29" r="2" fill="currentColor"/>
+            <circle cx="32" cy="29" r="2" fill="currentColor"/>
+            <circle cx="40" cy="29" r="2" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="d-item d-item-monitor" style="--depth:.20">
+          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="8" y="14" width="48" height="32" rx="3"/>
+            <line x1="14" y1="22" x2="44" y2="22"/>
+            <line x1="14" y1="28" x2="36" y2="28"/>
+            <line x1="14" y1="34" x2="40" y2="34"/>
+            <line x1="22" y1="46" x2="42" y2="46"/>
+            <line x1="32" y1="46" x2="32" y2="52"/>
+          </svg>
+        </span>
+        <span class="d-item d-item-sync" style="--depth:.14">
+          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 30 A18 18 0 0 1 48 22"/>
+            <polyline points="42,16 48,22 42,28"/>
+            <path d="M50 34 A18 18 0 0 1 16 42"/>
+            <polyline points="22,48 16,42 22,36"/>
+          </svg>
+        </span>
       </div>
 
       <!-- Scroll cue -->
@@ -3431,6 +3518,10 @@
   <section class="dialogo" id="dialogo">
     <div class="dialogo-cinema" id="dialogoCinema">
 
+      <!-- Cosmic starfield — same density as cosmos-stars (dobra 3) so
+           the seam between dobra 3 and dobra 4 has continuous stars. -->
+      <svg class="dialogo-stars" id="dialogoStars" preserveAspectRatio="none" aria-hidden="true"></svg>
+
       <!-- Particle Orca constellation (Three.js) — replaces the AI video.
            Lighter, mouse-reactive, alive throughout the scroll experience. -->
       <canvas class="dialogo-orca-canvas" id="dialogoOrcaCanvas" aria-hidden="true"></canvas>
@@ -3440,54 +3531,7 @@
            the cinema engages until the orca is partially formed. -->
       <div class="dialogo-preroll" id="dialogoPreroll" aria-hidden="true"></div>
 
-      <!-- Floating ecosystem items orbiting the orca (matches video composition) -->
-      <div class="dialogo-items" aria-hidden="true">
-        <span class="d-item d-item-bot" style="--depth:.18">
-          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="14" y="22" width="36" height="30" rx="6"/>
-            <line x1="32" y1="14" x2="32" y2="22"/>
-            <circle cx="32" cy="12" r="2.2" fill="currentColor"/>
-            <circle cx="25" cy="36" r="2.6" fill="currentColor"/>
-            <circle cx="39" cy="36" r="2.6" fill="currentColor"/>
-            <line x1="22" y1="46" x2="42" y2="46"/>
-            <line x1="14" y1="32" x2="10" y2="32"/>
-            <line x1="50" y1="32" x2="54" y2="32"/>
-          </svg>
-        </span>
-        <span class="d-item d-item-funnel" style="--depth:.22">
-          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M8 12 L56 12 L40 32 L40 50 L24 56 L24 32 Z"/>
-            <line x1="14" y1="20" x2="50" y2="20"/>
-            <line x1="20" y1="26" x2="44" y2="26"/>
-          </svg>
-        </span>
-        <span class="d-item d-item-chat" style="--depth:.16">
-          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 16 L50 16 Q54 16 54 20 L54 38 Q54 42 50 42 L28 42 L18 52 L18 42 Q14 42 14 38 L14 20 Q14 16 18 16 Z"/>
-            <circle cx="24" cy="29" r="2" fill="currentColor"/>
-            <circle cx="32" cy="29" r="2" fill="currentColor"/>
-            <circle cx="40" cy="29" r="2" fill="currentColor"/>
-          </svg>
-        </span>
-        <span class="d-item d-item-monitor" style="--depth:.20">
-          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="8" y="12" width="48" height="32" rx="3"/>
-            <line x1="14" y1="38" x2="50" y2="38"/>
-            <line x1="32" y1="44" x2="32" y2="54"/>
-            <line x1="22" y1="54" x2="42" y2="54"/>
-            <line x1="16" y1="20" x2="28" y2="20"/>
-            <line x1="16" y1="26" x2="22" y2="26"/>
-          </svg>
-        </span>
-        <span class="d-item d-item-sync" style="--depth:.14">
-          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 30 A18 18 0 0 1 48 22"/>
-            <polyline points="42,16 48,22 42,28"/>
-            <path d="M50 34 A18 18 0 0 1 16 42"/>
-            <polyline points="22,48 16,42 22,36"/>
-          </svg>
-        </span>
-      </div>
+      <!-- Floating ecosystem items moved to hero (epiminds-style centered subject) -->
 
       <!-- Vignette / legibility -->
       <div class="dialogo-vignette" aria-hidden="true"></div>
@@ -4359,6 +4403,7 @@ window.addEventListener('resize', ()=>{
 /* ---------- Render loop — gated by hero visibility to save GPU cycles ---------- */
 const clock = new THREE.Clock();
 const heroSection = document.getElementById('hero');
+const heroItemsEl = document.querySelector('.hero-items');
 function isHeroVisible(){
   if (!heroSection) return true;
   const r = heroSection.getBoundingClientRect();
@@ -4387,26 +4432,16 @@ function tick(){
   starsMat.uniforms.uTime.value = t;
   orcaMat.uniforms.uTime.value = t;
 
-  /* ── Mouse agitation: project pointer to z=0 plane, derive a
-     velocity-based "strength" that decays smoothly when the user
-     stops moving the cursor. The shader uses these uniforms to
-     repel + jitter particles near the cursor. ── */
-  if (orcaMat.uniforms.uMouseWorld){
-    projectMouseToOrcaLocal(camera, orca, orcaMat.uniforms.uMouseWorld.value);
-    const speed = Math.hypot(pointer.vx, pointer.vy); // px/ms
-    // Map speed (~0..3 px/ms typical) to 0..1 strength, with cap at high speeds
-    const targetStrength = Math.min(1, speed * 0.55);
-    // Smooth toward target with fast attack, slow release
-    const cur = orcaMat.uniforms.uMouseStrength.value;
-    const k = targetStrength > cur ? 0.35 : 0.04; // attack vs release
-    orcaMat.uniforms.uMouseStrength.value = cur + (targetStrength - cur) * k;
-    // Direction (normalized) of last movement for trail bias
-    if (speed > 0.001){
-      orcaMat.uniforms.uMouseDir.value.set(pointer.vx / speed, -pointer.vy / speed);
-    }
-    // Velocity decays each frame (no movement → speed reads stale)
-    pointer.vx *= 0.85;
-    pointer.vy *= 0.85;
+  /* Pointer parallax for the orbital SaaS items wrapping the orca */
+  if (heroItemsEl){
+    heroItemsEl.style.setProperty('--mx', pointer.x.toFixed(3));
+    heroItemsEl.style.setProperty('--my', (-pointer.y).toFixed(3));
+  }
+
+  /* Mouse agitation moved to dobra 4 (Diálogo). Hero is now centered
+     and contemplative — orbital items provide the "alive" feel here. */
+  if (orcaMat.uniforms.uMouseStrength){
+    orcaMat.uniforms.uMouseStrength.value = 0;
   }
 
   renderer.render(scene, camera);
@@ -4425,11 +4460,38 @@ function initDialogoOrcaScene(){
   const dialogoSection = document.getElementById('dialogo');
   if (!canvas || !dialogoSection) return;
 
+  /* ---------- Cosmic starfield (matches density of dobra 3) ----------
+     Generated once at init. Decorative layer behind the orca canvas
+     so the seam from the implantação's cosmos stays visually continuous. */
+  const dStarfieldEl = document.getElementById('dialogoStars');
+  if (dStarfieldEl){
+    const W = 1440, H = 900;
+    dStarfieldEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const palette = ['#FFF6F3','#FFF6F3','#FFF6F3','#F36B37','#FFF6F3','#F2360C'];
+    const N = Math.round((W * H) / 9257); // ~140 stars at 1440x900
+    let frag = '';
+    for (let i = 0; i < N; i++){
+      const x = Math.random() * W;
+      const y = Math.random() * H;
+      const r = (Math.random() * 1.3 + 0.4).toFixed(2);
+      const c = palette[Math.floor(Math.random() * palette.length)];
+      const o = (0.30 + Math.random() * 0.55).toFixed(2);
+      const dur = (3 + Math.random() * 4).toFixed(1);
+      const delay = (Math.random() * 4).toFixed(1);
+      frag += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${r}" fill="${c}" opacity="${o}">`
+            + `<animate attributeName="opacity" values="${o};${(o*0.3).toFixed(2)};${o}" dur="${dur}s" begin="-${delay}s" repeatCount="indefinite"/>`
+            + `</circle>`;
+    }
+    dStarfieldEl.innerHTML = frag;
+  }
+
   const dRenderer = new THREE.WebGLRenderer({
     canvas, antialias:true, alpha:true, powerPreference:'high-performance'
   });
   dRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  dRenderer.setClearColor(0x000000, 1);
+  /* Transparent clear so the starfield SVG behind the canvas remains
+     visible — the .dialogo-cinema's #060606 background fills the gap. */
+  dRenderer.setClearColor(0x000000, 0);
 
   const dScene = new THREE.Scene();
   const dCamera = new THREE.PerspectiveCamera(36, 1, 0.1, 1000);
@@ -4465,6 +4527,10 @@ function initDialogoOrcaScene(){
       uReveal:{value:0},          // ← starts scattered, animates to 1
       uDispersion:{value:0},
       uEnergy:{value:0.20},
+      /* Mouse-buzz uniforms (moved here from the hero) */
+      uMouseWorld:{value:new THREE.Vector2(9999,9999)},
+      uMouseStrength:{value:0},
+      uMouseDir:{value:new THREE.Vector2(0,0)},
     },
     vertexShader: orcaMat.vertexShader,
     fragmentShader: orcaMat.fragmentShader,
@@ -4619,14 +4685,41 @@ function initDialogoOrcaScene(){
   const atmosPoints = new THREE.Points(atmosGeom, atmosMat);
   dOrca.add(atmosPoints);   /* Inside dOrca group → reacts to mouse rotation */
 
-  /* ---- Pointer (independent from hero's pointer) ---- */
-  const dPtr = { x:0, y:0, tx:0, ty:0 };
+  /* ---- Pointer (independent from hero's pointer)
+     Now also tracks per-frame velocity, used to drive the orca particle
+     agitation (the "buzz/trail" effect that previously lived on the hero). */
+  const dPtr = { x:0, y:0, tx:0, ty:0,
+                 prevPx:0, prevPy:0, vx:0, vy:0, lastT:0 };
   window.addEventListener('pointermove', (e)=>{
     const r = dialogoSection.getBoundingClientRect();
     if (r.bottom < 0 || r.top > window.innerHeight) return; // dialogo not in view
     dPtr.tx = (e.clientX / window.innerWidth) * 2 - 1;
     dPtr.ty = -((e.clientY / window.innerHeight) * 2 - 1);
+    const now = performance.now();
+    const dt = Math.max(1, now - dPtr.lastT);
+    dPtr.vx = (e.clientX - dPtr.prevPx) / dt;
+    dPtr.vy = (e.clientY - dPtr.prevPy) / dt;
+    dPtr.prevPx = e.clientX;
+    dPtr.prevPy = e.clientY;
+    dPtr.lastT = now;
   }, { passive:true });
+
+  /* Project NDC mouse to dOrca's local space at z=0. Mirrors the helper
+     used in the hero, but uses the dialogo's camera + orca group. */
+  const _dPlane = new THREE.Plane(new THREE.Vector3(0,0,1), 0);
+  const _dRay = new THREE.Raycaster();
+  const _dNDC = new THREE.Vector2();
+  const _dHit = new THREE.Vector3();
+  const _dLocalHit = new THREE.Vector3();
+  function projectDPtrToDOrcaLocal(target){
+    _dNDC.set(dPtr.tx, dPtr.ty);
+    _dRay.setFromCamera(_dNDC, dCamera);
+    if (!_dRay.ray.intersectPlane(_dPlane, _dHit)) return false;
+    _dLocalHit.copy(_dHit);
+    dOrca.worldToLocal(_dLocalHit);
+    target.set(_dLocalHit.x, _dLocalHit.y);
+    return true;
+  }
 
   /* ---- Energy pulse (called by scene snap) ---- */
   let energyPulse = 0;
@@ -4690,11 +4783,23 @@ function initDialogoOrcaScene(){
     dOrcaMat.uniforms.uTime.value = t;
     atmosMat.uniforms.uTime.value = t;
 
-    // Floating items parallax: pass smoothed pointer to CSS variables
-    if (itemsEl){
-      itemsEl.style.setProperty('--mx', dPtr.x.toFixed(3));
-      itemsEl.style.setProperty('--my', dPtr.y.toFixed(3));
+    /* Mouse agitation (moved from hero): velocity-driven repulsion +
+       trail along uMouseDir. Same easing/decay model as before. */
+    if (dOrcaMat.uniforms.uMouseWorld){
+      projectDPtrToDOrcaLocal(dOrcaMat.uniforms.uMouseWorld.value);
+      const speed = Math.hypot(dPtr.vx, dPtr.vy);
+      const targetStrength = Math.min(1, speed * 0.55);
+      const cur = dOrcaMat.uniforms.uMouseStrength.value;
+      const k = targetStrength > cur ? 0.35 : 0.04;
+      dOrcaMat.uniforms.uMouseStrength.value = cur + (targetStrength - cur) * k;
+      if (speed > 0.001){
+        dOrcaMat.uniforms.uMouseDir.value.set(dPtr.vx / speed, -dPtr.vy / speed);
+      }
+      dPtr.vx *= 0.85;
+      dPtr.vy *= 0.85;
     }
+
+    // (Floating items moved to hero — parallax handled there now)
 
     dRenderer.render(dScene, dCamera);
   }
