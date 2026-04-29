@@ -274,27 +274,136 @@
     display:flex;align-items:center;justify-content:space-between;
     padding:28px clamp(24px,4vw,56px);
   }
-  .brand{display:flex;align-items:center;gap:14px;cursor:pointer}
-  .brand-mark{
-    width:34px;height:34px;border-radius:50%;
-    background:var(--cream);
-    display:inline-flex;align-items:center;justify-content:center;
-    transition:transform .5s cubic-bezier(.65,.05,.36,1),background .4s ease;
-    box-shadow:0 0 0 1px rgba(255,246,243,.08), 0 0 24px rgba(255,246,243,.08);
+  /* Brand mark — official ORKA wordmark with cinematic reveal,
+     breathing glow (matches the ESTADO VIVO of the HUD) and a live
+     indicator pip beside the trademark tag.
+
+     Glow lives on a ::before pseudo so the breathing animation does
+     not collide with the :hover state (CSS animations override static
+     rules — keeping them on different properties/elements lets both
+     work). */
+  .brand{
+    display:inline-flex;align-items:flex-end;gap:12px;
+    text-decoration:none;cursor:pointer;
+    position:relative;
+    padding:6px 4px 6px 0;
+    isolation:isolate;
   }
-  .brand-mark svg{width:22px;height:22px;color:var(--black);transition:color .4s ease}
-  .brand:hover .brand-mark{transform:rotate(-12deg);background:var(--orange);box-shadow:0 0 0 1px rgba(242,54,12,.45), 0 0 28px rgba(242,54,12,.45)}
-  .brand:hover .brand-mark svg{color:var(--cream)}
-  .brand-word{
-    font-family:'Instrument Serif',serif;
-    font-size:24px;letter-spacing:.01em;
-    color:var(--cream);
+  /* Breathing cream halo behind the logo (always running).
+     Two animations: a one-shot fade-in (0→.45 baseline) followed by
+     an infinite breathe (.45 ⇄ 1 peak). Split this way so each cycle
+     starts cleanly at the baseline (no flash-back-to-zero per loop). */
+  .brand::before{
+    content:"";position:absolute;
+    left:-12px;top:50%;
+    width:calc(100% + 24px);height:64px;
+    transform:translateY(-50%);
+    z-index:-1;pointer-events:none;
+    border-radius:40px;
+    background:radial-gradient(ellipse 60% 100% at 28% 50%,
+      rgba(255,246,243,.22) 0%,
+      transparent 62%);
+    filter:blur(10px);
+    opacity:0;
+    animation:
+      brand-halo-in 1s ease 1.6s forwards,
+      brand-breathe 5s ease-in-out 2.6s infinite;
   }
-  .brand-tm{
+  /* Orange hover-glow — separate pseudo so transition isn't fighting
+     with ::before's breathing animation. Sits in the same place,
+     only fades in on :hover. */
+  .brand::after{
+    content:"";position:absolute;
+    left:-12px;top:50%;
+    width:calc(100% + 24px);height:64px;
+    transform:translateY(-50%);
+    z-index:-1;pointer-events:none;
+    border-radius:40px;
+    background:radial-gradient(ellipse 75% 110% at 28% 50%,
+      rgba(242,54,12,.55) 0%,
+      rgba(243,107,55,.22) 32%,
+      transparent 62%);
+    filter:blur(12px);
+    opacity:0;
+    transition:opacity .45s cubic-bezier(.65,.05,.36,1);
+  }
+  .brand:hover::after{ opacity:1 }
+  .brand-logo{
+    height:36px;width:auto;display:block;
+    /* Scan-reveal on first paint. */
+    clip-path:inset(0 100% 0 0);
+    animation:brand-scan 1.2s cubic-bezier(.65,.05,.36,1) .35s forwards;
+    transition:transform .5s ease, filter .4s ease;
+    filter:drop-shadow(0 0 0 transparent);
+  }
+  .brand:hover .brand-logo{
+    transform:translateY(-1px);
+    filter:drop-shadow(0 0 6px rgba(255,246,243,.25));
+  }
+  /* Scan beam — orange vertical line that travels along the reveal,
+     visible only during the first 1.2s. Synced to the clip-path. */
+  .brand-scan{
+    position:absolute;left:0;top:6px;bottom:6px;width:1.5px;
+    background:linear-gradient(to bottom,
+      transparent, var(--orange) 30%, var(--orange) 70%, transparent);
+    box-shadow:0 0 12px var(--orange-glow);
+    opacity:0;
+    animation:brand-scan-beam 1.2s cubic-bezier(.65,.05,.36,1) .35s forwards;
+    pointer-events:none;
+  }
+  /* Right-side meta: live pip + "vision™" tag */
+  .brand-meta{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:0 0 4px 0;
+    opacity:0;
+    animation:brand-meta-in .9s cubic-bezier(.65,.05,.36,1) 1.3s forwards;
+  }
+  .brand-pulse{
+    width:5px;height:5px;border-radius:50%;
+    background:var(--orange);
+    box-shadow:0 0 10px var(--orange-glow);
+    animation:pulse 1.6s ease-in-out infinite;
+  }
+  .brand-tag{
     font-family:'JetBrains Mono',monospace;
-    font-size:9px;letter-spacing:.16em;
-    color:var(--cream-mute);text-transform:uppercase;
-    margin-left:-2px;align-self:flex-start;margin-top:6px;
+    font-size:9px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--cream-mute);
+    border-left:1px solid rgba(255,246,243,.18);
+    padding-left:8px;
+    line-height:1;
+  }
+  .brand-tag sup{font-size:.8em;margin-left:1px;letter-spacing:0}
+
+  @keyframes brand-scan{
+    from{ clip-path:inset(0 100% 0 0); }
+    to  { clip-path:inset(0 0 0 0); }
+  }
+  @keyframes brand-scan-beam{
+    0%   { left:0;     opacity:0; }
+    8%   {              opacity:1; }
+    92%  { left:calc(100% - 1.5px); opacity:1; }
+    100% { left:calc(100% - 1.5px); opacity:0; }
+  }
+  @keyframes brand-meta-in{
+    from{ opacity:0; transform:translateX(-6px); }
+    to  { opacity:1; transform:none; }
+  }
+  /* One-shot fade-in: 0 → baseline once the scan reveal completes. */
+  @keyframes brand-halo-in{
+    from { opacity:0; }
+    to   { opacity:.45; }
+  }
+  /* Breathing loop — oscillates between baseline and peak. Reinforces
+     ESTADO VIVO. */
+  @keyframes brand-breathe{
+    0%, 100% { opacity:.45; }
+    50%      { opacity:1;   }
+  }
+  @media (prefers-reduced-motion:reduce){
+    .brand-logo,.brand-meta{ animation:none; clip-path:none; opacity:1; }
+    .brand::before{ animation:none; opacity:1; }
+    .brand-scan{ display:none; }
+    .brand-pulse{ animation:none; }
   }
   .nav-links{
     display:none;gap:42px;
@@ -337,24 +446,18 @@
   .nav-cta:hover .nav-cta-icon{transform:rotate(45deg)}
   .nav-cta-icon svg{width:9px;height:9px;color:#fff}
 
-  /* Side rail badges */
-  .rail{
-    position:absolute;left:clamp(20px,3vw,44px);top:50%;
-    transform:translateY(-50%) rotate(-90deg);transform-origin:left top;
-    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.32em;
-    color:var(--cream-mute);text-transform:uppercase;
-    display:flex;align-items:center;gap:14px;
-  }
-  .rail::before{content:"";width:36px;height:1px;background:var(--cream-dim)}
+  /* Side rail (right) — combined editorial mark */
   .rail-r{
     position:absolute;right:clamp(20px,3vw,44px);top:50%;
     transform:translateY(-50%) rotate(90deg);transform-origin:right top;
     font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.32em;
     color:var(--cream-mute);text-transform:uppercase;
-    display:flex;align-items:center;gap:14px;
+    display:flex;align-items:center;gap:12px;
+    white-space:nowrap;
   }
   .rail-r::after{content:"";width:36px;height:1px;background:var(--cream-dim)}
-  @media (max-width:880px){.rail,.rail-r{display:none}}
+  .rail-r .rail-sep{color:var(--orange);opacity:.85}
+  @media (max-width:880px){.rail-r{display:none}}
 
   /* Hero copy */
   .copy{
@@ -384,11 +487,40 @@
     line-height:.86;letter-spacing:-.03em;color:var(--cream);
     text-shadow:0 0 80px rgba(242,54,12,.18),0 0 220px rgba(242,54,12,.06);
   }
+  /* Editorial kicker — chapter-style ruler + serif italic, sits above
+     the headline as a single warm line of context. */
   h1.title .lead{
-    display:block;font-size:clamp(13px,.95vw,15px);
-    font-family:Inter,sans-serif;font-weight:500;letter-spacing:.04em;
-    color:var(--cream-mute);text-transform:none;
-    margin-bottom:22px;max-width:540px;
+    display:flex;align-items:baseline;gap:14px;
+    font-size:clamp(14px,1vw,17px);line-height:1.4;
+    font-family:Inter,sans-serif;font-weight:400;letter-spacing:.005em;
+    color:var(--cream);text-transform:none;
+    margin-bottom:28px;max-width:600px;
+    text-shadow:none;
+  }
+  h1.title .lead::before{
+    content:"";flex:0 0 auto;
+    width:28px;height:1px;background:var(--orange);
+    align-self:center;
+    box-shadow:0 0 10px var(--orange-glow);
+  }
+  h1.title .lead em{
+    /* Stay on Inter so optical size matches the surrounding sentence;
+       only italic + warm color call attention to the word. */
+    font-family:Inter,sans-serif;font-style:italic;font-weight:500;
+    color:var(--orange-soft);
+    background:none;-webkit-text-fill-color:initial;
+    text-shadow:none;
+    font-size:1em;
+  }
+  /* "Introduzindo" — small italic kicker above the dominant ORKA Vision */
+  h1.title .title-intro{
+    display:block;
+    font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;
+    font-size:clamp(28px,3vw,52px);
+    line-height:1;letter-spacing:-.01em;
+    color:var(--cream-mute);
+    margin-bottom:.04em;
+    text-shadow:none;
   }
   h1.title em{
     font-style:italic;color:var(--cream);
@@ -434,13 +566,38 @@
   .cta:hover .cta-arrow{background:var(--cream);color:var(--orange)}
   .cta-arrow svg{width:12px;height:12px}
 
+  /* Right-side meta — editorial dossier card, replaces the tired stats blob */
   .meta{
-    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.22em;
-    text-transform:uppercase;color:var(--cream-mute);
-    line-height:1.7;
+    display:flex;flex-direction:column;align-items:flex-start;gap:14px;
   }
-  .meta strong{color:var(--cream)}
-  .meta .dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--orange);margin:0 8px;vertical-align:middle}
+  @media (min-width:1024px){.meta{align-items:flex-end;text-align:right}}
+  .meta-stamp{
+    display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+    line-height:.9;
+  }
+  @media (min-width:1024px){.meta-stamp{align-items:flex-end}}
+  .meta-stamp-num{
+    font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;
+    font-size:clamp(46px,4.6vw,68px);
+    color:var(--cream);letter-spacing:-.025em;
+    text-shadow:0 0 24px rgba(242,54,12,.2);
+  }
+  .meta-stamp-label{
+    font-family:Inter,sans-serif;font-weight:400;
+    font-size:clamp(12px,.95vw,14px);
+    letter-spacing:.01em;color:var(--cream-soft);
+  }
+  .meta-rule{
+    width:64px;height:1px;background:var(--cream-dim);
+    align-self:flex-end;
+  }
+  @media (max-width:1023px){.meta-rule{align-self:flex-start}}
+  .meta-tag{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--cream-mute);
+    line-height:1.5;
+  }
+  .meta-tag .meta-tag-sep{color:var(--orange);margin:0 4px;opacity:.85}
 
   /* Scroll cue */
   .scroll-cue{
@@ -1066,7 +1223,7 @@
      ===================================================== */
   .dive{
     position:relative;z-index:8;
-    height:160vh;
+    height:120vh;
     background:#060606;
     /* No overflow:hidden here — sticky child needs ancestor to allow scroll */
   }
@@ -1397,7 +1554,7 @@
   }
   .step-body strong{color:var(--cream);font-weight:500}
   .step-meta{
-    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    display:flex;align-items:center;gap:10px;
     padding-top:10px;border-top:1px dashed rgba(255,246,243,.08);
     font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;
     text-transform:uppercase;color:var(--cream-mute);
@@ -2678,17 +2835,14 @@
 
       <!-- Top nav -->
       <nav class="nav">
-        <div class="brand" data-cursor="hover">
-          <div class="brand-mark" aria-hidden="true">
-            <!-- Stylized orca silhouette: rounded body + leaf-shaped eye -->
-            <svg viewBox="0 0 32 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M16 3.2c-7 0-11.6 4.8-11.6 11 0 3.5 1.5 6.4 4 8.3 1.4-3.4 4.8-5.6 8.7-5.6 2.7 0 5.5.8 8.4 1.6 1.5-1.5 2.1-3.9 2.1-6.4C27.6 7.4 23 3.2 16 3.2Z" fill="currentColor"/>
-              <path d="M19.4 8.6c2.8-.4 6 .9 7.6 2.6-2 .9-5.5 1.2-7.6.4-1-.4-1.4-1.5-1-2.4.2-.3.6-.5 1-.6Z" fill="#060606"/>
-            </svg>
-          </div>
-          <span class="brand-word">orka</span>
-          <span class="brand-tm">vision&trade;</span>
-        </div>
+        <a href="#" class="brand" data-cursor="hover" aria-label="ORKA Vision — voltar ao topo">
+          <span class="brand-scan" aria-hidden="true"></span>
+          <img class="brand-logo" src="assets/orka-logo-h.webp" alt="ORKA" width="800" height="210" />
+          <span class="brand-meta" aria-hidden="true">
+            <span class="brand-pulse"></span>
+            <span class="brand-tag">vision<sup>™</sup></span>
+          </span>
+        </a>
 
         <div class="nav-links">
           <a href="#zenith" data-cursor="hover">Zenith</a>
@@ -2705,9 +2859,8 @@
         </a>
       </nav>
 
-      <!-- Side rails -->
-      <div class="rail">Orka Vision</div>
-      <div class="rail-r">2026</div>
+      <!-- Side rail (right) — combined brand + year -->
+      <div class="rail-r">Orka Vision <span class="rail-sep" aria-hidden="true">·</span> 2026</div>
 
       <!-- HUD -->
       <div class="hud" aria-hidden="true">
@@ -2719,34 +2872,20 @@
       <!-- Hero copy -->
       <div class="copy">
         <div class="copy-left">
-          <span class="overline">
-            <span class="pip" aria-hidden="true"></span>
-            <span>Apresentando</span>
-            <span class="sep">/</span>
-            <span>Orka Vision</span>
-          </span>
-
           <h1 class="title">
-            <span class="lead">Multi-agentes para imobiliárias que recusaram ficar para trás.</span>
-            Introduzindo <em>ORKA Vision</em><span class="punct">.</span>
+            <span class="lead">Multi-agentes para imobiliárias que <em>recusaram</em> ficar para trás.</span>
+            <span class="title-intro">Introduzindo</span>
+            <em>ORKA Vision</em><span class="punct">.</span>
           </h1>
         </div>
 
         <div class="copy-right">
-          <a href="#zenith" class="cta" data-cursor="hover">
-            <span>Convocar a constelação</span>
+          <a href="#agentes" class="cta" data-cursor="hover">
+            <span>Mergulhar no site</span>
             <span class="cta-arrow" aria-hidden="true">
-              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6 H9 M6 3 L9 6 L6 9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3 V9 M3 6 L6 9 L9 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </span>
           </a>
-
-          <p class="meta">
-            <strong>4 agentes</strong> em produção
-            <span class="dot"></span>
-            <strong>+38 imobiliárias</strong>
-            <br/>
-            Atendendo 24/7 desde 2024
-          </p>
         </div>
       </div>
 
@@ -3084,25 +3223,20 @@
     <!-- Section meta -->
     <div class="impl-meta">
       <span>03 / IMPLANTAÇÃO</span>
-      <span class="live">Live · 4 fases · ZENITH-PROTOCOLO</span>
+      <span class="live">4 etapas · 21 dias</span>
     </div>
 
     <!-- Heading -->
     <div class="impl-heading">
       <div class="impl-title-wrap">
-        <div class="impl-kicker">[ Trajetória Zenith — embarque em 4 fases ]</div>
         <h2 class="impl-title">
           Como entramos em <em>órbita</em><span class="punct">.</span>
         </h2>
       </div>
       <div class="impl-side">
         <p class="impl-sub">
-          Cada fase entrega valor antes da próxima começar. <strong>Sem 6 meses em PowerPoint.</strong> Sem promessa cósmica.
+          Em até <strong>21 dias</strong>, sua operação está no ar. Quatro etapas — com entrega ao final de cada uma.
         </p>
-        <span class="impl-protocol">
-          <span class="dot"></span>
-          <span>T-0 → T+30 · janela média 21 dias</span>
-        </span>
       </div>
     </div>
 
@@ -3180,13 +3314,11 @@
           </div>
           <h3 class="step-title">Diagnóstico</h3>
           <p class="step-body">
-            Mapeamos canais, tempo de resposta, atendimento e CRM. <strong>O gargalo aparece</strong> antes da primeira reunião terminar.
+            Investigamos canais, tempo de resposta, CRM e funil. <strong>O gargalo aparece</strong> ainda na primeira conversa.
           </p>
           <div class="step-meta">
-            <span class="step-time">T-0 · 5 dias</span>
             <span class="step-out">→ Diagnóstico vivo</span>
           </div>
-          <code class="step-log"><span class="prompt">&gt;</span> radar.scan() · canais=4 · gargalos=12</code>
         </div>
       </article>
 
@@ -3207,15 +3339,13 @@
               </svg>
             </span>
           </div>
-          <h3 class="step-title">Mapa de solução</h3>
+          <h3 class="step-title">Mapeamento</h3>
           <p class="step-body">
-            Priorizamos o que <strong>vira caixa antes do mês acabar</strong>. Sem revolução de vitrine. Sem reformar tudo de uma vez.
+            Cruzamos o diagnóstico com seu funil e priorizamos onde a <strong>IA gera retorno mais rápido</strong> — sem refazer tudo de uma vez.
           </p>
           <div class="step-meta">
-            <span class="step-time">T+5 · 2 dias</span>
-            <span class="step-out">→ Roadmap 90d</span>
+            <span class="step-out">→ Plano de execução</span>
           </div>
-          <code class="step-log"><span class="prompt">&gt;</span> roadmap.compile() · prioridades=3 · ROI&lt;30d</code>
         </div>
       </article>
 
@@ -3236,13 +3366,11 @@
           </div>
           <h3 class="step-title">Construção</h3>
           <p class="step-body">
-            Agentes, fluxos, CRM, páginas, integrações — tudo num <strong>cérebro só</strong>. Em produção. Não em slide.
+            Agentes, fluxos, CRM e integrações conectados num <strong>cérebro só</strong>, configurado para a sua operação real.
           </p>
           <div class="step-meta">
-            <span class="step-time">T+7 · 14–21 dias</span>
             <span class="step-out">→ Operação no ar</span>
           </div>
-          <code class="step-log"><span class="prompt">&gt;</span> deploy.run() · agentes=3 · stack=integrada</code>
         </div>
       </article>
 
@@ -3261,13 +3389,11 @@
           </div>
           <h3 class="step-title">Ajuste &amp; evolução</h3>
           <p class="step-body">
-            Toda semana, novos dados. Toda semana, mais inteligente. <strong>A operação não para de aprender.</strong>
+            Acompanhamos resultado semana a semana, ajustando o que <strong>não está performando</strong> e amplificando o que já entrega.
           </p>
           <div class="step-meta">
-            <span class="step-time">T+30 · contínuo</span>
-            <span class="step-out">→ Boletim semanal</span>
+            <span class="step-out">→ Acompanhamento semanal</span>
           </div>
-          <code class="step-log"><span class="prompt">&gt;</span> learn.loop() · cadência=semanal · contínuo</code>
         </div>
       </article>
     </div>
@@ -3275,7 +3401,7 @@
     <!-- Bottom strap -->
     <div class="impl-strap">
       <div class="impl-strap-left">
-        <strong>O Zenith não é um produto.</strong> É um protocolo de implantação que evolui com sua operação. Cada cliente tem uma trajetória única — e nós ficamos ao lado até a órbita ser estável.
+        <strong>O Zenith não é um produto fechado.</strong> É uma implantação acompanhada do começo ao fim — e que continua evoluindo com a sua operação depois que entra no ar.
       </div>
       <div class="impl-strap-right">
         <span class="total"><em>21</em> dias</span>
@@ -4087,7 +4213,11 @@ const orcaMat = new THREE.ShaderMaterial({
     uPixel:{value:Math.min(window.devicePixelRatio,2)},
     uReveal:{value:0},      // 0..1 entrance reveal
     uDispersion:{value:0},  // 0..1 scroll-driven explode
-    uEnergy:{value:0}        // 0..1 hover/scroll energy
+    uEnergy:{value:0},       // 0..1 hover/scroll energy
+    /* ── Mouse interaction (velocity-driven repulsion) ── */
+    uMouseWorld:{value:new THREE.Vector2(9999,9999)}, // world XY at z=0 plane
+    uMouseStrength:{value:0},                          // 0..1, decays with no movement
+    uMouseDir:{value:new THREE.Vector2(0,0)}            // last movement direction (unit)
   },
   vertexShader:`
     attribute float aSeed;
@@ -4097,8 +4227,12 @@ const orcaMat = new THREE.ShaderMaterial({
     uniform float uReveal;
     uniform float uDispersion;
     uniform float uEnergy;
+    uniform vec2 uMouseWorld;
+    uniform float uMouseStrength;
+    uniform vec2 uMouseDir;
     varying vec3 vColor;
     varying float vAlpha;
+    varying float vAgitation;
 
     // simple hash-based 3d offset
     vec3 hash3(float n){
@@ -4119,6 +4253,30 @@ const orcaMat = new THREE.ShaderMaterial({
       // Per-particle z float for life
       pos.z += sin(uTime*0.9 + aSeed*12.56) * 0.6;
 
+      /* ── Mouse repulsion with anisotropic falloff:
+         - Soft, gentle push (toned down vs. previous version).
+         - Falloff stretches BEHIND the cursor along uMouseDir, so fast
+           movement leaves a visible trail; slow movement is a tight buzz. ── */
+      vec2 toMouse = origin.xy - uMouseWorld;
+      // Decompose into "along motion" (signed: + ahead, − behind) and "across".
+      float along  = dot(toMouse, uMouseDir);
+      float across = length(toMouse - uMouseDir * along);
+      // Behind the cursor (along < 0): scale distance down so reach extends
+      // → particles farther behind still feel the wake, creating the trail.
+      float trailReach = (along < 0.0) ? 0.35 : 1.0;
+      float dEff2 = along*along*trailReach*trailReach + across*across;
+      float falloff = exp(-dEff2 * 0.020);
+      float force = uMouseStrength * falloff;
+      vec2 awayDir = normalize(toMouse + vec2(0.0001));
+      // Softer base push + drift along motion direction
+      vec2 push = awayDir * 3.5 + uMouseDir * 1.8;
+      pos.xy += push * force;
+      // Subtle jitter — the "burburinho", much gentler than before
+      float jitter = sin(uTime*18.0 + aSeed*40.0) * force * 0.45;
+      vec3 jitterDir = hash3(aSeed*257.0) - 0.5;
+      pos += jitterDir * jitter;
+      vAgitation = force;
+
       // Dispersion (scroll end): radial blast
       vec3 outward = normalize(origin + vec3(0.001, 0.001, 0.001));
       pos += outward * uDispersion * 220.0 * (0.6 + aSeed*0.8);
@@ -4128,15 +4286,17 @@ const orcaMat = new THREE.ShaderMaterial({
       gl_Position = projectionMatrix * mv;
 
       float twinkle = 0.55 + 0.45 * sin(uTime*1.4 + aSeed*7.5);
-      float baseSize = 1.4 + twinkle*0.9 + uEnergy*0.6;
+      // Agitated particles flare softly in size + brightness
+      float baseSize = 1.4 + twinkle*0.9 + uEnergy*0.6 + force*0.7;
       gl_PointSize = baseSize * uPixel * (340.0 / -mv.z);
 
       vAlpha = (0.55 + 0.45*twinkle) * smoothstep(0.0, 0.5, uReveal) * (1.0 - uDispersion*0.7);
-      vColor = color;
+      // Agitation tints the particle slightly warmer
+      vColor = mix(color, color * vec3(1.25, 1.0, 0.9), force);
     }
   `,
   fragmentShader:`
-    varying vec3 vColor; varying float vAlpha;
+    varying vec3 vColor; varying float vAlpha; varying float vAgitation;
     void main(){
       vec2 c = gl_PointCoord - 0.5;
       float d = length(c);
@@ -4145,6 +4305,8 @@ const orcaMat = new THREE.ShaderMaterial({
       // hot core, soft halo
       float core = pow(fall, 2.6);
       vec3 col = vColor * (0.5 + core*1.6);
+      // Agitated particles flare slightly brighter (gentle)
+      col *= (1.0 + vAgitation * 0.5);
       gl_FragColor = vec4(col, vAlpha * fall);
     }
   `
@@ -4152,12 +4314,40 @@ const orcaMat = new THREE.ShaderMaterial({
 
 let orcaPoints = null;
 
-/* ---------- Mouse / pointer ---------- */
-const pointer = { x:0, y:0, tx:0, ty:0 };
+/* ---------- Mouse / pointer ----------
+   Tracks both NDC (for parallax rotation) and a delta-based velocity
+   used to drive the orca particle agitation effect. */
+const pointer = { x:0, y:0, tx:0, ty:0, prevPx:0, prevPy:0, vx:0, vy:0, lastT:0 };
 window.addEventListener('pointermove', (e)=>{
   pointer.tx = (e.clientX / window.innerWidth) * 2 - 1;
   pointer.ty = -((e.clientY / window.innerHeight) * 2 - 1);
+  const now = performance.now();
+  const dt = Math.max(1, now - pointer.lastT);
+  pointer.vx = (e.clientX - pointer.prevPx) / dt;
+  pointer.vy = (e.clientY - pointer.prevPy) / dt;
+  pointer.prevPx = e.clientX;
+  pointer.prevPy = e.clientY;
+  pointer.lastT = now;
 });
+
+/* Helper: project NDC (mouse) to the orca's LOCAL space at z=0.
+   The orca mesh rotates with the cursor, so the agitation has to
+   work in local coords (where aOrigin lives) — otherwise the buzz
+   would lag behind the rotated mesh. */
+const _mouseRayPlane = new THREE.Plane(new THREE.Vector3(0,0,1), 0);
+const _mouseRaycaster = new THREE.Raycaster();
+const _mouseNDC = new THREE.Vector2();
+const _mouseWorldHit = new THREE.Vector3();
+const _mouseLocalHit = new THREE.Vector3();
+function projectMouseToOrcaLocal(camera, orcaMesh, target){
+  _mouseNDC.set(pointer.tx, pointer.ty);
+  _mouseRaycaster.setFromCamera(_mouseNDC, camera);
+  if (!_mouseRaycaster.ray.intersectPlane(_mouseRayPlane, _mouseWorldHit)) return false;
+  _mouseLocalHit.copy(_mouseWorldHit);
+  orcaMesh.worldToLocal(_mouseLocalHit);
+  target.set(_mouseLocalHit.x, _mouseLocalHit.y);
+  return true;
+}
 
 /* ---------- Resize ---------- */
 window.addEventListener('resize', ()=>{
@@ -4196,6 +4386,28 @@ function tick(){
 
   starsMat.uniforms.uTime.value = t;
   orcaMat.uniforms.uTime.value = t;
+
+  /* ── Mouse agitation: project pointer to z=0 plane, derive a
+     velocity-based "strength" that decays smoothly when the user
+     stops moving the cursor. The shader uses these uniforms to
+     repel + jitter particles near the cursor. ── */
+  if (orcaMat.uniforms.uMouseWorld){
+    projectMouseToOrcaLocal(camera, orca, orcaMat.uniforms.uMouseWorld.value);
+    const speed = Math.hypot(pointer.vx, pointer.vy); // px/ms
+    // Map speed (~0..3 px/ms typical) to 0..1 strength, with cap at high speeds
+    const targetStrength = Math.min(1, speed * 0.55);
+    // Smooth toward target with fast attack, slow release
+    const cur = orcaMat.uniforms.uMouseStrength.value;
+    const k = targetStrength > cur ? 0.35 : 0.04; // attack vs release
+    orcaMat.uniforms.uMouseStrength.value = cur + (targetStrength - cur) * k;
+    // Direction (normalized) of last movement for trail bias
+    if (speed > 0.001){
+      orcaMat.uniforms.uMouseDir.value.set(pointer.vx / speed, -pointer.vy / speed);
+    }
+    // Velocity decays each frame (no movement → speed reads stale)
+    pointer.vx *= 0.85;
+    pointer.vy *= 0.85;
+  }
 
   renderer.render(scene, camera);
 }
@@ -4688,7 +4900,7 @@ async function boot(){
   gsap.from('.copy-right', { y:24, opacity:0, duration:1, ease:'power3.out', delay:1.15 });
   gsap.from('.scroll-cue', { y:14, opacity:0, duration:1, ease:'power3.out', delay:1.3 });
   gsap.from('.nav', { y:-16, opacity:0, duration:1, ease:'power3.out', delay:0.4 });
-  gsap.from('.rail, .rail-r', { opacity:0, duration:1.4, ease:'power2.out', delay:1.0 });
+  gsap.from('.rail-r', { opacity:0, duration:1.4, ease:'power2.out', delay:1.0 });
   gsap.from('.hud', { x:-20, opacity:0, duration:1, ease:'power3.out', delay:1.4 });
 
   // Particle reveal
@@ -4887,25 +5099,28 @@ boot();
   const section = document.querySelector('.implantacao');
   if (!section) return;
 
-  /* ---------- Starfield (lightweight SVG) ---------- */
+  /* ---------- Starfield (lightweight SVG)
+     Density and palette intentionally matched to .dive-stars (140 stars
+     across 1440x900 ≈ 1 star per 9257 px²) so the transition into
+     dobra 3 keeps visual continuity — no abrupt density drop. */
   const stars = document.getElementById('cosmosStars');
   if (stars){
     const w = section.clientWidth || window.innerWidth;
     const h = Math.max(section.clientHeight, 700);
     stars.setAttribute('viewBox', `0 0 ${w} ${h}`);
-    const N = 110;
-    const palette = ['#FFF6F3','#FFF6F3','#FFF6F3','#F36B37','#F2360C','#FFF6F3'];
+    const N = Math.round((w * h) / 9257);
+    const palette = ['#FFF6F3','#FFF6F3','#FFF6F3','#F36B37','#FFF6F3','#F2360C'];
     let frag = '';
     for (let i=0;i<N;i++){
       const x = Math.random()*w;
       const y = Math.random()*h;
-      const r = Math.random()*1.2 + 0.4;
+      const r = (Math.random()*1.3 + 0.4).toFixed(2);
       const c = palette[Math.floor(Math.random()*palette.length)];
-      const o = (0.25 + Math.random()*0.6).toFixed(2);
-      const dur = (3 + Math.random()*5).toFixed(1);
+      const o = (0.35 + Math.random()*0.55).toFixed(2);
+      const dur = (3 + Math.random()*4).toFixed(1);
       const delay = (Math.random()*4).toFixed(1);
-      frag += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${r.toFixed(2)}" fill="${c}" opacity="${o}">`
-            + `<animate attributeName="opacity" values="${o};${(o*0.25).toFixed(2)};${o}" dur="${dur}s" begin="-${delay}s" repeatCount="indefinite"/>`
+      frag += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${r}" fill="${c}" opacity="${o}">`
+            + `<animate attributeName="opacity" values="${o};${(o*0.3).toFixed(2)};${o}" dur="${dur}s" begin="-${delay}s" repeatCount="indefinite"/>`
             + `</circle>`;
     }
     stars.innerHTML = frag;
@@ -5004,8 +5219,7 @@ boot();
 <!-- =====================================================
      DIVE — Cinematic transition (cream ceiling lifts + parallax stars)
      rAF-driven progress reading getBoundingClientRect on the .dive
-     section (200vh tall). Sticky stage holds the visual content for
-     the 100vh of scroll progress.
+     section. Sticky stage holds the visual content during scroll.
      ===================================================== -->
 <script>
 (function initDive(){
@@ -5046,33 +5260,28 @@ boot();
     raf = null;
     const rect = dive.getBoundingClientRect();
     const vh = window.innerHeight;
-    /* total scrollable distance INSIDE the dive (= section height - viewport) */
     const total = dive.offsetHeight - vh;
-    /* how far we've scrolled into the dive (0 → total) */
     const scrolled = Math.max(0, Math.min(total, -rect.top));
     const p = total > 0 ? scrolled / total : 0;
 
-    /* ── Cream ceiling: lifts up + scales (perspective) + blurs ── */
-    const e = ss(p);                       // smoothstep-eased progress
+    /* Cream ceiling: ease-out for fast cosmos reveal at start. */
+    const e = 1 - Math.pow(1 - p, 1.7);
     const lift  = e * 110;                 // 0 → 110vh (off-screen)
     const scale = 1 + e * 0.22;            // 1 → 1.22 (perspective grow)
     const blur  = e * 36;                  // 0 → 36px
-    /* Cream stays mostly visible, only fades in last 25% */
-    const op    = 1 - clamp01(p, 0.75, 1);
+    const op    = 1 - clamp01(p, 0.55, 0.85);
     cream.style.transform = `translate3d(0, -${lift.toFixed(2)}vh, 0) scale(${scale.toFixed(3)})`;
     cream.style.filter    = `blur(${blur.toFixed(1)}px)`;
     cream.style.opacity   = op.toFixed(3);
 
-    /* ── Stars: fade in early, slight parallax descent ── */
     if (stars){
       const sFade = clamp01(p, 0.08, 0.65);
-      const sY    = (1 - p) * 14;          // parallax: start higher, settle
-      const sScale = 0.92 + p * 0.18;      // gentle zoom-in (we approach)
+      const sY    = (1 - p) * 14;
+      const sScale = 0.92 + p * 0.18;
       stars.style.opacity   = sFade.toFixed(2);
       stars.style.transform = `translate3d(0, ${sY.toFixed(1)}vh, 0) scale(${sScale.toFixed(3)})`;
     }
 
-    /* ── Depth glow: fades in middle-to-end ── */
     if (depth){
       depth.style.opacity = ss(clamp01(p, 0.35, 1)).toFixed(3);
     }

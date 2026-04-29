@@ -16,3 +16,9 @@ Thumbs.db
 
 # Server logs
 *.log
+
+# Local validation artifacts (puppeteer screenshots + scripts)
+probe/
+probe.js
+probe[0-9]*.js
+probe_*.js
