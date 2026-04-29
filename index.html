@@ -489,6 +489,23 @@
     border-top:1px solid rgba(6,6,6,.06);
     display:flex;flex-direction:column;
   }
+  /* Texture wash — soft warm gradients + grain so the cream isn't a flat
+     blowout. Sits below all content (z<0). */
+  .agentes::before{
+    content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse 60% 45% at 12% 8%, rgba(242,54,12,.045), transparent 70%),
+      radial-gradient(ellipse 55% 50% at 92% 92%, rgba(243,107,55,.05), transparent 75%),
+      radial-gradient(ellipse 90% 80% at 50% 50%, transparent 40%, rgba(6,6,6,.025) 100%);
+  }
+  /* Fine grain — keeps the cream from looking digital-flat. */
+  .agentes::after{
+    content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .35 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size:160px 160px;
+    opacity:.045;mix-blend-mode:multiply;
+  }
+  .agentes > *{position:relative;z-index:1}
 
   /* Vertical ticker on the left edge */
   .agentes-sidetag{
@@ -661,94 +678,103 @@
   }
   .device-screen{
     position:relative;width:100%;height:100%;
-    background:#F0E9E2;
+    background:#0B141A;
     border-radius:34px;overflow:hidden;
     display:flex;flex-direction:column;
   }
 
-  /* Status bar */
+  /* Status bar (iOS-like, dark) */
   .device-statusbar{
     height:28px;flex:0 0 auto;
-    background:transparent;
+    background:#0B141A;
     display:flex;align-items:center;justify-content:space-between;
     padding:6px 22px 0;
-    font-family:'JetBrains Mono',monospace;
-    font-size:11px;font-weight:500;color:#060606;
+    font-family:'SF Pro Text','Inter',sans-serif;
+    font-size:11px;font-weight:600;color:#E9EDEF;
+    letter-spacing:-.01em;
+    z-index:2;
   }
-  .device-statusbar .icons{display:inline-flex;gap:5px;align-items:center}
+  .device-statusbar .icons{display:inline-flex;gap:5px;align-items:center;color:#E9EDEF}
   .device-statusbar .icons svg{width:13px;height:13px}
 
-  /* Chat header */
+  /* Chat header — authentic WA dark */
   .chat-head{
     flex:0 0 auto;
-    display:flex;align-items:center;gap:12px;
-    padding:10px 16px 12px;
-    background:#060606;color:#FFF6F3;
-    border-bottom:1px solid rgba(255,246,243,.08);
+    display:flex;align-items:center;gap:10px;
+    padding:8px 12px 10px;
+    background:#1F2C33;color:#E9EDEF;
+    box-shadow:0 1px 0 rgba(0,0,0,.18);
+    z-index:2;
   }
   .chat-head-back{
-    width:18px;height:18px;color:rgba(255,246,243,.6);flex:0 0 auto;
+    width:18px;height:18px;color:#8696A0;flex:0 0 auto;
   }
   .chat-avatar{
-    width:36px;height:36px;border-radius:50%;
-    background:#FFF6F3;
+    width:34px;height:34px;border-radius:50%;
+    background:#0A0807;
     display:flex;align-items:center;justify-content:center;
-    flex:0 0 auto;
-    overflow:hidden;
-    box-shadow:0 0 0 1px rgba(242,54,12,.4),0 0 14px rgba(242,54,12,.25);
+    flex:0 0 auto;overflow:hidden;
+    box-shadow:0 0 0 1px rgba(255,255,255,.04);
   }
-  .chat-avatar svg{width:22px;height:22px;color:#060606}
-  .chat-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .chat-avatar svg{width:22px;height:22px;color:var(--orange)}
+  .chat-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
   .chat-name{
-    font-family:Inter,sans-serif;font-size:13px;font-weight:600;color:#FFF6F3;
+    font-family:Inter,sans-serif;font-size:13.5px;font-weight:500;
+    color:#E9EDEF;letter-spacing:.005em;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   }
   .chat-status{
-    display:inline-flex;align-items:center;gap:6px;
-    font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.18em;
-    text-transform:uppercase;color:rgba(255,246,243,.55);
+    display:inline-flex;align-items:center;gap:5px;
+    font-family:Inter,sans-serif;font-size:11px;font-weight:400;
+    color:#8696A0;letter-spacing:0;text-transform:none;
   }
   .chat-status .pulse{
-    width:6px;height:6px;border-radius:50%;background:var(--orange);
-    box-shadow:0 0 8px var(--orange-glow);
+    width:5px;height:5px;border-radius:50%;background:#00A884;
     animation:pulse 1.6s ease-in-out infinite;
   }
-  .chat-head-actions{display:flex;gap:14px;color:rgba(255,246,243,.55)}
-  .chat-head-actions svg{width:16px;height:16px}
+  .chat-head-actions{display:flex;gap:18px;color:#AEBAC1;align-items:center}
+  .chat-head-actions svg{width:18px;height:18px}
 
-  /* Chat body */
+  /* Chat body — authentic WA dark wallpaper (full doodle image) */
   .chat-body{
     position:relative;flex:1;
-    background:
-      radial-gradient(circle at 20% 10%, rgba(242,54,12,.05), transparent 40%),
-      radial-gradient(circle at 80% 90%, rgba(242,54,12,.05), transparent 40%),
-      #F0E9E2;
-    padding:14px 14px 0;
+    background:#0B141A url("assets/wa-doodle.jpg") center/cover no-repeat;
+    padding:0;
     overflow:hidden;
-  }
-  .chat-body::before{
-    /* tiled subtle wave pattern */
-    content:"";position:absolute;inset:0;pointer-events:none;
-    background-image:
-      radial-gradient(circle at 0 0, rgba(6,6,6,.025) 1px, transparent 2px),
-      radial-gradient(circle at 8px 8px, rgba(6,6,6,.018) 1px, transparent 2px);
-    background-size:16px 16px;
-    opacity:.7;
   }
 
   /* Chat thread stack — only one visible at a time */
   .chat-stack{position:relative;width:100%;height:100%}
   .chat-thread{
     position:absolute;inset:0;
-    padding:14px 12px 16px;
-    display:flex;flex-direction:column;gap:10px;
+    padding:10px 8px 10px;
+    display:flex;flex-direction:column;gap:2px;
     opacity:0;visibility:hidden;
     transform:translateY(8px);
     transition:opacity .5s cubic-bezier(.65,.05,.36,1),
                transform .55s cubic-bezier(.65,.05,.36,1),
                visibility 0s linear .55s;
     overflow-y:auto;
+    overscroll-behavior:contain;
+    /* Hairline scrollbar — webkit controls the exact width.
+       (Avoid `scrollbar-width:thin` here: in Chromium 121+ that property
+       takes precedence over ::-webkit-scrollbar width and forces ~12px.) */
   }
+  .chat-thread::-webkit-scrollbar{width:2px;height:2px}
+  .chat-thread::-webkit-scrollbar-track{background:transparent}
+  .chat-thread::-webkit-scrollbar-thumb{background:rgba(233,237,239,.10);border-radius:1px}
+  .chat-thread:hover::-webkit-scrollbar-thumb{background:rgba(233,237,239,.22)}
+  /* Firefox fallback (no webkit support): use `thin` since exact px control
+     isn't available there. */
+  @-moz-document url-prefix(){
+    .chat-thread{scrollbar-width:thin;scrollbar-color:rgba(233,237,239,.10) transparent}
+  }
+  /* extra space between groups of different sides */
+  .chat-thread .bubble + .bubble.lead,
+  .chat-thread .bubble + .bubble.agent{margin-top:1px}
+  .chat-thread .bubble.lead + .bubble.agent,
+  .chat-thread .bubble.agent + .bubble.lead{margin-top:8px}
+  .chat-thread .chat-sep + .bubble{margin-top:4px}
   .chat-thread.active{
     opacity:1;visibility:visible;transform:translateY(0);
     transition:opacity .55s cubic-bezier(.65,.05,.36,1),
@@ -756,67 +782,103 @@
                visibility 0s;
   }
 
-  /* Day separator */
+  /* Day separator — WA-style centered pill */
   .chat-sep{
     align-self:center;
-    background:rgba(6,6,6,.06);
-    color:rgba(6,6,6,.55);
-    font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.24em;text-transform:uppercase;
-    padding:5px 12px;border-radius:99px;
-    margin:6px 0;
+    background:rgba(31,44,51,.92);
+    color:#8696A0;
+    font-family:Inter,sans-serif;font-size:11px;font-weight:500;letter-spacing:.01em;text-transform:uppercase;
+    padding:5px 12px;border-radius:8px;
+    margin:8px 0 6px;
+    box-shadow:0 1px 1px rgba(0,0,0,.13);
   }
 
-  /* Bubbles */
+  /* Bubbles — authentic WA dark mode */
   .bubble{
     max-width:78%;
-    padding:8px 11px 6px;
-    border-radius:12px;
-    font-family:Inter,sans-serif;font-size:13.5px;line-height:1.4;
-    color:#0a0a0a;
+    padding:6px 8px 8px 9px;
+    border-radius:7.5px;
+    font-family:Inter,sans-serif;font-size:13.5px;line-height:1.32;
+    color:#E9EDEF;
     position:relative;
-    box-shadow:0 1px 2px rgba(6,6,6,.06);
+    box-shadow:0 1px 0.5px rgba(0,0,0,.13);
     word-wrap:break-word;
+    margin:1px 0;
   }
-  .bubble p{margin:0;font-size:13.5px;line-height:1.45}
+  .bubble p{margin:0;font-size:13.5px;line-height:1.36;color:inherit;display:inline}
   .bubble .meta{
-    display:flex;align-items:center;justify-content:flex-end;gap:4px;
-    font-size:10px;color:rgba(6,6,6,.42);margin-top:3px;
+    display:inline-flex;align-items:center;gap:2px;
+    font-family:Inter,sans-serif;
+    font-size:10.5px;line-height:1;font-weight:400;
+    letter-spacing:-.04em;
+    color:rgba(233,237,239,.55);
+    margin-left:6px;float:right;
+    margin-top:4px;margin-bottom:-3px;
+    user-select:none;
+    white-space:nowrap;
+    font-variant-numeric:tabular-nums;
   }
-  .bubble .meta svg{width:14px;height:10px;color:#1FA8E0}
+  .bubble .meta svg{width:15px;height:11px;color:#53BDEB;margin-left:1px}
+  /* SENT (lead) — green right-side bubble */
   .bubble.lead{
     align-self:flex-end;
-    background:#FFF6F3;
-    border-bottom-right-radius:3px;
+    background:#005C4B;
+    padding:6px 9px 8px 7px;
   }
+  /* RECEIVED (agent) — gray left-side bubble */
   .bubble.agent{
     align-self:flex-start;
-    background:#060606;color:#FFF6F3;
-    border-bottom-left-radius:3px;
-    box-shadow:0 4px 14px rgba(242,54,12,.18), 0 1px 2px rgba(6,6,6,.18);
+    background:#202C33;
+    padding:6px 7px 8px 9px;
   }
-  .bubble.agent p{color:#FFF6F3}
-  .bubble.agent .meta{color:rgba(255,246,243,.5)}
-  .bubble.agent .agent-tag{
-    display:inline-flex;align-items:center;gap:4px;
-    font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.2em;
-    text-transform:uppercase;color:var(--orange);margin-bottom:4px;
+  /* Tail — only on the FIRST bubble of a same-side sequence (WA convention).
+     First-of-side = previous sibling is not the same side.
+     We default to "has tail" and remove on consecutive same-side bubbles. */
+  .bubble.lead{border-bottom-right-radius:1.5px}
+  .bubble.agent{border-bottom-left-radius:1.5px}
+  .bubble.lead::after{
+    content:"";position:absolute;
+    right:-7px;bottom:0;
+    width:8px;height:13px;
+    background:#005C4B;
+    clip-path:polygon(0 0, 100% 100%, 0 100%);
   }
-  .bubble.agent .agent-tag::before{
-    content:"";width:5px;height:5px;border-radius:50%;background:var(--orange);
-    box-shadow:0 0 6px var(--orange);
+  .bubble.agent::after{
+    content:"";position:absolute;
+    left:-7px;bottom:0;
+    width:8px;height:13px;
+    background:#202C33;
+    clip-path:polygon(100% 0, 100% 100%, 0 100%);
   }
-  .bubble strong{font-weight:600}
+  /* Hide tail + restore corner radius for consecutive same-side bubbles */
+  .bubble.lead + .bubble.lead{
+    border-bottom-right-radius:7.5px;
+    border-top-right-radius:7.5px;
+  }
+  .bubble.lead + .bubble.lead::after{display:none}
+  .bubble.agent + .bubble.agent{
+    border-bottom-left-radius:7.5px;
+    border-top-left-radius:7.5px;
+  }
+  .bubble.agent + .bubble.agent::after{display:none}
+  .bubble strong{font-weight:600;color:#E9EDEF}
+  .bubble.lead strong{color:#FFF}
+  /* Clear floats from .meta after the bubble content */
+  .bubble::before{content:"";display:table}
+  .bubble{overflow:visible}
+  .bubble.lead, .bubble.agent{display:flow-root;overflow:visible}
 
   /* Typing indicator (briefly shown on switch) */
   .typing{
-    align-self:flex-start;display:none;align-items:center;gap:5px;
-    background:#FFF6F3;padding:9px 12px;border-radius:12px;border-bottom-left-radius:3px;
-    box-shadow:0 1px 2px rgba(6,6,6,.06);
+    align-self:flex-start;display:none;align-items:center;gap:4px;
+    background:#202C33;padding:10px 12px;border-radius:7.5px;border-bottom-left-radius:1.5px;
+    box-shadow:0 1px 0.5px rgba(0,0,0,.13);
+    margin:1px 0;
   }
   .typing.show{display:inline-flex;animation:typing-pop .25s ease}
   @keyframes typing-pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   .typing span{
-    width:6px;height:6px;border-radius:50%;background:rgba(6,6,6,.35);
+    width:6px;height:6px;border-radius:50%;background:rgba(233,237,239,.4);
     animation:typing-bounce 1.2s ease-in-out infinite;
   }
   .typing span:nth-child(2){animation-delay:.15s}
@@ -826,42 +888,59 @@
     40%{transform:translateY(-4px);opacity:1}
   }
 
-  /* Bubble entrance — fires when thread becomes active */
-  .chat-thread.active .bubble,
-  .chat-thread.active .chat-sep{
-    animation:bubble-in .55s cubic-bezier(.65,.05,.36,1) both;
+  /* Bubble entrance — fires when thread becomes active.
+     Light cascade so longer conversations don't feel sluggish to read. */
+  .chat-thread.active > *{
+    animation:bubble-in .45s cubic-bezier(.65,.05,.36,1) both;
   }
-  .chat-thread.active .bubble:nth-child(1){animation-delay:.05s}
-  .chat-thread.active .bubble:nth-child(2),.chat-thread.active .chat-sep:nth-child(2){animation-delay:.18s}
-  .chat-thread.active .bubble:nth-child(3),.chat-thread.active .chat-sep:nth-child(3){animation-delay:.32s}
-  .chat-thread.active .bubble:nth-child(4),.chat-thread.active .chat-sep:nth-child(4){animation-delay:.48s}
+  .chat-thread.active > *:nth-child(1){animation-delay:.04s}
+  .chat-thread.active > *:nth-child(2){animation-delay:.09s}
+  .chat-thread.active > *:nth-child(3){animation-delay:.14s}
+  .chat-thread.active > *:nth-child(4){animation-delay:.18s}
+  .chat-thread.active > *:nth-child(5){animation-delay:.22s}
+  .chat-thread.active > *:nth-child(6){animation-delay:.26s}
+  .chat-thread.active > *:nth-child(7){animation-delay:.29s}
+  .chat-thread.active > *:nth-child(8){animation-delay:.32s}
+  .chat-thread.active > *:nth-child(n+9){animation-delay:.34s}
   @keyframes bubble-in{
-    from{opacity:0;transform:translateY(8px) scale(.96)}
+    from{opacity:0;transform:translateY(6px) scale(.98)}
     to  {opacity:1;transform:none}
   }
 
-  /* Composer (fake — read-only feel) */
+  /* Composer — WA dark mode */
   .chat-composer{
     flex:0 0 auto;
-    display:flex;align-items:center;gap:8px;
-    padding:8px 10px 10px;
-    background:#F0E9E2;
-    border-top:1px solid rgba(6,6,6,.06);
+    display:flex;align-items:center;gap:6px;
+    padding:6px 8px 8px;
+    background:#1F2C33;
   }
   .chat-composer .field{
-    flex:1;background:#FFF6F3;border:1px solid rgba(6,6,6,.06);
-    border-radius:18px;padding:8px 14px;
-    font-family:Inter,sans-serif;font-size:12px;color:rgba(6,6,6,.4);
-    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    flex:1;background:#2A3942;border:none;
+    border-radius:24px;padding:8px 12px;
+    font-family:Inter,sans-serif;font-size:13px;color:#8696A0;
+    display:flex;align-items:center;gap:10px;
+    min-height:36px;
   }
-  .chat-composer .field svg{width:14px;height:14px;color:rgba(6,6,6,.35)}
+  .chat-composer .field .emoji{
+    width:20px;height:20px;color:#8696A0;flex-shrink:0;
+  }
+  .chat-composer .field .placeholder{
+    flex:1;color:#8696A0;font-weight:400;
+  }
+  .chat-composer .field .attach{
+    width:20px;height:20px;color:#8696A0;flex-shrink:0;
+    transform:rotate(-30deg);
+  }
+  .chat-composer .field .cam{
+    width:20px;height:20px;color:#8696A0;flex-shrink:0;
+  }
   .chat-composer .send{
-    width:34px;height:34px;border-radius:50%;
-    background:var(--orange);color:#fff;
+    width:36px;height:36px;border-radius:50%;
+    background:#00A884;color:#fff;
     display:flex;align-items:center;justify-content:center;
-    box-shadow:0 6px 18px rgba(242,54,12,.4);
+    flex-shrink:0;
   }
-  .chat-composer .send svg{width:14px;height:14px}
+  .chat-composer .send svg{width:18px;height:18px}
 
   /* Right column: Titles list */
   .agentes-titles-col{position:relative;display:flex;flex-direction:column}
@@ -2738,7 +2817,7 @@
           <span class="agentes-brand-label">Live demo · ZNITH-01</span>
         </div>
 
-        <div class="device" role="img" aria-label="Demonstração ao vivo de agentes Orka">
+        <div class="device" role="img" aria-label="Demonstração ao vivo de agentes Orka" data-lenis-prevent>
           <div class="device-screen">
 
             <!-- Status bar -->
@@ -2757,16 +2836,17 @@
               <div class="chat-avatar" aria-hidden="true">
                 <svg viewBox="0 0 32 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M16 3.2c-7 0-11.6 4.8-11.6 11 0 3.5 1.5 6.4 4 8.3 1.4-3.4 4.8-5.6 8.7-5.6 2.7 0 5.5.8 8.4 1.6 1.5-1.5 2.1-3.9 2.1-6.4C27.6 7.4 23 3.2 16 3.2Z" fill="currentColor"/>
-                  <path d="M19.4 8.6c2.8-.4 6 .9 7.6 2.6-2 .9-5.5 1.2-7.6.4-1-.4-1.4-1.5-1-2.4.2-.3.6-.5 1-.6Z" fill="#FFF6F3"/>
+                  <path d="M19.4 8.6c2.8-.4 6 .9 7.6 2.6-2 .9-5.5 1.2-7.6.4-1-.4-1.4-1.5-1-2.4.2-.3.6-.5 1-.6Z" fill="#0A0807"/>
                 </svg>
               </div>
               <div class="chat-info">
-                <span class="chat-name" data-chat-name>Agente Orka · Atendimento</span>
-                <span class="chat-status"><i class="pulse"></i><span>online · respondendo</span></span>
+                <span class="chat-name" data-chat-name>Orka Vision</span>
+                <span class="chat-status"><span>online</span></span>
               </div>
               <div class="chat-head-actions" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92V21a1 1 0 0 1-1.09 1A19.91 19.91 0 0 1 2 4.09 1 1 0 0 1 3 3h4.09a1 1 0 0 1 1 .75c.13.96.4 1.9.81 2.78a1 1 0 0 1-.23 1.05L7.21 9.21a16 16 0 0 0 7.58 7.58l1.63-1.46a1 1 0 0 1 1.05-.23 11.36 11.36 0 0 0 2.78.81 1 1 0 0 1 .75 1z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92V21a1 1 0 0 1-1.09 1A19.91 19.91 0 0 1 2 4.09 1 1 0 0 1 3 3h4.09a1 1 0 0 1 1 .75c.13.96.4 1.9.81 2.78a1 1 0 0 1-.23 1.05L7.21 9.21a16 16 0 0 0 7.58 7.58l1.63-1.46a1 1 0 0 1 1.05-.23 11.36 11.36 0 0 0 2.78.81 1 1 0 0 1 .75 1z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
               </div>
             </div>
 
@@ -2775,58 +2855,119 @@
               <div class="chat-stack">
 
                 <!-- ATENDIMENTO -->
-                <article class="chat-thread active" data-agent="atendimento">
-                  <span class="chat-sep">Hoje · 14:32</span>
+                <article class="chat-thread active" data-agent="atendimento" data-lenis-prevent>
+                  <span class="chat-sep">Hoje</span>
                   <div class="bubble lead">
-                    <p>Tô vendo um 3 quartos no Centro. Qual o valor?</p>
-                    <span class="meta">14:32 <svg viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5.5l3 3 6-7M6 8.5l3-3"/><path d="M5 5.5l3 3 6-7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <p>Oi, tô vendo um 3 quartos no Centro. Qual o valor?</p>
+                    <span class="meta">14:32<svg viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6 L4 9 L10 2"/><path d="M5 6 L8 9 L14 2"/></svg></span>
                   </div>
                   <div class="bubble agent">
-                    <span class="agent-tag">Atendimento · 8s</span>
-                    <p>Boa, João! Tenho <strong>3 unidades</strong> no Centro batendo com tua busca. Qual delas tu quer ver primeiro? Mando no seu zap em 30s. 👇</p>
+                    <p>Boa, João! Tenho <strong>3 unidades</strong> no Centro que batem com a tua busca. 👇</p>
                     <span class="meta">14:32</span>
                   </div>
                   <div class="bubble agent">
-                    <p>E me responde rapidinho: a visita pode ser <strong>amanhã 18h</strong> ou <strong>quarta 10h</strong>?</p>
+                    <p>Edifício Atlântico, Solaris e Jardim — todos com financiamento aprovado pela Caixa.</p>
                     <span class="meta">14:32</span>
+                  </div>
+                  <div class="bubble lead">
+                    <p>Manda o do Atlântico</p>
+                    <span class="meta">14:33<svg viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6 L4 9 L10 2"/><path d="M5 6 L8 9 L14 2"/></svg></span>
+                  </div>
+                  <div class="bubble agent">
+                    <p>78m², 2 vagas, andar alto. <strong>R$ 685k</strong>, aceita FGTS + financia em 360×.</p>
+                    <span class="meta">14:33</span>
+                  </div>
+                  <div class="bubble agent">
+                    <p>Posso te marcar uma visita: <strong>amanhã 18h</strong> ou <strong>quarta 10h</strong>?</p>
+                    <span class="meta">14:33</span>
+                  </div>
+                  <div class="bubble lead">
+                    <p>Quarta 10h tá ótimo</p>
+                    <span class="meta">14:34<svg viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6 L4 9 L10 2"/><path d="M5 6 L8 9 L14 2"/></svg></span>
+                  </div>
+                  <div class="bubble agent">
+                    <p>Fechado ✅ Mando lembrete na terça e endereço no teu Maps. Até quarta, João.</p>
+                    <span class="meta">14:34</span>
                   </div>
                 </article>
 
                 <!-- FOLLOW-UP -->
-                <article class="chat-thread" data-agent="followup">
+                <article class="chat-thread" data-agent="followup" data-lenis-prevent>
                   <span class="chat-sep">Há 3 dias</span>
                   <div class="bubble lead">
                     <p>Vou pensar e te falo</p>
-                    <span class="meta">11:08 <svg viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 5.5l3 3 6-7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="meta">11:08<svg viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6 L4 9 L10 2"/><path d="M5 6 L8 9 L14 2"/></svg></span>
                   </div>
-                  <span class="chat-sep">Hoje · 09:14</span>
+                  <span class="chat-sep">Hoje</span>
                   <div class="bubble agent">
-                    <span class="agent-tag">Follow-up · automático</span>
                     <p>Oi Maria, lembra que tu tava entre o apto da <strong>Rua Brusque</strong> e o do Centro?</p>
                     <span class="meta">09:14</span>
                   </div>
                   <div class="bubble agent">
-                    <p>Fiz a simulação com <strong>FGTS + entrada parcelada</strong>: o primeiro fica R$ 38k mais barato no total. Te mando o PDF?</p>
+                    <p>Fiz a simulação com <strong>FGTS + entrada parcelada</strong>: o da Brusque fica R$ 38k mais barato no total.</p>
                     <span class="meta">09:14</span>
+                  </div>
+                  <div class="bubble agent">
+                    <p>Te mando o PDF da comparação?</p>
+                    <span class="meta">09:14</span>
+                  </div>
+                  <div class="bubble lead">
+                    <p>Pode mandar</p>
+                    <span class="meta">09:32<svg viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6 L4 9 L10 2"/><path d="M5 6 L8 9 L14 2"/></svg></span>
+                  </div>
+                  <div class="bubble agent">
+                    <p>📎 simulacao-brusque-vs-centro.pdf</p>
+                    <span class="meta">09:33</span>
+                  </div>
+                  <div class="bubble agent">
+                    <p>Resumo: parcela cabe no teu orçamento (<strong>R$ 3,2k/mês</strong>) e a entrada pode ser em 6×.</p>
+                    <span class="meta">09:33</span>
+                  </div>
+                  <div class="bubble lead">
+                    <p>Visito antes de assinar?</p>
+                    <span class="meta">10:14<svg viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6 L4 9 L10 2"/><path d="M5 6 L8 9 L14 2"/></svg></span>
+                  </div>
+                  <div class="bubble agent">
+                    <p>Claro. Marquei <strong>sábado 10h</strong> — te mando lembrete na sexta. 👍</p>
+                    <span class="meta">10:14</span>
                   </div>
                 </article>
 
                 <!-- REATIVAÇÃO -->
-                <article class="chat-thread" data-agent="reativacao">
+                <article class="chat-thread" data-agent="reativacao" data-lenis-prevent>
                   <span class="chat-sep">Há 6 meses</span>
                   <div class="bubble lead">
                     <p>Por enquanto não, obrigado.</p>
-                    <span class="meta">17:42 <svg viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 5.5l3 3 6-7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="meta">17:42<svg viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6 L4 9 L10 2"/><path d="M5 6 L8 9 L14 2"/></svg></span>
                   </div>
-                  <span class="chat-sep">Hoje · 11:02</span>
+                  <span class="chat-sep">Hoje</span>
                   <div class="bubble agent">
-                    <span class="agent-tag">Reativação · gatilho oferta</span>
                     <p>Oi Carlos, tudo bem? Faz tempo. Saiu uma unidade no <strong>Edifício Solaris</strong> — aquele que tu olhou em outubro.</p>
                     <span class="meta">11:02</span>
                   </div>
                   <div class="bubble agent">
-                    <p>Saiu <strong>R$ 60k abaixo</strong> do anunciado. A janela é de 48h. Posso te marcar uma visita?</p>
+                    <p>Saiu <strong>R$ 60k abaixo</strong> do anunciado. A janela é de 48h.</p>
                     <span class="meta">11:02</span>
+                  </div>
+                  <div class="bubble lead">
+                    <p>Caraca, sério? Quanto tá pedindo?</p>
+                    <span class="meta">11:08<svg viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6 L4 9 L10 2"/><path d="M5 6 L8 9 L14 2"/></svg></span>
+                  </div>
+                  <div class="bubble agent">
+                    <p><strong>R$ 680k</strong>. Mesma planta que tu queria, andar alto, vista pro mar.</p>
+                    <span class="meta">11:09</span>
+                  </div>
+                  <div class="bubble agent">
+                    <p>Posso te marcar amanhã pra visita?</p>
+                    <span class="meta">11:09</span>
+                  </div>
+                  <div class="bubble lead">
+                    <p>Amanhã 14h</p>
+                    <span class="meta">11:11<svg viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6 L4 9 L10 2"/><path d="M5 6 L8 9 L14 2"/></svg></span>
+                  </div>
+                  <div class="bubble agent">
+                    <p>Marquei 14h com o proprietário 📍 Mando localização 1h antes.</p>
+                    <span class="meta">11:11</span>
                   </div>
                 </article>
 
@@ -2838,14 +2979,16 @@
               </div>
             </div>
 
-            <!-- Composer (read-only) -->
+            <!-- Composer (read-only · WA dark mode) -->
             <div class="chat-composer" aria-hidden="true">
               <div class="field">
-                <span>Digite uma mensagem…</span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="13" r="4"/></svg>
+                <svg class="emoji" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.5 2.3 2.2 3.5 2.2 1.2 0 2.5-.7 3.5-2.2"/><circle cx="9" cy="10" r=".9" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r=".9" fill="currentColor" stroke="none"/></svg>
+                <span class="placeholder">Mensagem</span>
+                <svg class="attach" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5l-9.6 9.6a5 5 0 0 1-7.1-7.1l9.6-9.6a3.5 3.5 0 0 1 5 5L9.4 19a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg>
+                <svg class="cam" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="4"/></svg>
               </div>
               <span class="send" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3zm5 10a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12h-2z"/></svg>
               </span>
             </div>
           </div>
@@ -4611,9 +4754,9 @@ boot();
 
   const ORDER = ['atendimento','followup','reativacao'];
   const NAMES = {
-    atendimento: 'Agente Orka · Atendimento',
-    followup:    'Agente Orka · Follow-up',
-    reativacao:  'Agente Orka · Reativação'
+    atendimento: 'Orka Vision',
+    followup:    'Orka Vision',
+    reativacao:  'Orka Vision'
   };
 
   const titlesList = grid.querySelector('.agentes-titles');
@@ -4623,6 +4766,12 @@ boot();
   const swappables = grid.querySelectorAll('[data-agent]');
   const chatName = section.querySelector('[data-chat-name]');
   const typing = section.querySelector('#typingIndicator');
+
+  /* Per-agent chat scroll memory — restored when user comes back to a chat
+     they had scrolled. Keeps the conversation exactly where they left it. */
+  const scrollMemory = Object.create(null);
+  const allThreads = section.querySelectorAll('.chat-thread');
+  ORDER.forEach(id => { scrollMemory[id] = 0; });
 
   let switchTimer = null;
 
@@ -4637,11 +4786,30 @@ boot();
 
   function setActive(id){
     if (grid.dataset.active === id) return;
+
+    /* Save scroll position of the thread we're leaving — so when the user
+       comes back to it, the chat reopens exactly where they were. */
+    const leavingThread = section.querySelector('.chat-thread.active');
+    if (leavingThread){
+      scrollMemory[leavingThread.dataset.agent] = leavingThread.scrollTop;
+    }
+
     grid.dataset.active = id;
     section.dataset.active = id;
 
     // Toggle all swappable elements
     swappables.forEach(el => el.classList.toggle('active', el.dataset.agent === id));
+
+    /* Restore the new active thread's scroll position. We do this both
+       immediately (for synchronous layout) and again on the next frame
+       (in case the visibility:hidden → visible transition was suppressing
+       the scroll write). */
+    const enteringThread = section.querySelector(`.chat-thread[data-agent="${id}"]`);
+    if (enteringThread){
+      const target = scrollMemory[id] || 0;
+      enteringThread.scrollTop = target;
+      requestAnimationFrame(() => { enteringThread.scrollTop = target; });
+    }
 
     // Indicator + label position
     updateMetrics(id);
@@ -4665,6 +4833,15 @@ boot();
       switchTimer = setTimeout(() => typing.classList.remove('show'), 280);
     }
   }
+
+  /* Track scroll position continuously on each thread so the memory is
+     always fresh — even if the user just scrolls inside a thread without
+     switching agents. */
+  allThreads.forEach(thread => {
+    thread.addEventListener('scroll', () => {
+      scrollMemory[thread.dataset.agent] = thread.scrollTop;
+    }, { passive:true });
+  });
 
   titleLis.forEach(li => {
     const id = li.dataset.agent;
