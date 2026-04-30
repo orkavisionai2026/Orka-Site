@@ -35,7 +35,7 @@
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&display=swap" rel="stylesheet" />
 
 <!-- Libraries — pinned versions + Subresource Integrity (SRI) hashes -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
@@ -71,7 +71,7 @@
     /* Families */
     --font-sans:'Geist',Inter,system-ui,-apple-system,'Segoe UI',sans-serif;
     --font-mono:'Geist Mono','JetBrains Mono',ui-monospace,Menlo,monospace;
-    --font-serif:'Instrument Serif',Georgia,serif;
+    --font-serif:'Fraunces','Instrument Serif',Georgia,serif;
     /* Display sizes (manchetes) */
     --t-display-1:clamp(48px,6vw,96px);
     --t-display-2:clamp(34px,4.4vw,64px);
@@ -172,6 +172,28 @@
   .agenda-kpi-num em,.dialogo-progress .num{
     font-feature-settings:"tnum","ss01";
     font-variant-numeric:tabular-nums;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     FRAUNCES variation-settings — tom controlado.
+     A fonte tem 4 eixos: opsz (9-144), wght (300-900),
+     SOFT (0-100), WONK (0-1).
+
+     Default em qualquer Fraunces (opsz médio, soft moderado,
+     SEM wonk = clean editorial). Override só onde quero teatral. */
+  :where([style*="--font-serif"]),
+  em,i,
+  .vstat-num,.calc-output-num,.obj-pct,
+  .lacuna-bar-num em,.lacuna-gap-num em,
+  .obj-question,.dif-strap-line{
+    font-variation-settings:"opsz" 48,"SOFT" 30,"WONK" 0;
+  }
+  /* Display headlines — ativa wonk + soft alto pra ganhar o caráter
+     teatral que sobressai (ORKA, agente, responde a mão, etc) */
+  .velocidade-headline em,.lacuna-headline em,
+  .dif-headline em,.obj-headline em,
+  h1.title em{
+    font-variation-settings:"opsz" 144,"SOFT" 80,"WONK" 1;
   }
 
   /* Universal focus-visible — all interactive elements show keyboard focus */
