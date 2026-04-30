@@ -412,6 +412,11 @@
   }
   .nav-cta:hover .nav-cta-icon{transform:rotate(45deg)}
   .nav-cta-icon svg{width:9px;height:9px;color:#fff}
+  /* On narrow viewports, shrink CTA to icon-only (avoids wrap-around with brand logo) */
+  @media (max-width:560px){
+    .nav-cta{ padding:8px;gap:0 }
+    .nav-cta > span:not(.nav-cta-icon){ display:none }
+  }
 
   /* Side rail (right) — combined editorial mark */
   .rail-r{
@@ -432,6 +437,7 @@
     bottom:clamp(40px,8vh,80px);
     display:flex;flex-direction:column;gap:14px;
     align-items:flex-start;
+    max-width:calc(100vw - 48px);
   }
   .hero-eyebrow{
     font-family:'JetBrains Mono',monospace;
@@ -450,16 +456,29 @@
     flex-wrap:nowrap;
   }
   .copy-row .hero-dive-cta{ margin-left:auto }
+  /* At smaller laptops/tablets, allow the dive CTA to wrap below the cluster */
+  @media (max-width:1100px){
+    .copy-row{ flex-wrap:wrap }
+    .copy-row .hero-dive-cta{ margin-left:0 }
+  }
+  /* At narrow widths, stack cluster too (title above, CTA below) */
+  @media (max-width:560px){
+    .copy-cluster{ flex-wrap:wrap;gap:14px }
+  }
 
   h1.title{
     /* Instrument Serif italic — closer to the epiminds "Introducing Lucy."
        feel. Contained size so the headline doesn't dominate the viewport. */
     font-family:'Instrument Serif',serif;font-weight:400;font-style:italic;
-    font-size:clamp(38px,4.8vw,72px);
+    font-size:clamp(34px,4.8vw,72px);
     line-height:1.05;letter-spacing:-.015em;color:var(--cream);
     text-shadow:0 0 80px rgba(242,54,12,.18);
     margin:0;
     white-space:nowrap;
+  }
+  /* On narrow viewports allow the title cluster to wrap */
+  @media (max-width:760px){
+    h1.title{ white-space:normal }
   }
   /* "Introduzindo" — same family/style as ORKA, just slightly muted */
   h1.title .title-intro{
@@ -576,27 +595,49 @@
     0%,100%{ opacity:1 }
     50%   { opacity:.78 }
   }
-  /* Position each item around the orca */
+  /* Position each item around the orca — fixed % at desktop, pushed
+     further from center on smaller viewports via @media. */
   .d-item-bot{
-    top:20%;left:14%;
+    top:18%;left:10%;
     animation:float-a 11s ease-in-out infinite;
   }
   .d-item-funnel{
-    top:18%;right:12%;
+    top:16%;right:10%;
     animation:float-b 13s ease-in-out infinite;
   }
   .d-item-chat{
-    top:60%;left:11%;
+    top:60%;left:8%;
     animation:float-c 9s ease-in-out infinite;
   }
   .d-item-monitor{
-    top:62%;right:11%;
+    top:62%;right:8%;
     animation:float-d 12s ease-in-out infinite;
   }
   .d-item-sync{
     bottom:12%;left:50%;
     transform:translate3d(-50%, 0, 0);
     animation:float-e 10s ease-in-out infinite;
+  }
+  /* Smaller laptops (MacBook 13"/14") — push icons further from center,
+     reduce icon size so they don't crowd the orca. */
+  @media (max-width:1366px){
+    .d-item-bot{ top:14%;left:5% }
+    .d-item-funnel{ top:12%;right:5% }
+    .d-item-chat{ top:64%;left:4% }
+    .d-item-monitor{ top:66%;right:4% }
+    .hero-items .d-item svg{ width:clamp(40px,4.4vw,64px) }
+  }
+  /* Tablet — only keep top icons + sync, hide side icons (overlap the orca) */
+  @media (max-width:1024px){
+    .d-item-chat,.d-item-monitor{ display:none }
+    .d-item-bot{ top:10%;left:6% }
+    .d-item-funnel{ top:10%;right:6% }
+    .d-item-sync{ bottom:8% }
+    .hero-items .d-item svg{ width:clamp(36px,5vw,52px) }
+  }
+  /* Mobile — hide all hero items, the orca alone is the focal point */
+  @media (max-width:640px){
+    .hero-items{ display:none }
   }
   @keyframes float-a{
     0%,100%{ translate:0 0 }
