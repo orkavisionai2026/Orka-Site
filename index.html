@@ -2506,20 +2506,6 @@
     color:var(--cream);
     padding:clamp(48px,6vw,80px) clamp(28px,4.4vw,72px) clamp(80px,10vw,128px);
     overflow:hidden;
-    /* Pulled up by the hero pin distance (45vh) so velocidade.top sits
-       exactly at hero bottom — eliminates the pin-spacer dead-zone. */
-    margin-top:-45vh;
-    /* Hidden during hero pin to keep the orca animation unobstructed.
-       The .is-revealed class is added via the hero pin's onLeave callback
-       (and onRefresh if user reloads past the pin). */
-    visibility:hidden;
-    opacity:0;
-    transition:opacity .55s ease-out, visibility 0s linear .55s;
-  }
-  .velocidade.is-revealed{
-    visibility:visible;
-    opacity:1;
-    transition:opacity .55s ease-out, visibility 0s linear 0s;
   }
   .velocidade::before{
     content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
@@ -5015,12 +5001,12 @@ function buildScroll(){
   const trigger = ScrollTrigger.create({
     trigger: '#hero',
     start:   'top top',
-    /* Pin 45% — hero stays in viewport while orca dispersion + UI fade
-       play out. Velocidade is hidden during pin (CSS) and reveals via
-       onLeave callback when pin ends — this combined with margin-top:-45vh
-       on velocidade eliminates the pin-spacer dead-zone entirely. */
-    end:     '+=45%',
-    pin:     true,
+    /* No pin — hero scrolls naturally. Animation phases (orca dispersion,
+       UI fade) play tied to scroll position from hero top to hero leaving
+       viewport. Eliminates the pin-spacer dead-zone — velocidade aparece
+       imediatamente após o hero, sem bloco vazio entre eles. */
+    end:     'bottom top',
+    pin:     false,
     scrub:   0.7,
 
     onUpdate:(self)=>{
@@ -5079,8 +5065,6 @@ function buildScroll(){
       if (snapped) return;
       snapped = true;
       if (canvas){ canvas.style.filter=''; canvas.style.transform=''; }
-      /* Reveal velocidade now that hero pin is done — eliminates the gap. */
-      document.querySelector('.velocidade')?.classList.add('is-revealed');
     },
 
     onEnterBack:()=>{
@@ -5088,37 +5072,16 @@ function buildScroll(){
       if (exitTween){ exitTween.kill(); exitTween = null; }
       if (canvas){ canvas.style.filter=''; canvas.style.transform=''; canvas.style.opacity=''; }
       if (heroEl) heroEl.style.opacity = '';
-      /* Hide velocidade again — user scrolled back into the hero pin. */
-      document.querySelector('.velocidade')?.classList.remove('is-revealed');
-    }
-  });
-
-  /* Reveal velocidade if user reloads / lands past the hero pin (refresh case) */
-  ScrollTrigger.addEventListener('refresh', () => {
-    if (window.scrollY >= window.innerHeight * 0.45){
-      document.querySelector('.velocidade')?.classList.add('is-revealed');
     }
   });
 
   return trigger;
 }
 
-/* ---------- Cursor — orca eye, instant tracking ----------
-   Only activates on devices with a real pointer (mouse). Touch-only devices
-   keep the system cursor logic disabled (no .has-eye class added).
-   If JS fails to load at all, the system cursor stays visible by default. */
+/* Custom orca-eye cursor desativado por solicitação — usa cursor tradicional.
+   Elemento + CSS preservados caso seja reativado no futuro. */
 const cEye = document.getElementById('cursorEye');
-const hasFinePointer = window.matchMedia && window.matchMedia('(pointer: fine)').matches;
-if (cEye && hasFinePointer){
-  document.documentElement.classList.add('has-eye');   // hides system cursor via CSS
-  window.addEventListener('pointermove', (e)=>{
-    cEye.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
-  });
-  document.querySelectorAll('[data-cursor="hover"]').forEach(el=>{
-    el.addEventListener('pointerenter',()=>cEye.classList.add('is-hover'));
-    el.addEventListener('pointerleave',()=>cEye.classList.remove('is-hover'));
-  });
-}
+if (cEye) cEye.style.display = 'none';
 
 /* ---------- Boot ---------- */
 async function boot(){
