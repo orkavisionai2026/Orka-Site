@@ -2504,7 +2504,9 @@
     position:relative;z-index:8;
     background:#060606;
     color:var(--cream);
-    padding:clamp(48px,6vw,80px) clamp(28px,4.4vw,72px) clamp(80px,10vw,128px);
+    /* Padding-top eliminado — velocidade encosta direto no fim do hero,
+       sem espaço acima do meta tag / headline. */
+    padding:clamp(16px,2vw,28px) clamp(28px,4.4vw,72px) clamp(80px,10vw,128px);
     overflow:hidden;
   }
   .velocidade::before{
@@ -2524,7 +2526,8 @@
     font-size:11px;letter-spacing:.22em;text-transform:uppercase;
     color:var(--cream-mute);
     display:flex;align-items:center;gap:14px;
-    margin-bottom:48px;max-width:1280px;margin-left:auto;margin-right:auto;
+    /* Margem-bottom tight — meta tag encostada no headline */
+    margin:0 auto 20px;max-width:1280px;
   }
   .velocidade-meta::after{
     content:'';flex:1;height:1px;background:var(--line);
