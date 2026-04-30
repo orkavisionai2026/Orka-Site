@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>ORKA — Diálogo (arquivado)</title>
+<!--
+  ==================================================================
+  ARQUIVO DO DIÁLOGO — extraído de index.html em 2026-04-30
+  ----------------------------------------------------------------
+  Esta seção foi removida da home a pedido do usuário, mas mantida
+  aqui para reincorporação futura. Para reativar:
+
+  1. Copie o bloco CSS de <style>...</style> abaixo para o <style>
+     principal do index.html (antes do </style> final)
+  2. Copie o bloco HTML <section class="dialogo">...</section> para
+     o local desejado (originalmente entre Implantação e Objeções)
+  3. Copie os blocos JS abaixo para a seção de scripts do index
+     (initDialogoOrcaScene, initDialogo, invite form)
+  4. Renumere os meta-tags das seções afetadas
+
+  Dependências externas que o Diálogo usa do index principal:
+    - GSAP + ScrollTrigger (CDN no <head>)
+    - Lenis (window.lenis exposto pelo bootstrap principal)
+    - Three.js module (carregado no script-module do hero)
+    - As variáveis CSS --cream, --orange, etc. (no :root)
+    - As funções globais window.pulseDialogoOrca / setDialogoOrcaReveal
+      (definidas pelo próprio initDialogoOrcaScene)
+  ==================================================================
+-->
+
+<!-- ============================================================== -->
+<!-- BLOCO 1 — CSS -->
+<!-- ============================================================== -->
+<style>
+  /* =====================================================
+     DIÁLOGO  (cinema: sticky + rAF-driven progress)
+     Section is 500vh tall. Inner .dialogo-cinema is sticky-
+     pinned at viewport top, holding the visual content in
+     place while the user scrolls through the 400vh of
+     scroll-distance below it. Custom rAF loop reads
+     getBoundingClientRect to drive progress directly,
+     bypassing ScrollTrigger entirely (it conflicts with
+     the hero's pin in this multi-pin setup).
+     ===================================================== */
+  .dialogo{
+    position:relative;z-index:7;
+    /* Match implantacao bg (#060606) so the seam between implantacao
+       and dialogo is invisible — pure #000 was creating a subtle tone
+       difference. */
+    background:#060606;color:var(--cream);
+    height:500vh;height:500svh;
+    width:100%;
+    --scroll:0;
+    /* (margin-top:-100vh removed — was used to hide the now-deleted .veil
+       transition section's 100vh exit period. Without .veil, the negative
+       margin caused .dialogo to overlap with .implantacao.) */
+  }
+  .dialogo-cinema{
+    position:sticky;top:0;
+    height:100vh;height:100svh;
+    width:100%;
+    overflow:hidden;
+    background:#060606;
+    isolation:isolate;
+  }
+
+  /* Cosmic starfield behind the orca (continuity from dobra 3).
+     Sits below the canvas (z:0) so the orca particles still dominate. */
+  .dialogo-stars{
+    position:absolute;inset:-6% -2%;
+    width:104%;height:112%;
+    z-index:0;pointer-events:none;
+    opacity:.85;
+  }
+  /* Full-bleed canvas — Three.js orca particle constellation */
+  .dialogo-orca-canvas{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    z-index:1;
+    background:transparent;
+    display:block;
+  }
+
+  /* Preroll overlay disabled — was hiding the cosmic starfield while
+     the cinema hadn't engaged yet, creating a black seam between
+     dobra 3 and dobra 4. The orca's uReveal animation already handles
+     the particle assembly gracefully without needing a black curtain. */
+  .dialogo-preroll{
+    display:none;
+  }
+
+  /* Floating ecosystem items — orbit the central orca */
+  .dialogo-items{
+    position:absolute;inset:0;z-index:1;
+    pointer-events:none;
+    /* Pointer parallax CSS variables driven by JS */
+    --mx:0;
+    --my:0;
+  }
+  .d-item{
+    position:absolute;
+    color:#F36B37;
+    /* Drop-shadow gives the warm wireframe glow seen in the reference */
+    filter:
+      drop-shadow(0 0 6px rgba(243,107,55,.55))
+      drop-shadow(0 0 18px rgba(242,54,12,.28));
+    /* Float animation + mouse parallax (depth controls magnitude) */
+    transform:translate3d(
+      calc(var(--mx) * var(--depth) * 60px),
+      calc(var(--my) * var(--depth) * 40px),
+      0
+    );
+    will-change:transform,opacity;
+    opacity:0;          /* faded in by JS once scene mounts */
+    transition:opacity .8s ease-out;
+  }
+  .d-item.is-on{ opacity:.92 }
+  .d-item svg{
+    width:clamp(64px,7.2vw,108px);
+    height:auto;
+    /* Subtle pulse on the stroke for "wireframe alive" feel */
+    animation:item-pulse 4s ease-in-out infinite;
+  }
+  @keyframes item-pulse{
+    0%,100%{ opacity:1 }
+    50%   { opacity:.78 }
+  }
+
+  /* Position each item around the orca (matches the reference video composition).
+     Each has its own float keyframe so they don't move in unison. */
+  .d-item-bot{
+    top:20%;left:14%;
+    animation:float-a 11s ease-in-out infinite;
+  }
+  .d-item-funnel{
+    top:18%;right:12%;
+    animation:float-b 13s ease-in-out infinite;
+  }
+  .d-item-chat{
+    top:60%;left:11%;
+    animation:float-c 9s ease-in-out infinite;
+  }
+  .d-item-monitor{
+    top:62%;right:11%;
+    animation:float-d 12s ease-in-out infinite;
+  }
+  .d-item-sync{
+    bottom:12%;left:50%;
+    transform:translate3d(-50%, 0, 0);
+    animation:float-e 10s ease-in-out infinite;
+  }
+  @keyframes float-a{
+    0%,100%{ translate:0 0 }
+    25%{ translate:-6px -12px }
+    50%{ translate: 4px -6px }
+    75%{ translate:-2px  6px }
+  }
+  @keyframes float-b{
+    0%,100%{ translate:0 0 }
+    33%{ translate: 8px  -8px }
+    66%{ translate:-5px  10px }
+  }
+  @keyframes float-c{
+    0%,100%{ translate:0 0 }
+    25%{ translate: 4px  10px }
+    50%{ translate:-6px   3px }
+    75%{ translate: 2px  -8px }
+  }
+  @keyframes float-d{
+    0%,100%{ translate:0 0 }
+    40%{ translate:-7px -5px }
+    70%{ translate: 5px  9px }
+  }
+  @keyframes float-e{
+    0%,100%{ translate:0 0 }
+    33%{ translate: 0 -8px }
+    66%{ translate: 0  6px }
+  }
+
+  /* Mouse parallax overrides: applied as a wrapping transform via JS-set
+     CSS variables on .dialogo-items. Each item's translate is the float
+     animation; the wrapper translates them additionally based on mouse. */
+  .dialogo-items{
+    transform: translate3d(
+      calc(var(--mx) * 12px),
+      calc(var(--my) *  8px),
+      0
+    );
+    transition: transform .35s cubic-bezier(.2,.6,.2,1);
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .d-item, .d-item svg { animation:none!important }
+    .dialogo-items { transition:none!important }
+  }
+
+  /* Tint/legibility overlay — gradients ONLY (no flat brightness filter) */
+  .dialogo-vignette{
+    position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:
+      radial-gradient(ellipse 70% 80% at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,.18) 45%, rgba(0,0,0,.55) 85%, rgba(0,0,0,.85) 100%),
+      linear-gradient(to bottom, rgba(0,0,0,.55) 0%, transparent 18%, transparent 82%, rgba(0,0,0,.7) 100%);
+  }
+
+  /* Header */
+  .dialogo-head{
+    position:absolute;top:0;left:0;right:0;z-index:6;
+    display:flex;align-items:flex-start;justify-content:space-between;gap:28px;
+    padding:clamp(28px,3.4vw,48px) clamp(28px,4vw,72px) 0;
+    pointer-events:none;
+  }
+  .dialogo-head > *{pointer-events:auto}
+  .dialogo-meta{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--cream-mute);
+    display:flex;align-items:center;gap:14px;
+  }
+  .dialogo-meta::before{content:"";width:28px;height:1px;background:var(--cream-dim)}
+  .dialogo-status{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--cream-soft);
+  }
+  .dialogo-status .dot{
+    width:6px;height:6px;border-radius:50%;background:var(--orange);
+    box-shadow:0 0 12px var(--orange-glow);
+    animation:pulse 1.6s ease-in-out infinite;
+  }
+
+  /* Headline — visible only at scene 0, then condenses */
+  .dialogo-headline{
+    position:absolute;top:clamp(72px,12vh,140px);left:0;right:0;z-index:6;
+    text-align:center;padding:0 24px;
+    --in: clamp(0, calc((0.05 - var(--scroll, 0)) / 0.05 + 1), 1);
+    opacity: var(--in);
+    transform: translateY(calc((1 - var(--in)) * -10px)) scale(calc(0.97 + var(--in) * 0.03));
+    transition:opacity .25s linear,transform .35s cubic-bezier(.4,0,.2,1);
+    pointer-events:none;
+  }
+  .dialogo-headline h2{
+    font-family:Inter,system-ui,sans-serif;font-weight:700;
+    font-size:clamp(44px,6.4vw,108px);
+    line-height:.92;letter-spacing:-.045em;color:var(--cream);
+    margin:0 0 14px;
+  }
+  .dialogo-headline h2 em{
+    font-family:'Instrument Serif',serif;font-weight:400;font-style:italic;
+    background:linear-gradient(180deg,#FFF6F3 30%, #F36B37 130%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    padding-right:.05em;
+  }
+  .dialogo-headline h2 .punct{color:var(--orange)}
+  .dialogo-headline p{
+    font-family:Inter,sans-serif;font-weight:300;
+    font-size:clamp(14px,1.05vw,17px);line-height:1.55;
+    color:var(--cream-soft);max-width:46ch;margin:0 auto;
+  }
+
+  /* Scenes container — single area where one Q+A pair shows at a time */
+  .scenes{
+    position:absolute;left:0;right:0;
+    top:50%;transform:translateY(-50%);
+    z-index:6;
+    height:min(60vh,520px);
+    display:flex;align-items:center;justify-content:center;
+    pointer-events:none;
+  }
+  .scene{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;justify-content:center;
+    gap:clamp(14px,2.4vh,28px);
+    padding:0 clamp(28px,4vw,72px);
+    max-width:920px;margin:0 auto;left:0;right:0;
+    --p:0; /* local progress 0..1 within scene */
+    opacity:0;visibility:hidden;
+    transition:visibility 0s linear .3s;
+  }
+  .scene.is-on{
+    opacity:1;visibility:visible;
+    transition:visibility 0s linear 0s;
+    pointer-events:auto;
+  }
+
+  /* Q (user) bubble — fades in at scene start */
+  .scene .qa-q{
+    --in: clamp(0, calc(var(--p, 0) / 0.18), 1);
+    --out: clamp(0, calc((1 - var(--p, 0)) / 0.12), 1);
+    --vis: min(var(--in), var(--out));
+    align-self:flex-end;
+    opacity:var(--vis);
+    transform:translateY(calc((1 - var(--in)) * 18px));
+    filter:blur(calc((1 - var(--in)) * 4px));
+    max-width:min(560px,82%);
+  }
+  /* A (orka) bubble — fades in at ~25% local progress */
+  .scene .qa-a{
+    --in: clamp(0, calc((var(--p, 0) - 0.25) / 0.18), 1);
+    --out: clamp(0, calc((1 - var(--p, 0)) / 0.10), 1);
+    --vis: min(var(--in), var(--out));
+    align-self:flex-start;
+    opacity:var(--vis);
+    transform:translateY(calc((1 - var(--in)) * 22px));
+    filter:blur(calc((1 - var(--in)) * 6px));
+    max-width:min(640px,90%);
+  }
+
+  /* Bubble visual styles */
+  .qa-q-meta{
+    display:flex;align-items:center;gap:8px;
+    font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--cream-mute);
+    margin-bottom:8px;justify-content:flex-end;
+  }
+  .qa-q-meta::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--cream-mute)}
+  .bubble-q{
+    /* Dark warm backdrop — cuts through orca particles for legibility (WCAG AA) */
+    background:rgba(8,6,5,0.86);
+    color:var(--cream);
+    border:1px solid rgba(255,246,243,.20);
+    backdrop-filter:blur(28px) saturate(140%);-webkit-backdrop-filter:blur(28px) saturate(140%);
+    border-radius:18px 18px 6px 18px;
+    padding:14px 20px;
+    font-family:Inter,sans-serif;font-size:clamp(14px,1.05vw,16.5px);
+    line-height:1.5;font-weight:400;
+    box-shadow:0 8px 32px rgba(0,0,0,.6);
+    /* Subtle text-shadow as belt-and-suspenders for animated bg */
+    text-shadow:0 1px 2px rgba(0,0,0,.4);
+  }
+  .bubble-q strong{font-weight:500;color:var(--cream)}
+
+  .qa-a-row{
+    display:flex;align-items:flex-end;gap:14px;
+  }
+  .qa-a-avatar{
+    flex:0 0 auto;width:38px;height:38px;border-radius:50%;
+    background:var(--cream);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 0 1px rgba(242,54,12,.4),0 0 18px rgba(242,54,12,.32);
+    margin-bottom:4px;
+  }
+  .qa-a-avatar svg{width:24px;height:24px;color:#0c0c0c}
+  .bubble-a{
+    background:#FFF6F3;color:#060606;
+    border-radius:18px 18px 18px 6px;
+    padding:16px 20px;
+    font-family:Inter,sans-serif;font-size:clamp(14px,1.1vw,17px);
+    line-height:1.45;font-weight:400;
+    box-shadow:0 24px 70px rgba(242,54,12,.22), 0 6px 20px rgba(0,0,0,.45);
+    display:flex;align-items:center;gap:18px;
+    flex:1;min-width:0;
+  }
+  .bubble-a p{margin:0}
+  .bubble-a p strong{font-weight:600;color:var(--orange)}
+  .bubble-a .a-text{flex:1;min-width:0}
+  .bubble-a .badge{
+    flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;
+    text-transform:uppercase;color:rgba(6,6,6,.45);
+    padding-left:18px;border-left:1px solid rgba(6,6,6,.12);
+    white-space:nowrap;
+  }
+  .bubble-a .badge svg{width:14px;height:14px;color:var(--orange)}
+  .bubble-a .badge strong{color:var(--orange);font-weight:500}
+
+  /* Tag above the active scene bubble (counter "01 / 04 · pergunta") */
+  .scene-tag{
+    align-self:center;
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--cream-mute);
+    margin-bottom:6px;
+    --in: clamp(0, calc(var(--p, 0) / 0.2), 1);
+    --out: clamp(0, calc((1 - var(--p, 0)) / 0.15), 1);
+    opacity: min(var(--in), var(--out));
+  }
+  .scene-tag .num{color:var(--orange);font-weight:500}
+  .scene-tag .sep{color:rgba(255,246,243,.18)}
+
+  /* Invite scene */
+  .scene.invite{align-items:center}
+  .scene.invite .qa-q,.scene.invite .qa-a{display:none}
+  .invite-shell{
+    --in: clamp(0, calc(var(--p, 0) / 0.25), 1);
+    opacity: var(--in);
+    transform: translateY(calc((1 - var(--in)) * 24px));
+    position:relative;
+    background:rgba(255,246,243,.03);
+    border:1px solid rgba(242,54,12,.45);
+    border-radius:999px;
+    padding:8px 8px 8px 26px;
+    display:flex;align-items:center;gap:14px;
+    width:min(640px,92%);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    box-shadow:0 0 0 6px rgba(242,54,12,.06), 0 28px 80px rgba(242,54,12,.22);
+    pointer-events:auto;
+    align-self:center;margin:0 auto;
+  }
+  .invite-tag{
+    --in: clamp(0, calc(var(--p, 0) / 0.2), 1);
+    opacity: var(--in);
+    transform: translateY(calc((1 - var(--in)) * 14px));
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.32em;
+    text-transform:uppercase;color:var(--orange);
+    align-self:center;margin-bottom:4px;
+  }
+  .invite-shell .icon{
+    width:32px;height:32px;border-radius:50%;
+    background:rgba(242,54,12,.18);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--orange);flex:0 0 auto;
+  }
+  .invite-shell .icon svg{width:16px;height:16px}
+  .invite-shell input{
+    flex:1;background:transparent;border:0;outline:none;
+    font-family:Inter,sans-serif;font-size:15px;color:var(--cream);
+    padding:8px 0;
+  }
+  .invite-shell input::placeholder{color:var(--cream-mute)}
+  .invite-shell .send{
+    flex:0 0 auto;width:42px;height:42px;border-radius:50%;
+    background:var(--orange);color:#fff;border:0;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 20px rgba(242,54,12,.5);
+    transition:transform .3s ease, box-shadow .3s ease;
+  }
+  .invite-shell .send:hover{transform:rotate(-12deg) scale(1.06);box-shadow:0 10px 28px rgba(242,54,12,.7)}
+  .invite-shell .send svg{width:16px;height:16px}
+
+  /* Bottom progress strip */
+  .dialogo-progress{
+    position:absolute;left:0;right:0;bottom:0;z-index:7;
+    display:flex;align-items:center;gap:14px;
+    padding:14px clamp(28px,4vw,72px);
+    background:linear-gradient(to top, rgba(0,0,0,.85), transparent);
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--cream-mute);
+    pointer-events:none;
+  }
+  .dialogo-progress .label{flex:0 0 auto}
+  .dialogo-progress .bar{
+    flex:1;height:1px;background:rgba(255,246,243,.08);position:relative;overflow:hidden;
+  }
+  .dialogo-progress .bar::after{
+    content:"";position:absolute;left:0;top:0;height:100%;
+    width:calc(var(--scroll,0) * 100%);
+    background:linear-gradient(90deg, var(--orange), var(--orange-soft));
+    box-shadow:0 0 10px var(--orange-glow);
+  }
+  .dialogo-progress .num{flex:0 0 auto;color:var(--cream)}
+
+  /* Hint to scroll (visible only at very start) */
+  .scroll-hint{
+    position:absolute;left:50%;bottom:48px;z-index:6;
+    transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.32em;
+    text-transform:uppercase;color:var(--cream-mute);
+    pointer-events:none;
+    --in: clamp(0, calc((0.05 - var(--scroll, 0)) / 0.05 + 1), 1);
+    opacity:calc(var(--in) * .7);
+  }
+  .scroll-hint::after{
+    content:"";width:1px;height:36px;
+    background:linear-gradient(to bottom, transparent, var(--orange));
+  }
+
+  /* Responsive */
+  @media (max-width:760px){
+    .dialogo-headline h2{font-size:38px}
+    .scene{padding:0 18px}
+    .bubble-a{flex-direction:column;align-items:flex-start;gap:10px;font-size:14.5px}
+    .bubble-a .badge{padding-left:0;border-left:0;border-top:1px solid rgba(6,6,6,.12);padding-top:8px;width:100%}
+    .qa-a-avatar{display:none}
+    .qa-a-row{flex-direction:column;gap:0}
+  }
+</style>
+
+<!-- ============================================================== -->
+<!-- BLOCO 2 — HTML (originalmente após Implantação) -->
+<!-- ============================================================== -->
+  <!-- =====================================================
+       DIÁLOGO (sticky-pinned cinema, rAF-driven)
+       ===================================================== -->
+  <section class="dialogo" id="dialogo">
+    <div class="dialogo-cinema" id="dialogoCinema">
+
+      <!-- Cosmic starfield — same density as cosmos-stars (dobra 3) so
+           the seam between dobra 3 and dobra 4 has continuous stars. -->
+      <svg class="dialogo-stars" id="dialogoStars" preserveAspectRatio="none" aria-hidden="true"></svg>
+
+      <!-- Particle Orca constellation (Three.js) — replaces the AI video.
+           Lighter, mouse-reactive, alive throughout the scroll experience. -->
+      <canvas class="dialogo-orca-canvas" id="dialogoOrcaCanvas" aria-hidden="true"></canvas>
+
+      <!-- Preroll overlay — black layer that fades out during the first 6%
+           of cinema progress, while the orca assembles. Hides the moment
+           the cinema engages until the orca is partially formed. -->
+      <div class="dialogo-preroll" id="dialogoPreroll" aria-hidden="true"></div>
+
+      <!-- Floating ecosystem items moved to hero (epiminds-style centered subject) -->
+
+      <!-- Vignette / legibility -->
+      <div class="dialogo-vignette" aria-hidden="true"></div>
+
+      <!-- Header -->
+      <div class="dialogo-head">
+        <div class="dialogo-meta"><span>07 / DIÁLOGO</span></div>
+        <div class="dialogo-status"><span class="dot"></span><span>ao vivo · ORKA-ONE · respondendo</span></div>
+      </div>
+
+      <!-- Headline removed by request — direct cinema entry without intro text -->
+
+
+      <!-- Scenes (5 total: 4 Q&A + invite). Only one visible at a time, crossfade -->
+      <div class="scenes" id="scenesRoot">
+
+        <!-- SCENE 1 — implementação -->
+        <article class="scene" data-start="0.06" data-end="0.27">
+          <span class="scene-tag"><span class="num">01</span><span class="sep">/</span>04 · pergunta</span>
+          <div class="qa-q">
+            <div class="qa-q-meta">Você · 14:08</div>
+            <div class="bubble-q">Quanto tempo leva pra implementar isso na minha imobiliária?</div>
+          </div>
+          <div class="qa-a">
+            <div class="qa-a-row">
+              <span class="qa-a-avatar" aria-hidden="true">
+                <svg viewBox="0 0 32 28" fill="none"><path d="M16 3.2c-7 0-11.6 4.8-11.6 11 0 3.5 1.5 6.4 4 8.3 1.4-3.4 4.8-5.6 8.7-5.6 2.7 0 5.5.8 8.4 1.6 1.5-1.5 2.1-3.9 2.1-6.4C27.6 7.4 23 3.2 16 3.2Z" fill="currentColor"/><path d="M19.4 8.6c2.8-.4 6 .9 7.6 2.6-2 .9-5.5 1.2-7.6.4-1-.4-1.4-1.5-1-2.4.2-.3.6-.5 1-.6Z" fill="#FFF6F3"/></svg>
+              </span>
+              <div class="bubble-a">
+                <div class="a-text"><p><strong>21 dias</strong> em média. Diagnóstico em 5, mapa em 2, construção em 14. Você acompanha cada fase em tempo real.</p></div>
+                <span class="badge">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <strong>Janela confirmada</strong>
+                </span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- SCENE 2 — corretores -->
+        <article class="scene" data-start="0.25" data-end="0.46">
+          <span class="scene-tag"><span class="num">02</span><span class="sep">/</span>04 · pergunta</span>
+          <div class="qa-q">
+            <div class="qa-q-meta">Você · 14:09</div>
+            <div class="bubble-q">E os meus corretores? Vocês substituem o time que eu já tenho?</div>
+          </div>
+          <div class="qa-a">
+            <div class="qa-a-row">
+              <span class="qa-a-avatar" aria-hidden="true">
+                <svg viewBox="0 0 32 28" fill="none"><path d="M16 3.2c-7 0-11.6 4.8-11.6 11 0 3.5 1.5 6.4 4 8.3 1.4-3.4 4.8-5.6 8.7-5.6 2.7 0 5.5.8 8.4 1.6 1.5-1.5 2.1-3.9 2.1-6.4C27.6 7.4 23 3.2 16 3.2Z" fill="currentColor"/><path d="M19.4 8.6c2.8-.4 6 .9 7.6 2.6-2 .9-5.5 1.2-7.6.4-1-.4-1.4-1.5-1-2.4.2-.3.6-.5 1-.6Z" fill="#FFF6F3"/></svg>
+              </span>
+              <div class="bubble-a">
+                <div class="a-text"><p>Não. <strong>Liberamos seu corretor</strong> do operacional pra focar onde ele converte: visita, negociação, fechamento. A McKinsey projeta <strong>16M postos administrativos extintos no Brasil até 2030</strong> — o corretor consultivo é exatamente o que IA não substitui.</p></div>
+                <span class="badge">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <strong>Papéis redefinidos</strong>
+                </span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- SCENE 3 — CRM -->
+        <article class="scene" data-start="0.44" data-end="0.65">
+          <span class="scene-tag"><span class="num">03</span><span class="sep">/</span>04 · pergunta</span>
+          <div class="qa-q">
+            <div class="qa-q-meta">Você · 14:10</div>
+            <div class="bubble-q">Funciona com o meu CRM atual ou preciso trocar tudo?</div>
+          </div>
+          <div class="qa-a">
+            <div class="qa-a-row">
+              <span class="qa-a-avatar" aria-hidden="true">
+                <svg viewBox="0 0 32 28" fill="none"><path d="M16 3.2c-7 0-11.6 4.8-11.6 11 0 3.5 1.5 6.4 4 8.3 1.4-3.4 4.8-5.6 8.7-5.6 2.7 0 5.5.8 8.4 1.6 1.5-1.5 2.1-3.9 2.1-6.4C27.6 7.4 23 3.2 16 3.2Z" fill="currentColor"/><path d="M19.4 8.6c2.8-.4 6 .9 7.6 2.6-2 .9-5.5 1.2-7.6.4-1-.4-1.4-1.5-1-2.4.2-.3.6-.5 1-.6Z" fill="#FFF6F3"/></svg>
+              </span>
+              <div class="bubble-a">
+                <div class="a-text"><p>Sim. O Zenith <strong>conecta no que você já tem</strong> — RD, Hubspot, Pipedrive, Notion, planilha. Ou montamos do zero, se preferir.</p></div>
+                <span class="badge">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <strong>Integração mapeada</strong>
+                </span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- SCENE 4 — ROI -->
+        <article class="scene" data-start="0.63" data-end="0.84">
+          <span class="scene-tag"><span class="num">04</span><span class="sep">/</span>04 · pergunta</span>
+          <div class="qa-q">
+            <div class="qa-q-meta">Você · 14:11</div>
+            <div class="bubble-q">E se não der ROI? Como funciona a garantia?</div>
+          </div>
+          <div class="qa-a">
+            <div class="qa-a-row">
+              <span class="qa-a-avatar" aria-hidden="true">
+                <svg viewBox="0 0 32 28" fill="none"><path d="M16 3.2c-7 0-11.6 4.8-11.6 11 0 3.5 1.5 6.4 4 8.3 1.4-3.4 4.8-5.6 8.7-5.6 2.7 0 5.5.8 8.4 1.6 1.5-1.5 2.1-3.9 2.1-6.4C27.6 7.4 23 3.2 16 3.2Z" fill="currentColor"/><path d="M19.4 8.6c2.8-.4 6 .9 7.6 2.6-2 .9-5.5 1.2-7.6.4-1-.4-1.4-1.5-1-2.4.2-.3.6-.5 1-.6Z" fill="#FFF6F3"/></svg>
+              </span>
+              <div class="bubble-a">
+                <div class="a-text"><p>Paga o investimento <strong>em 60 dias</strong> ou a gente devolve. Sem cláusula escondida — está em contrato.</p></div>
+                <span class="badge">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <strong>Garantia ativa</strong>
+                </span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- SCENE 5 — Invite -->
+        <article class="scene invite" data-start="0.82" data-end="1.0">
+          <span class="invite-tag">A próxima pergunta é sua</span>
+          <form class="invite-shell" id="inviteForm" novalidate>
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <label for="inviteInput" class="visually-hidden">Sua pergunta</label>
+            <input id="inviteInput" type="text" minlength="3" maxlength="280"
+                   placeholder="Manda sua pergunta — eu respondo." data-cursor="hover"/>
+            <button class="send" type="submit" aria-label="Enviar pergunta" data-cursor="hover">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </form>
+        </article>
+
+      </div>
+
+      <!-- Scroll hint (only at start) -->
+      <div class="scroll-hint" aria-hidden="true">role para conversar</div>
+
+      <!-- Bottom progress strip -->
+      <div class="dialogo-progress" aria-hidden="true">
+        <span class="label">Conversa</span>
+        <span class="bar"></span>
+        <span class="num" id="dialogoCount">00 / 04</span>
+      </div>
+
+    </div>
+  </section>
+
+<!-- ============================================================== -->
+<!-- BLOCO 3 — JS · initDialogoOrcaScene (Three.js orca) -->
+<!-- ============================================================== -->
+<script type="module">
+/* ============================================================
+   DOBRA 05 — DIÁLOGO orca scene
+   Independent Three.js context. Reuses orca particle geometry
+   (cloned shader material with calmer uniforms — no dispersion).
+   Mouse parallax · breathing · energy pulse on scene snap.
+   Also drives the floating items' CSS-var parallax.
+   ============================================================ */
+function initDialogoOrcaScene(){
+  const canvas = document.getElementById('dialogoOrcaCanvas');
+  const itemsEl = document.querySelector('.dialogo-items');
+  const dialogoSection = document.getElementById('dialogo');
+  if (!canvas || !dialogoSection) return;
+
+  /* ---------- Cosmic starfield (matches density of dobra 3) ----------
+     Generated once at init. Decorative layer behind the orca canvas
+     so the seam from the implantação's cosmos stays visually continuous. */
+  const dStarfieldEl = document.getElementById('dialogoStars');
+  if (dStarfieldEl){
+    const W = 1440, H = 900;
+    dStarfieldEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const palette = ['#FFF6F3','#FFF6F3','#FFF6F3','#F36B37','#FFF6F3','#F2360C'];
+    const N = Math.round((W * H) / 9257); // ~140 stars at 1440x900
+    let frag = '';
+    for (let i = 0; i < N; i++){
+      const x = Math.random() * W;
+      const y = Math.random() * H;
+      const r = (Math.random() * 1.3 + 0.4).toFixed(2);
+      const c = palette[Math.floor(Math.random() * palette.length)];
+      const o = (0.30 + Math.random() * 0.55).toFixed(2);
+      const dur = (3 + Math.random() * 4).toFixed(1);
+      const delay = (Math.random() * 4).toFixed(1);
+      frag += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${r}" fill="${c}" opacity="${o}">`
+            + `<animate attributeName="opacity" values="${o};${(o*0.3).toFixed(2)};${o}" dur="${dur}s" begin="-${delay}s" repeatCount="indefinite"/>`
+            + `</circle>`;
+    }
+    dStarfieldEl.innerHTML = frag;
+  }
+
+  const dRenderer = new THREE.WebGLRenderer({
+    canvas, antialias:true, alpha:true, powerPreference:'high-performance'
+  });
+  dRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  /* Transparent clear so the starfield SVG behind the canvas remains
+     visible — the .dialogo-cinema's #060606 background fills the gap. */
+  dRenderer.setClearColor(0x000000, 0);
+
+  const dScene = new THREE.Scene();
+  const dCamera = new THREE.PerspectiveCamera(36, 1, 0.1, 1000);
+  // Pulled back so the orca occupies ~40% of viewport (matching reference video)
+  dCamera.position.set(0, 0, 140);
+
+  /* ---- Background plexus stars (lighter than hero) ---- */
+  const dStarsGeom = buildStars(800, 360);
+  const dStarsMat = new THREE.ShaderMaterial({
+    vertexColors:true, transparent:true, depthWrite:false,
+    blending:THREE.AdditiveBlending,
+    uniforms:{ uTime:{value:0}, uPixel:{value:Math.min(window.devicePixelRatio,2)} },
+    vertexShader: starsMat.vertexShader,
+    fragmentShader: starsMat.fragmentShader,
+  });
+  const dStars = new THREE.Points(dStarsGeom, dStarsMat);
+  dScene.add(dStars);
+
+  /* ---- Orca particle group ---- */
+  const dOrca = new THREE.Group();
+  dScene.add(dOrca);
+
+  /* Dedicated material — same shaders, independent uniforms.
+     uReveal STARTS AT 0 (scattered particles) and animates to 1
+     when the user enters dobra 4 — "the orka entity reassembles
+     after dispersing in the hero". uDispersion stays 0. */
+  const dOrcaMat = new THREE.ShaderMaterial({
+    vertexColors:true, transparent:true, depthWrite:false,
+    blending:THREE.AdditiveBlending,
+    uniforms:{
+      uTime:{value:0},
+      uPixel:{value:Math.min(window.devicePixelRatio,2)},
+      uReveal:{value:0},          // ← starts scattered, animates to 1
+      uDispersion:{value:0},
+      uEnergy:{value:0.20},
+      /* Mouse-buzz uniforms (moved here from the hero) */
+      uMouseWorld:{value:new THREE.Vector2(9999,9999)},
+      uMouseStrength:{value:0},
+      uMouseDir:{value:new THREE.Vector2(0,0)},
+    },
+    vertexShader: orcaMat.vertexShader,
+    fragmentShader: orcaMat.fragmentShader,
+  });
+
+  /* Reuse the orca geometry by loading the same image. */
+  loadOrcaParticles().then(geom => {
+    const dPoints = new THREE.Points(geom, dOrcaMat);
+    dOrca.add(dPoints);
+  }).catch(()=>{});
+
+  /* ---- Plexus lines: faint connections between scattered anchors ----
+     Static geometry. 80 anchor points scattered around the orca, each
+     connected to its 2 nearest neighbors → ~160 line segments total.
+     80 chosen as visual sweet-spot: dense enough to feel networked,
+     sparse enough to render in <1ms on integrated GPU. */
+  const N_ANCHORS = 80;
+  const anchors = [];
+  for (let i = 0; i < N_ANCHORS; i++){
+    anchors.push(new THREE.Vector3(
+      (Math.random()-0.5) * 220,
+      (Math.random()-0.5) * 140,
+      (Math.random()-0.5) * 70
+    ));
+  }
+  const linePos = [];
+  for (let i = 0; i < N_ANCHORS; i++){
+    const a = anchors[i];
+    const dists = [];
+    for (let j = 0; j < N_ANCHORS; j++){
+      if (i === j) continue;
+      dists.push({ idx:j, d:a.distanceTo(anchors[j]) });
+    }
+    dists.sort((x,y)=>x.d - y.d);
+    for (let k = 0; k < 2; k++){
+      const b = anchors[dists[k].idx];
+      linePos.push(a.x, a.y, a.z, b.x, b.y, b.z);
+    }
+  }
+  const lineGeom = new THREE.BufferGeometry();
+  lineGeom.setAttribute('position', new THREE.Float32BufferAttribute(linePos, 3));
+  const lineMat = new THREE.LineBasicMaterial({
+    color: 0xF36B37,
+    transparent: true,
+    opacity: 0.14,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+  const plexusLines = new THREE.LineSegments(lineGeom, lineMat);
+  dOrca.add(plexusLines);
+
+  /* Plexus dot anchors (so connection points are visible) */
+  const plexusGeom = new THREE.BufferGeometry();
+  const dotPos = new Float32Array(N_ANCHORS * 3);
+  anchors.forEach((a, i) => {
+    dotPos[i*3]   = a.x;
+    dotPos[i*3+1] = a.y;
+    dotPos[i*3+2] = a.z;
+  });
+  plexusGeom.setAttribute('position', new THREE.BufferAttribute(dotPos, 3));
+  const plexusDotsMat = new THREE.PointsMaterial({
+    color: 0xF36B37,
+    size: 2.0,
+    transparent: true,
+    opacity: 0.5,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    sizeAttenuation: true,
+  });
+  const plexusDots = new THREE.Points(plexusGeom, plexusDotsMat);
+  dOrca.add(plexusDots);
+
+  /* ---- Atmospheric particles — cream/orange dots floating around the orca,
+     drifting with sin/cos motion, reacting to mouse via dOrca group rotation.
+     Adds visual density matching the reference video's "particle integration" feel.
+     420 = sweet spot between density (visible at 1080p) and GPU budget (~5% on M1). */
+  const N_ATMOS = 420;
+  const atmosGeom = new THREE.BufferGeometry();
+  const atmosPos = new Float32Array(N_ATMOS * 3);
+  const atmosColor = new Float32Array(N_ATMOS * 3);
+  const atmosSeed = new Float32Array(N_ATMOS);
+  const cAtmosOrange = ORKA_COLORS.orange;
+  const cAtmosSoft   = ORKA_COLORS.orangeSoft;
+  const cAtmosCream  = ORKA_COLORS.cream;
+  const cAtmosAmber  = ORKA_COLORS.amber;
+  for (let i = 0; i < N_ATMOS; i++){
+    /* Distribute in a thick spherical shell (radius 60-160) around the orca */
+    const r = 60 + Math.random() * 100;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    atmosPos[i*3]   = r * Math.sin(phi) * Math.cos(theta);
+    atmosPos[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+    atmosPos[i*3+2] = r * Math.cos(phi);
+
+    /* Color matches the orca palette (so they look like particles "from" the orca) */
+    const t = Math.random();
+    let c;
+    if (t > 0.85) c = cAtmosOrange;
+    else if (t > 0.55) c = cAtmosSoft;
+    else if (t > 0.30) c = cAtmosAmber;
+    else c = cAtmosCream;
+    atmosColor[i*3]   = c.r;
+    atmosColor[i*3+1] = c.g;
+    atmosColor[i*3+2] = c.b;
+    atmosSeed[i] = Math.random();
+  }
+  atmosGeom.setAttribute('position', new THREE.Float32BufferAttribute(atmosPos, 3));
+  atmosGeom.setAttribute('color',    new THREE.Float32BufferAttribute(atmosColor, 3));
+  atmosGeom.setAttribute('aSeed',    new THREE.Float32BufferAttribute(atmosSeed, 1));
+
+  const atmosMat = new THREE.ShaderMaterial({
+    vertexColors:true, transparent:true, depthWrite:false,
+    blending:THREE.AdditiveBlending,
+    uniforms:{
+      uTime:{value:0},
+      uPixel:{value:Math.min(window.devicePixelRatio,2)},
+    },
+    vertexShader:`
+      attribute float aSeed;
+      uniform float uTime;
+      uniform float uPixel;
+      varying vec3 vColor;
+      varying float vAlpha;
+      void main(){
+        vec3 p = position;
+        /* Slow organic drift — each particle has unique frequency via aSeed */
+        float t = uTime * 0.18;
+        p.x += sin(t + aSeed * 6.28) * 5.0;
+        p.y += cos(t * 1.15 + aSeed * 9.42) * 4.5;
+        p.z += sin(t * 0.85 + aSeed * 12.56) * 5.0;
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        gl_Position = projectionMatrix * mv;
+        float twk = 0.5 + 0.5 * sin(uTime * 1.1 + aSeed * 7.5);
+        gl_PointSize = (1.1 + twk * 1.0) * uPixel * (300.0 / -mv.z);
+        vAlpha = (0.30 + 0.45 * twk) * 0.62;
+        vColor = color;
+      }
+    `,
+    fragmentShader:`
+      varying vec3 vColor; varying float vAlpha;
+      void main(){
+        vec2 c = gl_PointCoord - 0.5;
+        float d = length(c);
+        if (d > 0.5) discard;
+        float fall = smoothstep(0.5, 0.0, d);
+        float core = pow(fall, 2.4);
+        vec3 col = vColor * (0.4 + core * 1.4);
+        gl_FragColor = vec4(col, vAlpha * fall);
+      }
+    `,
+  });
+  const atmosPoints = new THREE.Points(atmosGeom, atmosMat);
+  dOrca.add(atmosPoints);   /* Inside dOrca group → reacts to mouse rotation */
+
+  /* ---- Pointer (independent from hero's pointer)
+     Now also tracks per-frame velocity, used to drive the orca particle
+     agitation (the "buzz/trail" effect that previously lived on the hero). */
+  const dPtr = { x:0, y:0, tx:0, ty:0,
+                 prevPx:0, prevPy:0, vx:0, vy:0, lastT:0 };
+  window.addEventListener('pointermove', (e)=>{
+    const r = dialogoSection.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > window.innerHeight) return; // dialogo not in view
+    dPtr.tx = (e.clientX / window.innerWidth) * 2 - 1;
+    dPtr.ty = -((e.clientY / window.innerHeight) * 2 - 1);
+    const now = performance.now();
+    const dt = Math.max(1, now - dPtr.lastT);
+    dPtr.vx = (e.clientX - dPtr.prevPx) / dt;
+    dPtr.vy = (e.clientY - dPtr.prevPy) / dt;
+    dPtr.prevPx = e.clientX;
+    dPtr.prevPy = e.clientY;
+    dPtr.lastT = now;
+  }, { passive:true });
+
+  /* Project NDC mouse to dOrca's local space at z=0. Mirrors the helper
+     used in the hero, but uses the dialogo's camera + orca group. */
+  const _dPlane = new THREE.Plane(new THREE.Vector3(0,0,1), 0);
+  const _dRay = new THREE.Raycaster();
+  const _dNDC = new THREE.Vector2();
+  const _dHit = new THREE.Vector3();
+  const _dLocalHit = new THREE.Vector3();
+  function projectDPtrToDOrcaLocal(target){
+    _dNDC.set(dPtr.tx, dPtr.ty);
+    _dRay.setFromCamera(_dNDC, dCamera);
+    if (!_dRay.ray.intersectPlane(_dPlane, _dHit)) return false;
+    _dLocalHit.copy(_dHit);
+    dOrca.worldToLocal(_dLocalHit);
+    target.set(_dLocalHit.x, _dLocalHit.y);
+    return true;
+  }
+
+  /* ---- Energy pulse (called by scene snap) ---- */
+  let energyPulse = 0;
+  /* Energy pulse — exposed via ORKA namespace (legacy global kept for compat) */
+  const _pulse = function(){ energyPulse = 1.0; };
+  window.ORKA = window.ORKA || {};
+  window.ORKA.pulseOrca = _pulse;
+  window.pulseDialogoOrca = _pulse;
+
+  /* ---- Resize ---- */
+  function resize(){
+    const w = canvas.clientWidth || window.innerWidth;
+    const h = canvas.clientHeight || window.innerHeight;
+    dRenderer.setSize(w, h, false);
+    dCamera.aspect = w / h;
+    dCamera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', resize);
+  // First resize after canvas is laid out
+  requestAnimationFrame(resize);
+
+  /* ---- Reveal control: exposed via ORKA namespace ---- */
+  const _setReveal = function(u){
+    dOrcaMat.uniforms.uReveal.value = Math.max(0, Math.min(1, u));
+  };
+  window.ORKA = window.ORKA || {};
+  window.ORKA.setOrcaReveal = _setReveal;
+  window.setDialogoOrcaReveal = _setReveal;
+
+  /* ---- Render loop — gated by visibility to save GPU ---- */
+  const dClock = new THREE.Clock();
+  function isVisible(){
+    const r = dialogoSection.getBoundingClientRect();
+    return r.bottom > -300 && r.top < window.innerHeight + 300;
+  }
+  function dTick(){
+    requestAnimationFrame(dTick);
+    if (!isVisible()) return;
+
+    const t = dClock.getElapsedTime();
+
+    dPtr.x += (dPtr.tx - dPtr.x) * 0.05;
+    dPtr.y += (dPtr.ty - dPtr.y) * 0.05;
+
+    // Calmer rotation than hero
+    dOrca.rotation.y = dPtr.x * 0.32 + Math.sin(t*0.18) * 0.03;
+    dOrca.rotation.x = -dPtr.y * 0.20 + Math.cos(t*0.14) * 0.02;
+
+    dStars.rotation.y = t * 0.008;
+    dStars.rotation.x = Math.sin(t*0.03) * 0.03;
+
+    // Energy pulse decays exponentially after a snap-triggered boost
+    energyPulse *= 0.94;
+    dOrcaMat.uniforms.uEnergy.value = 0.20 + energyPulse * 0.55;
+
+    /* Plexus lines pulse with the orca's energy */
+    lineMat.opacity     = 0.10 + energyPulse * 0.20;
+    plexusDotsMat.opacity = 0.40 + energyPulse * 0.30;
+
+    dStarsMat.uniforms.uTime.value = t;
+    dOrcaMat.uniforms.uTime.value = t;
+    atmosMat.uniforms.uTime.value = t;
+
+    /* Mouse agitation (moved from hero): velocity-driven repulsion +
+       trail along uMouseDir. Same easing/decay model as before. */
+    if (dOrcaMat.uniforms.uMouseWorld){
+      projectDPtrToDOrcaLocal(dOrcaMat.uniforms.uMouseWorld.value);
+      const speed = Math.hypot(dPtr.vx, dPtr.vy);
+      const targetStrength = Math.min(1, speed * 0.55);
+      const cur = dOrcaMat.uniforms.uMouseStrength.value;
+      const k = targetStrength > cur ? 0.35 : 0.04;
+      dOrcaMat.uniforms.uMouseStrength.value = cur + (targetStrength - cur) * k;
+      if (speed > 0.001){
+        dOrcaMat.uniforms.uMouseDir.value.set(dPtr.vx / speed, -dPtr.vy / speed);
+      }
+      dPtr.vx *= 0.85;
+      dPtr.vy *= 0.85;
+    }
+
+    // (Floating items moved to hero — parallax handled there now)
+
+    dRenderer.render(dScene, dCamera);
+  }
+  requestAnimationFrame(dTick);
+
+  /* Reveal floating items after a short delay (orca settles first) */
+  setTimeout(()=>{
+    document.querySelectorAll('.d-item').forEach(el => el.classList.add('is-on'));
+  }, 700);
+}
+initDialogoOrcaScene();
+</script>
+
+<!-- ============================================================== -->
+<!-- BLOCO 4 — JS · initDialogo (cinema scroll + cenas + snap) -->
+<!-- ============================================================== -->
+<script>
+<!-- =====================================================
+     DOBRA 05 — Diálogo (cinema-pinned, particle orca + scene snap)
+     ===================================================== -->
+<script>
+(function initDialogo(){
+  const section = document.querySelector('.dialogo');
+  const scenes = Array.from(document.querySelectorAll('.scene'));
+  const countEl = document.getElementById('dialogoCount');
+  const headline = document.getElementById('dialogoHeadline');
+  if (!section) return;
+
+  // Parse scene windows + pre-find Q/A children once
+  const sceneWindows = scenes.map(el => ({
+    el,
+    start: parseFloat(el.dataset.start) || 0,
+    end:   parseFloat(el.dataset.end)   || 1,
+    q: el.querySelector('.qa-q'),
+    a: el.querySelector('.qa-a'),
+    tag: el.querySelector('.scene-tag, .invite-tag'),
+    invite: el.classList.contains('invite') ? el.querySelector('.invite-shell') : null
+  }));
+
+  /* ---------- Scene visibility — direct JS opacity ----------
+     Bypasses any CSS calc/clamp ambiguity. Each scene fades
+     in/out within its window; Q first, then A inside that. */
+  function setSceneState(s, p){
+    const { el, start, end, q, a, tag, invite } = s;
+    const inWindow = p >= start && p <= end;
+    el.classList.toggle('is-on', inWindow);
+    if (!inWindow){
+      if (q){ q.style.opacity = 0; q.style.transform = 'translateY(20px)'; q.style.filter = 'blur(4px)'; }
+      if (a){ a.style.opacity = 0; a.style.transform = 'translateY(22px)'; a.style.filter = 'blur(6px)'; }
+      if (tag) tag.style.opacity = 0;
+      if (invite) invite.style.opacity = 0;
+      el.style.opacity = 0;
+      el.style.visibility = 'hidden';
+      return;
+    }
+    el.style.visibility = 'visible';
+    el.style.opacity = 1;
+
+    const local = (p - start) / (end - start);
+    el.style.setProperty('--p', local.toFixed(3));
+
+    if (tag){
+      const tIn = clamp01(local / 0.15);
+      const tOut = clamp01((1 - local) / 0.15);
+      tag.style.opacity = Math.min(tIn, tOut);
+    }
+
+    if (invite){
+      const iIn = clamp01(local / 0.25);
+      invite.style.opacity = iIn;
+      invite.style.transform = `translateY(${(1 - iIn) * 22}px)`;
+      return;
+    }
+
+    if (q){
+      const qIn  = clamp01(local / 0.18);
+      const qOut = clamp01((1 - local) / 0.12);
+      const qVis = Math.min(qIn, qOut);
+      q.style.opacity = qVis;
+      q.style.transform = `translateY(${(1 - qIn) * 18}px)`;
+      q.style.filter   = `blur(${(1 - qIn) * 4}px)`;
+    }
+    if (a){
+      const aIn  = clamp01((local - 0.25) / 0.18);
+      const aOut = clamp01((1 - local) / 0.10);
+      const aVis = Math.min(aIn, aOut);
+      a.style.opacity = aVis;
+      a.style.transform = `translateY(${(1 - aIn) * 22}px)`;
+      a.style.filter   = `blur(${(1 - aIn) * 6}px)`;
+    }
+  }
+  function clamp01(x){ return x < 0 ? 0 : (x > 1 ? 1 : x); }
+
+  /* ---- Active-scene tracking — pulses the orca on scene change ---- */
+  let activeSceneIdx = -1;
+  function updateActiveScene(p){
+    let idx = -1;
+    for (let i = 0; i < sceneWindows.length; i++){
+      if (p >= sceneWindows[i].start && p <= sceneWindows[i].end){
+        idx = i; break;
+      }
+    }
+    if (idx !== activeSceneIdx){
+      activeSceneIdx = idx;
+      if (idx >= 0 && typeof window.pulseDialogoOrca === 'function'){
+        window.pulseDialogoOrca();
+      }
+    }
+  }
+
+  const preroll = document.getElementById('dialogoPreroll');
+  function updateScroll(p){
+    p = Math.max(0, Math.min(1, p));
+    section.style.setProperty('--scroll', p.toFixed(4));
+
+    sceneWindows.forEach(s => setSceneState(s, p));
+    updateActiveScene(p);
+
+    // Preroll overlay — black fades out over 0 → 0.05 of progress
+    // (cinema engages → orca starts assembling → overlay clears)
+    if (preroll){
+      const op = 1 - clamp01(p / 0.05);
+      preroll.style.opacity = op.toFixed(3);
+    }
+
+    // Drive the orca's assembly via scroll position — particles converge
+    // smoothly during 0 → 0.18 of progress (matches the preroll + first scene
+    // window so the orca finishes assembling around scene 1's start).
+    if (typeof window.setDialogoOrcaReveal === 'function'){
+      const u = clamp01(p / 0.18);
+      window.setDialogoOrcaReveal(u * u * (3 - 2*u));   // smoothstep ease
+    }
+
+    // Counter: count answers fully revealed
+    let resolved = 0;
+    for (let i = 0; i < 4; i++){
+      const w = sceneWindows[i]; if (!w) continue;
+      const localP = (p - w.start) / (w.end - w.start);
+      if (localP >= 0.55) resolved = i + 1;
+    }
+    if (countEl) countEl.textContent = String(resolved).padStart(2,'0') + ' / 04';
+  }
+
+  updateScroll(0);
+
+  /* ---------- Custom rAF-driven progress (drives scene visibility) ---------- */
+  let lastP = -1;
+  function tick(){
+    const rect = section.getBoundingClientRect();
+    const total = section.offsetHeight - window.innerHeight;
+    let p;
+    if (total <= 0){
+      p = 0;
+    } else if (rect.top >= 0){
+      p = 0;
+    } else if (rect.bottom <= window.innerHeight){
+      p = 1;
+    } else {
+      p = Math.max(0, Math.min(1, -rect.top / total));
+    }
+    if (Math.abs(p - lastP) > 0.0005){
+      lastP = p;
+      updateScroll(p);
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  // Subtle entrance for the header chrome
+  if (window.gsap && window.ScrollTrigger){
+    gsap.from('.dialogo-meta, .dialogo-status', {
+      opacity:0, y:18, duration:.9, stagger:.08, ease:'power3.out',
+      scrollTrigger:{ trigger: section, start: 'top 85%' }
+    });
+  }
+
+  /* ============================================================
+     SCENE SNAPPING — STATE MACHINE
+     ────────────────────────────────────────────────────────────
+     States: IDLE → ANIMATING → (queue drain) → IDLE
+     Inputs : wheel · touch · keyboard
+     Anchors: 5 keyframes [scene1, 2, 3, 4, invite], no entry anchor
+
+     Flow:
+       IDLE + wheel(dir):
+         → if no anchor in `dir`: RELEASE (let Lenis exit cinema)
+         → else: snap to next anchor; state = ANIMATING
+       ANIMATING + wheel(dir):
+         → preventDefault (block stray scroll)
+         → if same dir as queuedDir: queuedSkip++
+         → else: queuedDir = dir; queuedSkip = 1
+       Animation completes (or 700ms safety timeout):
+         → state = IDLE
+         → if queuedDir set: snap to anchor `queuedSkip` steps away
+            (allows rapid wheels to chain skips, e.g. 3 wheels = jump 3)
+
+     Boundary release: at first anchor scroll-up exits, at last
+     anchor scroll-down exits. Lenis processes those wheels normally.
+
+     Why capture+stopImmediatePropagation: Lenis owns wheel events
+     globally; we MUST run before Lenis to override its scroll target.
+     ============================================================ */
+  const SCENE_ANCHORS = [0.175, 0.365, 0.555, 0.745, 0.92];
+
+  let isAnimating = false;
+
+  function isCinemaActive(){
+    const r = section.getBoundingClientRect();
+    return r.top <= 0 && r.bottom > window.innerHeight;
+  }
+
+  function getCurrentP(){
+    const total = section.offsetHeight - window.innerHeight;
+    const r = section.getBoundingClientRect();
+    return total <= 0 ? 0 : Math.max(0, Math.min(1, -r.top / total));
+  }
+
+  /* Find next anchor in given direction (1 = down, -1 = up).
+     Returns -1 if no anchor exists in that direction (boundary release). */
+  function findTargetIdx(p, dir){
+    if (dir > 0){
+      for (let i = 0; i < SCENE_ANCHORS.length; i++){
+        if (SCENE_ANCHORS[i] > p + 0.001) return i;
+      }
+    } else {
+      for (let i = SCENE_ANCHORS.length - 1; i >= 0; i--){
+        if (SCENE_ANCHORS[i] < p - 0.001) return i;
+      }
+    }
+    return -1;
+  }
+
+  /* Queue: while a snap animates, additional wheels accumulate as a
+     "skip count". When the lock clears, the next snap jumps that many
+     anchors at once — letting users rapidly traverse the cinema. */
+  let animTimeout = null;
+  let queuedDir   = 0;
+  let queuedSkip  = 0;
+
+  function findTargetWithSkip(p, dir, skip){
+    skip = Math.max(1, skip);
+    if (dir > 0){
+      let count = 0, last = -1;
+      for (let i = 0; i < SCENE_ANCHORS.length; i++){
+        if (SCENE_ANCHORS[i] > p + 0.001){
+          count++; last = i;
+          if (count >= skip) return i;
+        }
+      }
+      return last;
+    } else {
+      let count = 0, last = -1;
+      for (let i = SCENE_ANCHORS.length - 1; i >= 0; i--){
+        if (SCENE_ANCHORS[i] < p - 0.001){
+          count++; last = i;
+          if (count >= skip) return i;
+        }
+      }
+      return last;
+    }
+  }
+
+  function clearAnimLock(){
+    isAnimating = false;
+    if (animTimeout){ clearTimeout(animTimeout); animTimeout = null; }
+    /* Drain the queue immediately — chained snaps for rapid wheels */
+    if (queuedDir !== 0 && isCinemaActive()){
+      const dir = queuedDir, skip = queuedSkip;
+      queuedDir = 0; queuedSkip = 0;
+      const p = getCurrentP();
+      const target = findTargetWithSkip(p, dir, skip);
+      if (target !== -1) snapToSceneIdx(target);
+    } else {
+      queuedDir = 0; queuedSkip = 0;
+    }
+  }
+
+  function snapToSceneIdx(idx){
+    idx = Math.max(0, Math.min(SCENE_ANCHORS.length - 1, idx));
+    const total = section.offsetHeight - window.innerHeight;
+    const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+    const targetY = sectionTop + total * SCENE_ANCHORS[idx];
+    isAnimating = true;
+    if (typeof window.pulseDialogoOrca === 'function') window.pulseDialogoOrca();
+    if (animTimeout) clearTimeout(animTimeout);
+    /* Safety timeout — clears lock even if Lenis fails to call onComplete */
+    animTimeout = setTimeout(clearAnimLock, 700);
+    if (window.lenis){
+      window.lenis.scrollTo(targetY, {
+        duration: 0.45,
+        easing: t => 1 - Math.pow(1-t, 3),
+        onComplete(){ setTimeout(clearAnimLock, 30); }
+      });
+    } else {
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
+      setTimeout(clearAnimLock, 550);
+    }
+  }
+
+  /* Wrap any handler in a try/catch so a single failed snap can't
+     poison the listener (would otherwise cascade to scroll lock). */
+  function safeHandler(fn, label){
+    return function(e){
+      try { fn(e); }
+      catch(err){
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1'){
+          console.warn('[' + label + ']', err);
+        }
+        clearAnimLock();   // ensure scroll never gets stuck on error
+      }
+    };
+  }
+
+  /* ---- Wheel — capture phase + stopImmediatePropagation
+     to intercept BEFORE Lenis's wheel listener processes the event. */
+  function handleWheel(e){
+    if (!isCinemaActive()) return;
+    const dir = Math.sign(e.deltaY);
+    if (dir === 0) return;
+    const p = getCurrentP();
+    const target = findTargetIdx(p, dir);
+    if (target === -1) return;     // boundary release — let Lenis handle it
+    e.preventDefault();
+    e.stopImmediatePropagation();   // prevent Lenis from updating its target
+    if (isAnimating){
+      /* Accumulate intent: same-direction wheels add up as skip count */
+      if (queuedDir === dir){
+        queuedSkip++;
+      } else {
+        queuedDir  = dir;
+        queuedSkip = 1;
+      }
+      return;
+    }
+    snapToSceneIdx(target);
+  }
+  window.addEventListener('wheel', safeHandler(handleWheel, 'wheel'), { passive:false, capture:true });
+
+  /* ---- Touch ---- */
+  let touchActive = false, touchStartY = 0;
+  function onTouchStart(e){
+    if (!isCinemaActive()) return;
+    touchStartY = e.touches[0].clientY;
+    touchActive = true;
+  }
+  function onTouchMove(e){
+    if (!isCinemaActive() || !touchActive) return;
+    if (isAnimating){ e.preventDefault(); return; }
+    const dy = touchStartY - e.touches[0].clientY;
+    if (Math.abs(dy) > 30){
+      const dir = Math.sign(dy);
+      const p = getCurrentP();
+      const target = findTargetIdx(p, dir);
+      if (target === -1){ touchActive = false; return; }
+      e.preventDefault();
+      snapToSceneIdx(target);
+      touchActive = false;
+    }
+  }
+  function onTouchEnd(){ touchActive = false; }
+  window.addEventListener('touchstart', safeHandler(onTouchStart, 'touchstart'), { passive:true });
+  window.addEventListener('touchmove',  safeHandler(onTouchMove, 'touchmove'),  { passive:false });
+  window.addEventListener('touchend',   onTouchEnd,   { passive:true });
+
+  /* ---- Keyboard ---- */
+  window.addEventListener('keydown', safeHandler((e)=>{
+    if (!isCinemaActive()) return;
+    /* Skip when user is typing in a form field */
+    const tag = (e.target && e.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    let dir = 0;
+    if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') dir = 1;
+    else if (e.key === 'ArrowUp' || e.key === 'PageUp') dir = -1;
+    if (dir === 0) return;
+    const p = getCurrentP();
+    const target = findTargetIdx(p, dir);
+    if (target === -1) return;
+    e.preventDefault();
+    if (isAnimating) return;
+    snapToSceneIdx(target);
+  }, 'keydown'));
+})();
+</script>
+
+<!-- ============================================================== -->
+<!-- BLOCO 5 — JS · invite form submission -->
+<!-- ============================================================== -->
+<script>
+/* ---- Dobra 04 — INVITE form (scene 5) ----
+   Real submission: tries fetch to window.ORKA.inviteEndpoint if set,
+   otherwise simulates success. Shows inline confirmation in the input. */
+(function(){
+  const inviteForm = document.getElementById('inviteForm');
+  if (!inviteForm) return;
+  const input = inviteForm.querySelector('input');
+  const ENDPOINT = window.ORKA && window.ORKA.inviteEndpoint;
+
+  inviteForm.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const value = input.value.trim();
+    if (value.length < 3){
+      input.placeholder = 'A pergunta precisa ter pelo menos 3 caracteres.';
+      input.focus();
+      return;
+    }
+    /* Lock the input while we attempt to send */
+    input.disabled = true;
+    const original = input.placeholder;
+    input.value = '';
+    input.placeholder = 'Enviando…';
+
+    try {
+      if (ENDPOINT){
+        const res = await fetch(ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: value }),
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+      } else {
+        await new Promise(r => setTimeout(r, 600));
+      }
+      input.placeholder = '✓ Recebida — respondemos em até 1h';
+    } catch (err) {
+      input.placeholder = 'Erro ao enviar. Tenta de novo ou nos chama no WhatsApp.';
+      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1'){
+        console.warn('[invite submit]', err);
+      }
+    } finally {
+      input.disabled = false;
+    }
+  });
+})();
+</script>
+
+</head>
+<body><p style="font-family:sans-serif;padding:24px;color:#666">
+Este é um arquivo de armazenamento. Não é renderizado.
+</p></body>
+</html>
