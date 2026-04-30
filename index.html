@@ -5001,12 +5001,12 @@ function buildScroll(){
   const trigger = ScrollTrigger.create({
     trigger: '#hero',
     start:   'top top',
-    /* No pin — hero scrolls naturally. Animation phases (orca dispersion,
-       UI fade) play tied to scroll position from hero top to hero leaving
-       viewport. Eliminates the pin-spacer dead-zone — velocidade aparece
-       imediatamente após o hero, sem bloco vazio entre eles. */
-    end:     'bottom top',
-    pin:     false,
+    /* Pin 45% — hero pinned no viewport enquanto o fade transition
+       (orca dispersion + UI fade) executa. Após o pin, snap-scroll
+       leva o usuário direto para velocidade.top — elimina TODO o
+       trecho morto (hero faded scrolling out + pin-spacer empty). */
+    end:     '+=45%',
+    pin:     true,
     scrub:   0.7,
 
     onUpdate:(self)=>{
@@ -5065,6 +5065,23 @@ function buildScroll(){
       if (snapped) return;
       snapped = true;
       if (canvas){ canvas.style.filter=''; canvas.style.transform=''; }
+
+      /* SNAP — pin acabou, mover scroll direto para velocidade.top.
+         Elimina o trecho morto entre o final da animação e a primeira
+         dobra (era 100vh de hero faded + pin-spacer vazio). */
+      const velocidade = document.getElementById('velocidade');
+      if (velocidade){
+        const target = velocidade.offsetTop;
+        if (window.lenis){
+          window.lenis.scrollTo(target, {
+            duration: 0.5,
+            easing: t => 1 - Math.pow(1-t, 3),
+            lock: true,
+          });
+        } else {
+          window.scrollTo({ top: target, behavior: 'smooth' });
+        }
+      }
     },
 
     onEnterBack:()=>{
