@@ -5001,12 +5001,15 @@ function buildScroll(){
   const trigger = ScrollTrigger.create({
     trigger: '#hero',
     start:   'top top',
-    /* Pin 45% — hero pinned no viewport enquanto o fade transition
-       (orca dispersion + UI fade) executa. Após o pin, snap-scroll
-       leva o usuário direto para velocidade.top — elimina TODO o
-       trecho morto (hero faded scrolling out + pin-spacer empty). */
-    end:     '+=45%',
+    /* Pin distance = hero height (100%) + pinSpacing:false.
+       Esta é a configuração matematicamente exata pra eliminar o
+       dead-zone: o pin consome 100vh de scroll (durante o qual a
+       animação de fade do orca toca), e como pinSpacing:false não
+       adiciona spacer, ao final do pin velocidade.top está
+       EXATAMENTE no viewport top. Zero espaço morto. */
+    end:     '+=100%',
     pin:     true,
+    pinSpacing: false,
     scrub:   0.7,
 
     onUpdate:(self)=>{
@@ -5065,23 +5068,9 @@ function buildScroll(){
       if (snapped) return;
       snapped = true;
       if (canvas){ canvas.style.filter=''; canvas.style.transform=''; }
-
-      /* SNAP — pin acabou, mover scroll direto para velocidade.top.
-         Elimina o trecho morto entre o final da animação e a primeira
-         dobra (era 100vh de hero faded + pin-spacer vazio). */
-      const velocidade = document.getElementById('velocidade');
-      if (velocidade){
-        const target = velocidade.offsetTop;
-        if (window.lenis){
-          window.lenis.scrollTo(target, {
-            duration: 0.5,
-            easing: t => 1 - Math.pow(1-t, 3),
-            lock: true,
-          });
-        } else {
-          window.scrollTo({ top: target, behavior: 'smooth' });
-        }
-      }
+      /* Snap-scroll não é mais necessário — a configuração
+         pin '+=100%' + pinSpacing:false já faz com que velocidade.top
+         coincida com o pin end. */
     },
 
     onEnterBack:()=>{
