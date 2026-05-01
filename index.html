@@ -206,10 +206,11 @@
 
     /* Números tabulares — stats, percentuais, currency, dates.
      Ativa em todos os contextos onde o alinhamento numérico importa. */
-    .lacuna-bar-num em,
-    .lacuna-gap-num em,
+    .lacuna-track-filled-num,
+    .lacuna-track-open-num,
+    .lacuna-window-insight-num,
+    .dif-insight-stat-num,
     .obj-pct,
-    .dif-cell em,
     .prova-case-kpi-num,
     .prova-anchor-num,
     .kpi em,
@@ -231,10 +232,11 @@
     em,
     i,
     .obj-pct,
-    .lacuna-bar-num em,
-    .lacuna-gap-num em,
     .obj-question,
-    .dif-strap-line {
+    .lacuna-window-insight-num,
+    .dif-cap-verb,
+    .dif-insight-stat-num,
+    .dif-coda-line {
       font-variation-settings: "opsz" 48, "SOFT" 30, "WONK" 0;
     }
 
@@ -5223,15 +5225,17 @@
     }
 
     /* =====================================================
-     DIFERENCIAÇÃO  (Chatbot vs. Agente IA)
-     Cream theme. Sits between Lacuna and Agentes.
+     DIFERENCIAÇÃO  (Anatomia do agente)
+     Cream theme. Redesign 2026-04-30: removidos comparativos
+     com chatbot — foco 100% nas qualidades do agente.
+     6 capacidades em bento grid + insight estrutural + coda.
      ===================================================== */
     .diferenciacao {
       position: relative;
       z-index: 11;
       background: #FFF6F3;
       color: #0A0807;
-      padding: clamp(72px, 9vw, 112px) clamp(28px, 4.4vw, 72px);
+      padding: clamp(80px, 10vw, 128px) clamp(28px, 4.4vw, 72px);
       overflow: hidden;
     }
 
@@ -5242,13 +5246,13 @@
       z-index: 0;
       pointer-events: none;
       background:
-        radial-gradient(ellipse 60% 50% at 0% 50%, rgba(242, 54, 12, .04), transparent 60%),
-        radial-gradient(ellipse 60% 50% at 100% 50%, rgba(243, 107, 55, .04), transparent 60%);
+        radial-gradient(ellipse 60% 50% at 0% 0%, rgba(242, 54, 12, .045), transparent 60%),
+        radial-gradient(ellipse 60% 50% at 100% 100%, rgba(243, 107, 55, .04), transparent 65%);
     }
 
     .diferenciacao>* {
       position: relative;
-      z-index: 1
+      z-index: 1;
     }
 
     .dif-meta {
@@ -5272,137 +5276,409 @@
       max-width: 240px;
     }
 
+    /* Head */
     .dif-head {
       display: grid;
-      grid-template-columns: 1.5fr 1fr;
+      grid-template-columns: 1.4fr 1fr;
       gap: clamp(40px, 5.5vw, 88px);
       align-items: end;
-      margin: 0 auto clamp(48px, 6vw, 72px);
+      margin: 0 auto clamp(72px, 9vw, 112px);
       max-width: 1280px;
-      padding-bottom: clamp(36px, 4.5vw, 56px);
+      padding-bottom: clamp(40px, 5vw, 64px);
       border-bottom: 1px solid rgba(10, 8, 7, .08);
+    }
+
+    .dif-pretitle {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      font-weight: 500;
+      color: var(--orange);
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .dif-pretitle::before {
+      content: '';
+      width: 28px;
+      height: 1px;
+      background: var(--orange);
     }
 
     .dif-headline {
       font-family: var(--font-sans);
       font-weight: 700;
-      font-size: clamp(38px, 5vw, 76px);
+      font-size: clamp(40px, 5.4vw, 80px);
       line-height: .98;
-      letter-spacing: -.035em;
+      letter-spacing: -.038em;
       color: #0A0807;
     }
-
     .dif-headline em {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 200;
+      color: var(--orange);
+    }
+
+    .dif-sub {
+      font-size: clamp(16px, 1.3vw, 19px);
+      line-height: 1.6;
+      color: rgba(10, 8, 7, .78);
+      padding-left: clamp(16px, 1.4vw, 22px);
+      border-left: 2px solid var(--orange);
+    }
+    .dif-sub strong {
+      color: #0A0807;
+      font-weight: 600;
+    }
+    .dif-sub em {
       font-family: var(--font-serif);
       font-style: italic;
       font-weight: 400;
       color: var(--orange);
     }
 
-    .dif-sub {
-      font-size: var(--t-lead);
-      line-height: 1.55;
-      color: var(--ink-soft);
-    }
-
-    .dif-table {
+    /* Anatomy */
+    .dif-anatomy {
       max-width: 1280px;
       margin: 0 auto;
-      border: 1px solid rgba(10, 8, 7, .08);
-      border-radius: 16px;
-      overflow: hidden;
-      background: #fff;
     }
-
-    .dif-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+    .dif-anatomy-head {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: clamp(36px, 4.4vw, 56px);
     }
-
-    .dif-row+.dif-row {
-      border-top: 1px solid rgba(10, 8, 7, .08)
-    }
-
-    .dif-row.dif-header {
-      background: rgba(10, 8, 7, .03)
-    }
-
-    .dif-cell {
-      padding: clamp(18px, 1.8vw, 24px) clamp(20px, 2vw, 28px);
-      font-size: var(--t-body-sm);
-      line-height: 1.6;
-    }
-
-    .dif-cell.dif-cell-l {
-      border-right: 1px solid rgba(10, 8, 7, .08);
-      color: var(--ink-mute);
-    }
-
-    .dif-cell.dif-cell-r {
-      color: var(--ink);
-      font-weight: 500;
-    }
-
-    .dif-cell.dif-cell-r strong {
-      color: var(--orange);
-      font-weight: 700
-    }
-
-    .dif-row.dif-header .dif-cell {
+    .dif-anatomy-eyebrow {
       font-family: var(--font-mono);
-      font-size: var(--t-meta);
-      letter-spacing: var(--track-meta);
+      font-size: 11px;
+      letter-spacing: .22em;
       text-transform: uppercase;
-      color: var(--ink-mute);
-      font-weight: 500;
+      color: rgba(10, 8, 7, .55);
     }
-
-    .dif-row.dif-header .dif-cell.dif-cell-r {
-      color: var(--orange)
+    .dif-anatomy-title {
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: clamp(24px, 2.4vw, 36px);
+      line-height: 1.15;
+      letter-spacing: -.025em;
+      color: #0A0807;
+      max-width: 720px;
+      margin: 0;
     }
-
-    .dif-strap {
-      margin: clamp(40px, 5vw, 64px) auto 0;
-      max-width: 1280px;
-      padding: clamp(20px, 2.4vw, 32px);
-      background: rgba(242, 54, 12, .04);
-      border-left: 3px solid var(--orange);
-      border-radius: 0 12px 12px 0;
-    }
-
-    .dif-strap-line {
+    .dif-anatomy-title em {
       font-family: var(--font-serif);
       font-style: italic;
-      font-size: clamp(18px, 1.5vw, 24px);
-      line-height: 1.4;
-      color: #0A0807;
-      margin-bottom: 8px;
+      font-weight: 300;
+      color: var(--orange);
     }
 
-    .dif-strap-source {
+    /* Bento grid: 3 small (cycle) → 1 hero (orquestra) → 2 medium (lembra/negocia) */
+    .dif-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: clamp(16px, 2vw, 24px);
+    }
+    .dif-cap--p1 { grid-column: span 2; }
+    .dif-cap--p2 { grid-column: span 2; }
+    .dif-cap--p3 { grid-column: span 2; }
+    .dif-cap--p4 { grid-column: 1 / -1; }
+    .dif-cap--p5 { grid-column: span 3; }
+    .dif-cap--p6 { grid-column: span 3; }
+
+    .dif-cap {
+      background: #fff;
+      border: 1px solid rgba(10, 8, 7, .08);
+      border-radius: 16px;
+      padding: clamp(24px, 2.6vw, 32px);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+      transition: transform .35s var(--ease-quick),
+                  border-color .35s var(--ease-quick),
+                  box-shadow .35s var(--ease-quick);
+    }
+    .dif-cap:hover {
+      transform: translateY(-2px);
+      border-color: rgba(242, 54, 12, .32);
+      box-shadow: 0 16px 40px -20px rgba(242, 54, 12, .25);
+    }
+    .dif-cap-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(10, 8, 7, .35);
+      font-weight: 600;
+    }
+    .dif-cap-verb {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(36px, 4.2vw, 60px);
+      line-height: .95;
+      color: var(--orange);
+      letter-spacing: -.02em;
+      margin: 0;
+    }
+    .dif-cap-desc {
+      font-size: clamp(14px, 1.05vw, 16px);
+      line-height: 1.55;
+      color: rgba(10, 8, 7, .72);
+      margin: 0;
+      flex: 1;
+    }
+    .dif-cap-line {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: .14em;
+      color: rgba(10, 8, 7, .5);
+      text-transform: uppercase;
+      padding-top: 14px;
+      border-top: 1px solid rgba(10, 8, 7, .08);
+      margin-top: 4px;
+    }
+
+    /* HERO card — ORQUESTRA (full-width, dark inverted) */
+    .dif-cap--hero {
+      background: linear-gradient(135deg, #0A0807 0%, #1a1413 100%);
+      border-color: transparent;
+      color: var(--cream);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      grid-template-rows: auto auto;
+      grid-template-areas:
+        "num verb line"
+        "num desc line";
+      column-gap: clamp(24px, 3vw, 48px);
+      row-gap: 12px;
+      align-items: center;
+      padding: clamp(32px, 3.4vw, 48px) clamp(36px, 3.6vw, 56px);
+    }
+    .dif-cap--hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse 50% 80% at 100% 50%, rgba(242, 54, 12, .18), transparent 60%);
+    }
+    .dif-cap--hero > * { position: relative; z-index: 1; }
+    .dif-cap--hero:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 24px 60px -24px rgba(242, 54, 12, .35);
+    }
+    .dif-cap--hero .dif-cap-num {
+      grid-area: num;
+      color: var(--orange);
+      align-self: flex-start;
+      padding-top: 8px;
+    }
+    .dif-cap--hero .dif-cap-verb {
+      grid-area: verb;
+      font-size: clamp(48px, 5.8vw, 84px);
+      color: var(--cream);
+      font-weight: 200;
+    }
+    .dif-cap--hero .dif-cap-desc {
+      grid-area: desc;
+      color: rgba(255, 246, 243, .78);
+      font-size: clamp(15px, 1.1vw, 17px);
+      line-height: 1.55;
+      max-width: 640px;
+    }
+    .dif-cap--hero .dif-cap-desc strong {
+      color: var(--cream);
+      font-weight: 600;
+    }
+    .dif-cap--hero .dif-cap-line {
+      grid-area: line;
+      color: var(--orange);
+      border-top: none;
+      padding-top: 0;
+      margin: 0;
+      align-self: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    /* Insight — A MUDANÇA ESTRUTURAL (dark callout) */
+    .dif-insight {
+      margin: clamp(72px, 9vw, 112px) auto 0;
+      max-width: 1280px;
+      background: #0A0807;
+      color: var(--cream);
+      border-radius: 20px;
+      padding: clamp(40px, 5vw, 72px);
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: clamp(40px, 5vw, 72px);
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .dif-insight::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 50% 70% at 100% 0%, rgba(242, 54, 12, .20), transparent 60%),
+        radial-gradient(ellipse 40% 50% at 0% 100%, rgba(243, 107, 55, .10), transparent 60%);
+    }
+    .dif-insight > * { position: relative; z-index: 1; }
+
+    .dif-insight-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(255, 246, 243, .55);
+      margin-bottom: 18px;
+      display: block;
+    }
+    .dif-insight-headline {
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: clamp(26px, 2.6vw, 38px);
+      line-height: 1.2;
+      letter-spacing: -.025em;
+      color: var(--cream);
+      margin: 0;
+    }
+    .dif-insight-headline em {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 300;
+      color: var(--orange);
+    }
+
+    .dif-insight-numbers {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .dif-insight-stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      gap: 18px;
+    }
+    .dif-insight-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+      text-align: center;
+    }
+    .dif-insight-stat-num {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(56px, 6.4vw, 104px);
+      line-height: 1;
+      color: var(--orange);
+      letter-spacing: -.04em;
+    }
+    .dif-insight-stat-label {
       font-family: var(--font-mono);
       font-size: 10px;
       letter-spacing: .22em;
       text-transform: uppercase;
-      color: rgba(10, 8, 7, .5);
+      color: rgba(255, 246, 243, .55);
+    }
+    .dif-insight-equals {
+      font-family: var(--font-serif);
+      font-weight: 300;
+      font-size: clamp(40px, 4.4vw, 68px);
+      color: rgba(255, 246, 243, .35);
+      line-height: 1;
+    }
+    .dif-insight-bottom {
+      font-size: 14px;
+      line-height: 1.6;
+      color: rgba(255, 246, 243, .72);
+      text-align: center;
+      margin: 0;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 246, 243, .12);
+    }
+    .dif-insight-bottom strong {
+      color: var(--cream);
+      font-weight: 600;
+    }
+    .dif-insight-bottom em {
+      font-family: var(--font-serif);
+      font-style: italic;
+      color: var(--orange);
+      font-weight: 400;
     }
 
-    @media (max-width:760px) {
+    /* Coda — princípio editorial de fechamento */
+    .dif-coda {
+      margin: clamp(48px, 6vw, 80px) auto 0;
+      max-width: 880px;
+      text-align: center;
+    }
+    .dif-coda-line {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(20px, 2vw, 28px);
+      line-height: 1.4;
+      color: rgba(10, 8, 7, .72);
+      margin: 0;
+    }
+    .dif-coda-line em {
+      color: var(--orange);
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    /* Responsive */
+    @media (max-width:960px) {
+      .dif-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .dif-cap--p1, .dif-cap--p2, .dif-cap--p3 { grid-column: span 1; }
+      .dif-cap--p4 { grid-column: 1 / -1; }
+      .dif-cap--p5, .dif-cap--p6 { grid-column: span 1; }
+      .dif-cap--hero {
+        grid-template-columns: auto 1fr;
+        grid-template-areas:
+          "num verb"
+          "num desc"
+          "line line";
+        gap: 14px 24px;
+      }
+      .dif-cap--hero .dif-cap-line {
+        text-align: left;
+        padding-top: 18px;
+        border-top: 1px solid rgba(255, 246, 243, .12);
+      }
+      .dif-insight {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width:860px) {
       .dif-head {
         grid-template-columns: 1fr;
-        gap: 24px;
+        gap: 36px;
         align-items: flex-start;
-        padding-bottom: 32px
       }
-
-      .dif-row {
-        grid-template-columns: 1fr
-      }
-
-      .dif-cell.dif-cell-l {
-        border-right: 0;
-        border-bottom: 1px solid rgba(10, 8, 7, .08)
-      }
+    }
+    @media (max-width:600px) {
+      .dif-grid { grid-template-columns: 1fr; }
+      .dif-cap--p1, .dif-cap--p2, .dif-cap--p3,
+      .dif-cap--p5, .dif-cap--p6 { grid-column: 1 / -1; }
+      .dif-insight-stat-row { flex-direction: column; gap: 14px; }
+      .dif-insight-equals { transform: rotate(90deg); }
     }
 
     /* =====================================================
@@ -5877,57 +6153,109 @@
        the most common technical objection upstream of Agentes.
        ===================================================== -->
   <section class="diferenciacao" id="diferenciacao">
-    <div class="dif-meta"><span>04 / DIFERENCIAÇÃO</span></div>
+    <div class="dif-meta"><span>03 / DIFERENCIAÇÃO</span></div>
 
     <div class="dif-head">
-      <h2 class="dif-headline">
-        ORKA não é um chatbot.<br>
-        É um <em>agente.</em>
-      </h2>
+      <div>
+        <span class="dif-pretitle">O que é um agente de IA</span>
+        <h2 class="dif-headline">
+          Toda venda é uma cadeia de decisões.<br>
+          <em>Ele toma todas — menos a sua.</em>
+        </h2>
+      </div>
       <p class="dif-sub">
-        Chatbots seguem scripts. Agentes detectam intenção, planejam ações em múltiplos passos e executam — negociam,
-        qualificam, agendam, retomam contexto. A diferença é categórica.
+        <strong>Ele percebe a intenção do lead na primeira mensagem.</strong> Decide se qualifica, propõe, agenda ou escala. Executa em CRM, WhatsApp, agenda e e-mail — em paralelo. Lembra do contexto semanas depois. Quando precisa de você, te entrega o lead pronto, com tudo já mapeado. <em>Você só fecha.</em>
       </p>
     </div>
 
-    <div class="dif-table" role="table" aria-label="Comparativo entre chatbot tradicional e agente de IA">
-      <div class="dif-row dif-header" role="row">
-        <div class="dif-cell dif-cell-l" role="columnheader">Chatbot tradicional</div>
-        <div class="dif-cell dif-cell-r" role="columnheader">Agente de IA · ORKA</div>
+    <!-- Anatomy of an agent: 6 capacidades em bento grid -->
+    <div class="dif-anatomy">
+      <div class="dif-anatomy-head">
+        <span class="dif-anatomy-eyebrow">Anatomia de um agente</span>
+        <h3 class="dif-anatomy-title">
+          Seis capacidades. <em>Uma operação autônoma.</em>
+        </h3>
       </div>
-      <div class="dif-row" role="row">
-        <div class="dif-cell dif-cell-l" role="cell">Reativo · só responde o que é perguntado</div>
-        <div class="dif-cell dif-cell-r" role="cell"><strong>Proativo</strong> · qualifica, propõe, agenda, retoma</div>
+
+      <div class="dif-grid">
+        <article class="dif-cap dif-cap--p1">
+          <span class="dif-cap-num">01</span>
+          <h4 class="dif-cap-verb">Percebe</h4>
+          <p class="dif-cap-desc">Detecta intenção, sentimento, urgência e contexto na primeira mensagem. Não pergunta o que já sabe sobre o lead.</p>
+          <span class="dif-cap-line">Lê o lead antes de responder.</span>
+        </article>
+
+        <article class="dif-cap dif-cap--p2">
+          <span class="dif-cap-num">02</span>
+          <h4 class="dif-cap-verb">Decide</h4>
+          <p class="dif-cap-desc">Avalia o estado do funil e escolhe a próxima ação a cada turno. Sem script, sem árvore de decisão pré-cozida.</p>
+          <span class="dif-cap-line">Cada turno, um cálculo novo.</span>
+        </article>
+
+        <article class="dif-cap dif-cap--p3">
+          <span class="dif-cap-num">03</span>
+          <h4 class="dif-cap-verb">Age</h4>
+          <p class="dif-cap-desc">Executa a ação imediatamente — não delega, não aguarda confirmação humana, não engessa a operação.</p>
+          <span class="dif-cap-line">Decisão e execução, no mesmo turno.</span>
+        </article>
+
+        <article class="dif-cap dif-cap--p4 dif-cap--hero">
+          <span class="dif-cap-num">04</span>
+          <h4 class="dif-cap-verb">Orquestra</h4>
+          <p class="dif-cap-desc">
+            Coordena CRM, WhatsApp, Google Agenda, e-mail e as suas regras de negócio como uma só camada operacional. <strong>Sua stack inteira responde como uma única inteligência.</strong>
+          </p>
+          <span class="dif-cap-line">4+ sistemas · 1 conversa · 0 humano</span>
+        </article>
+
+        <article class="dif-cap dif-cap--p5">
+          <span class="dif-cap-num">05</span>
+          <h4 class="dif-cap-verb">Lembra</h4>
+          <p class="dif-cap-desc">Mantém o contexto completo de cada lead — preferências, histórico, objeções, agenda. Retoma a conversa exatamente onde parou, semanas depois.</p>
+          <span class="dif-cap-line">Memória contínua do funil inteiro.</span>
+        </article>
+
+        <article class="dif-cap dif-cap--p6">
+          <span class="dif-cap-num">06</span>
+          <h4 class="dif-cap-verb">Negocia</h4>
+          <p class="dif-cap-desc">Faz contraproposta, ajusta condições, contorna objeções dentro das suas regras de negócio. Conduz o lead até o agendamento.</p>
+          <span class="dif-cap-line">Do primeiro 'oi' até o handoff.</span>
+        </article>
       </div>
-      <div class="dif-row" role="row">
-        <div class="dif-cell dif-cell-l" role="cell">Scripts + árvores de decisão (se X, então Y)</div>
-        <div class="dif-cell dif-cell-r" role="cell"><strong>Planejamento multi-step</strong> orquestrado por LLM</div>
+    </div>
+
+    <!-- Insight callout: a mudança estrutural -->
+    <div class="dif-insight">
+      <div class="dif-insight-headline-wrap">
+        <span class="dif-insight-eyebrow">A mudança estrutural</span>
+        <h3 class="dif-insight-headline">
+          Sua operação deixa de ser limitada por <em>headcount.</em><br>
+          Passa a ser limitada por <em>demanda.</em>
+        </h3>
       </div>
-      <div class="dif-row" role="row">
-        <div class="dif-cell dif-cell-l" role="cell">Colapsa em ambiguidade</div>
-        <div class="dif-cell dif-cell-r" role="cell">Detecta <strong>intenção, sentimento e contexto</strong></div>
-      </div>
-      <div class="dif-row" role="row">
-        <div class="dif-cell dif-cell-l" role="cell">Recupera resposta de repositório fechado</div>
-        <div class="dif-cell dif-cell-r" role="cell"><strong>Orquestra ações</strong> em CRM, WhatsApp, agenda, e-mail
+      <div class="dif-insight-numbers">
+        <div class="dif-insight-stat-row">
+          <div class="dif-insight-stat">
+            <span class="dif-insight-stat-num">500</span>
+            <span class="dif-insight-stat-label">leads/mês</span>
+          </div>
+          <span class="dif-insight-equals" aria-hidden="true">≡</span>
+          <div class="dif-insight-stat">
+            <span class="dif-insight-stat-num">50.000</span>
+            <span class="dif-insight-stat-label">leads/mês</span>
+          </div>
         </div>
-      </div>
-      <div class="dif-row" role="row">
-        <div class="dif-cell dif-cell-l" role="cell">FAQ + status</div>
-        <div class="dif-cell dif-cell-r" role="cell"><strong>Negocia, qualifica, agenda, retém</strong></div>
-      </div>
-      <div class="dif-row" role="row">
-        <div class="dif-cell dif-cell-l" role="cell">Esquece a conversa anterior</div>
-        <div class="dif-cell dif-cell-r" role="cell">Mantém <strong>memória contínua</strong> do funil do lead</div>
+        <p class="dif-insight-bottom">
+          <strong>A mesma operação completa.</strong> Qualifica, agenda, retoma, orquestra — sem perder profundidade. O custo marginal de mais um lead atendido com excelência: <em>zero.</em>
+        </p>
       </div>
     </div>
 
-    <div class="dif-strap">
-      <p class="dif-strap-line">
-        "O consumidor brasileiro <strong style="color:var(--orange);font-weight:600">não rejeita IA</strong>. Rejeita IA
-        ruim."
+    <!-- Coda — princípio de fechamento -->
+    <div class="dif-coda">
+      <p class="dif-coda-line">
+        Não é mais um software no seu CRM. É a primeira camada operacional <em>autônoma</em> da sua empresa.
       </p>
-      <span class="dif-strap-source">87% consideram automação vital · ServiceNow América Latina · 2024</span>
     </div>
   </section>
 
@@ -8257,17 +8585,25 @@
       }
 
       if (document.querySelector('.diferenciacao')) {
-        gsap.from('.dif-headline, .dif-sub', {
+        gsap.from('.dif-pretitle, .dif-headline, .dif-sub', {
           opacity: 0, y: 24, duration: .8, stagger: .1, ease: 'power3.out',
           scrollTrigger: { trigger: '.diferenciacao', start: 'top 78%' }
         });
-        gsap.from('.dif-row', {
-          opacity: 0, y: 14, duration: .55, stagger: .06, ease: 'power2.out',
-          scrollTrigger: { trigger: '.dif-table', start: 'top 86%' }
+        gsap.from('.dif-anatomy-head', {
+          opacity: 0, y: 20, duration: .7, ease: 'power3.out',
+          scrollTrigger: { trigger: '.dif-anatomy', start: 'top 82%' }
         });
-        gsap.from('.dif-strap', {
+        gsap.from('.dif-cap', {
+          opacity: 0, y: 22, duration: .65, stagger: .08, ease: 'power3.out',
+          scrollTrigger: { trigger: '.dif-grid', start: 'top 85%' }
+        });
+        gsap.from('.dif-insight', {
+          opacity: 0, y: 26, duration: .85, ease: 'power3.out',
+          scrollTrigger: { trigger: '.dif-insight', start: 'top 85%' }
+        });
+        gsap.from('.dif-coda', {
           opacity: 0, y: 18, duration: .7, ease: 'power2.out',
-          scrollTrigger: { trigger: '.dif-strap', start: 'top 90%' }
+          scrollTrigger: { trigger: '.dif-coda', start: 'top 92%' }
         });
       }
 
