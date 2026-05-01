@@ -234,7 +234,7 @@
     .obj-pct,
     .obj-question,
     .lacuna-window-insight-num,
-    .dif-cap-verb,
+    .dif-cap-name,
     .dif-insight-stat-num,
     .dif-coda-line {
       font-variation-settings: "opsz" 48, "SOFT" 30, "WONK" 0;
@@ -5375,37 +5375,37 @@
       color: var(--orange);
     }
 
-    /* Bento grid: 3 small (cycle) → 1 hero (orquestra) → 2 medium (lembra/negocia) */
-    .dif-grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: clamp(16px, 2vw, 24px);
+    /* Cap list: 4 capacidades em fluxo editorial vertical
+       (3 rows light + 1 hero dark inverted no meio) */
+    .dif-cap-list {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(16px, 1.8vw, 24px);
     }
-    .dif-cap--p1 { grid-column: span 2; }
-    .dif-cap--p2 { grid-column: span 2; }
-    .dif-cap--p3 { grid-column: span 2; }
-    .dif-cap--p4 { grid-column: 1 / -1; }
-    .dif-cap--p5 { grid-column: span 3; }
-    .dif-cap--p6 { grid-column: span 3; }
 
-    .dif-cap {
+    .dif-cap--row {
       background: #fff;
       border: 1px solid rgba(10, 8, 7, .08);
       border-radius: 16px;
-      padding: clamp(24px, 2.6vw, 32px);
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      position: relative;
-      overflow: hidden;
+      padding: clamp(28px, 3vw, 40px) clamp(28px, 3vw, 44px);
+      display: grid;
+      grid-template-columns: clamp(180px, 22vw, 280px) 1fr;
+      gap: clamp(28px, 4vw, 64px);
+      align-items: start;
       transition: transform .35s var(--ease-quick),
                   border-color .35s var(--ease-quick),
                   box-shadow .35s var(--ease-quick);
     }
-    .dif-cap:hover {
+    .dif-cap--row:hover {
       transform: translateY(-2px);
       border-color: rgba(242, 54, 12, .32);
-      box-shadow: 0 16px 40px -20px rgba(242, 54, 12, .25);
+      box-shadow: 0 16px 40px -20px rgba(242, 54, 12, .22);
+    }
+
+    .dif-cap-label {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
     .dif-cap-num {
       font-family: var(--font-mono);
@@ -5415,56 +5415,46 @@
       color: rgba(10, 8, 7, .35);
       font-weight: 600;
     }
-    .dif-cap-verb {
+    .dif-cap-name {
       font-family: var(--font-serif);
       font-style: italic;
       font-weight: 300;
-      font-size: clamp(36px, 4.2vw, 60px);
-      line-height: .95;
+      font-size: clamp(34px, 3.8vw, 56px);
+      line-height: .96;
       color: var(--orange);
       letter-spacing: -.02em;
       margin: 0;
     }
     .dif-cap-desc {
-      font-size: clamp(14px, 1.05vw, 16px);
-      line-height: 1.55;
-      color: rgba(10, 8, 7, .72);
+      font-size: clamp(15px, 1.1vw, 18px);
+      line-height: 1.6;
+      color: rgba(10, 8, 7, .75);
       margin: 0;
-      flex: 1;
-    }
-    .dif-cap-line {
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      letter-spacing: .14em;
-      color: rgba(10, 8, 7, .5);
-      text-transform: uppercase;
-      padding-top: 14px;
-      border-top: 1px solid rgba(10, 8, 7, .08);
-      margin-top: 4px;
+      align-self: center;
+      max-width: 640px;
     }
 
-    /* HERO card — ORQUESTRA (full-width, dark inverted) */
+    /* HERO row — ORQUESTRAÇÃO (dark inverted, com tag à direita) */
     .dif-cap--hero {
       background: linear-gradient(135deg, #0A0807 0%, #1a1413 100%);
-      border-color: transparent;
-      color: var(--cream);
+      border: 1px solid transparent;
+      border-radius: 18px;
+      padding: clamp(36px, 4vw, 52px) clamp(32px, 3.6vw, 52px);
       display: grid;
-      grid-template-columns: auto 1fr auto;
-      grid-template-rows: auto auto;
-      grid-template-areas:
-        "num verb line"
-        "num desc line";
-      column-gap: clamp(24px, 3vw, 48px);
-      row-gap: 12px;
+      grid-template-columns: clamp(180px, 22vw, 280px) 1fr auto;
+      gap: clamp(28px, 4vw, 56px);
       align-items: center;
-      padding: clamp(32px, 3.4vw, 48px) clamp(36px, 3.6vw, 56px);
+      color: var(--cream);
+      position: relative;
+      overflow: hidden;
+      transition: transform .35s var(--ease-quick), box-shadow .35s var(--ease-quick);
     }
     .dif-cap--hero::before {
       content: '';
       position: absolute;
       inset: 0;
       pointer-events: none;
-      background: radial-gradient(ellipse 50% 80% at 100% 50%, rgba(242, 54, 12, .18), transparent 60%);
+      background: radial-gradient(ellipse 60% 80% at 100% 50%, rgba(242, 54, 12, .18), transparent 60%);
     }
     .dif-cap--hero > * { position: relative; z-index: 1; }
     .dif-cap--hero:hover {
@@ -5472,40 +5462,32 @@
       box-shadow: 0 24px 60px -24px rgba(242, 54, 12, .35);
     }
     .dif-cap--hero .dif-cap-num {
-      grid-area: num;
       color: var(--orange);
-      align-self: flex-start;
-      padding-top: 8px;
     }
-    .dif-cap--hero .dif-cap-verb {
-      grid-area: verb;
-      font-size: clamp(48px, 5.8vw, 84px);
+    .dif-cap--hero .dif-cap-name {
       color: var(--cream);
       font-weight: 200;
+      font-size: clamp(38px, 4.4vw, 64px);
     }
     .dif-cap--hero .dif-cap-desc {
-      grid-area: desc;
       color: rgba(255, 246, 243, .78);
       font-size: clamp(15px, 1.1vw, 17px);
-      line-height: 1.55;
-      max-width: 640px;
     }
     .dif-cap--hero .dif-cap-desc strong {
       color: var(--cream);
       font-weight: 600;
     }
-    .dif-cap--hero .dif-cap-line {
-      grid-area: line;
-      color: var(--orange);
-      border-top: none;
-      padding-top: 0;
-      margin: 0;
-      align-self: center;
+    .dif-cap-tag {
       font-family: var(--font-mono);
       font-size: 11px;
       letter-spacing: .18em;
-      text-align: right;
+      text-transform: uppercase;
+      color: var(--orange);
       white-space: nowrap;
+      padding-left: clamp(20px, 2.4vw, 32px);
+      border-left: 1px solid rgba(255, 246, 243, .15);
+      align-self: center;
+      font-weight: 500;
     }
 
     /* Insight — A MUDANÇA ESTRUTURAL (dark callout) */
@@ -5643,24 +5625,19 @@
 
     /* Responsive */
     @media (max-width:960px) {
-      .dif-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .dif-cap--p1, .dif-cap--p2, .dif-cap--p3 { grid-column: span 1; }
-      .dif-cap--p4 { grid-column: 1 / -1; }
-      .dif-cap--p5, .dif-cap--p6 { grid-column: span 1; }
       .dif-cap--hero {
-        grid-template-columns: auto 1fr;
-        grid-template-areas:
-          "num verb"
-          "num desc"
-          "line line";
-        gap: 14px 24px;
+        grid-template-columns: clamp(180px, 22vw, 280px) 1fr;
+        grid-template-rows: auto auto;
       }
-      .dif-cap--hero .dif-cap-line {
-        text-align: left;
+      .dif-cap--hero .dif-cap-label { grid-row: 1; grid-column: 1; }
+      .dif-cap--hero .dif-cap-desc { grid-row: 1; grid-column: 2; align-self: center; }
+      .dif-cap-tag {
+        grid-row: 2; grid-column: 1 / -1;
+        padding-left: 0;
         padding-top: 18px;
-        border-top: 1px solid rgba(255, 246, 243, .12);
+        border-left: 0;
+        border-top: 1px solid rgba(255, 246, 243, .15);
+        align-self: stretch;
       }
       .dif-insight {
         grid-template-columns: 1fr;
@@ -5672,11 +5649,18 @@
         gap: 36px;
         align-items: flex-start;
       }
+      .dif-cap--row,
+      .dif-cap--hero {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+      .dif-cap--hero .dif-cap-label,
+      .dif-cap--hero .dif-cap-desc {
+        grid-row: auto; grid-column: auto;
+      }
+      .dif-cap-desc { align-self: stretch; }
     }
     @media (max-width:600px) {
-      .dif-grid { grid-template-columns: 1fr; }
-      .dif-cap--p1, .dif-cap--p2, .dif-cap--p3,
-      .dif-cap--p5, .dif-cap--p6 { grid-column: 1 / -1; }
       .dif-insight-stat-row { flex-direction: column; gap: 14px; }
       .dif-insight-equals { transform: rotate(90deg); }
     }
@@ -6164,62 +6148,53 @@
         </h2>
       </div>
       <p class="dif-sub">
-        <strong>Ele percebe a intenção do lead na primeira mensagem.</strong> Decide se qualifica, propõe, agenda ou escala. Executa em CRM, WhatsApp, agenda e e-mail — em paralelo. Lembra do contexto semanas depois. Quando precisa de você, te entrega o lead pronto, com tudo já mapeado. <em>Você só fecha.</em>
+        Qualificação, follow-up, agendamento, registro no CRM, retomada de contexto — não distribuídos pela equipe, mas <strong>integrados numa única camada autônoma</strong>. Mesma profundidade para o primeiro lead da semana ou para o cinco-milésimo. <em>24/7, em paralelo, sem fadiga.</em>
       </p>
     </div>
 
-    <!-- Anatomy of an agent: 6 capacidades em bento grid -->
+    <!-- Anatomy: 4 capacidades em fluxo editorial vertical -->
     <div class="dif-anatomy">
       <div class="dif-anatomy-head">
-        <span class="dif-anatomy-eyebrow">Anatomia de um agente</span>
+        <span class="dif-anatomy-eyebrow">Anatomia</span>
         <h3 class="dif-anatomy-title">
-          Seis capacidades. <em>Uma operação autônoma.</em>
+          Quatro capacidades. <em>Uma só inteligência.</em>
         </h3>
       </div>
 
-      <div class="dif-grid">
-        <article class="dif-cap dif-cap--p1">
-          <span class="dif-cap-num">01</span>
-          <h4 class="dif-cap-verb">Percebe</h4>
-          <p class="dif-cap-desc">Detecta intenção, sentimento, urgência e contexto na primeira mensagem. Não pergunta o que já sabe sobre o lead.</p>
-          <span class="dif-cap-line">Lê o lead antes de responder.</span>
+      <div class="dif-cap-list">
+        <article class="dif-cap dif-cap--row">
+          <div class="dif-cap-label">
+            <span class="dif-cap-num">01</span>
+            <h4 class="dif-cap-name">Percepção</h4>
+          </div>
+          <p class="dif-cap-desc">Numa única mensagem, mapeia intenção, sentimento, urgência e contexto. Sem fazer perguntas que já consegue inferir do que o lead disse.</p>
         </article>
 
-        <article class="dif-cap dif-cap--p2">
-          <span class="dif-cap-num">02</span>
-          <h4 class="dif-cap-verb">Decide</h4>
-          <p class="dif-cap-desc">Avalia o estado do funil e escolhe a próxima ação a cada turno. Sem script, sem árvore de decisão pré-cozida.</p>
-          <span class="dif-cap-line">Cada turno, um cálculo novo.</span>
+        <article class="dif-cap dif-cap--row">
+          <div class="dif-cap-label">
+            <span class="dif-cap-num">02</span>
+            <h4 class="dif-cap-name">Autonomia</h4>
+          </div>
+          <p class="dif-cap-desc">A cada turno, escolhe a próxima ação e executa imediatamente. Sem script, sem árvore de decisão pré-cozida, sem confirmação humana entre decisão e ato.</p>
         </article>
 
-        <article class="dif-cap dif-cap--p3">
-          <span class="dif-cap-num">03</span>
-          <h4 class="dif-cap-verb">Age</h4>
-          <p class="dif-cap-desc">Executa a ação imediatamente — não delega, não aguarda confirmação humana, não engessa a operação.</p>
-          <span class="dif-cap-line">Decisão e execução, no mesmo turno.</span>
-        </article>
-
-        <article class="dif-cap dif-cap--p4 dif-cap--hero">
-          <span class="dif-cap-num">04</span>
-          <h4 class="dif-cap-verb">Orquestra</h4>
+        <article class="dif-cap dif-cap--hero">
+          <div class="dif-cap-label">
+            <span class="dif-cap-num">03</span>
+            <h4 class="dif-cap-name">Orquestração</h4>
+          </div>
           <p class="dif-cap-desc">
-            Coordena CRM, WhatsApp, Google Agenda, e-mail e as suas regras de negócio como uma só camada operacional. <strong>Sua stack inteira responde como uma única inteligência.</strong>
+            CRM, WhatsApp, Google Agenda, e-mail e as suas regras de negócio passam a responder como <strong>uma única inteligência</strong>. Cada conversa atravessa toda a stack, em tempo real, no mesmo turno.
           </p>
-          <span class="dif-cap-line">4+ sistemas · 1 conversa · 0 humano</span>
+          <span class="dif-cap-tag">4+ sistemas · 1 conversa · 0 humano</span>
         </article>
 
-        <article class="dif-cap dif-cap--p5">
-          <span class="dif-cap-num">05</span>
-          <h4 class="dif-cap-verb">Lembra</h4>
-          <p class="dif-cap-desc">Mantém o contexto completo de cada lead — preferências, histórico, objeções, agenda. Retoma a conversa exatamente onde parou, semanas depois.</p>
-          <span class="dif-cap-line">Memória contínua do funil inteiro.</span>
-        </article>
-
-        <article class="dif-cap dif-cap--p6">
-          <span class="dif-cap-num">06</span>
-          <h4 class="dif-cap-verb">Negocia</h4>
-          <p class="dif-cap-desc">Faz contraproposta, ajusta condições, contorna objeções dentro das suas regras de negócio. Conduz o lead até o agendamento.</p>
-          <span class="dif-cap-line">Do primeiro 'oi' até o handoff.</span>
+        <article class="dif-cap dif-cap--row">
+          <div class="dif-cap-label">
+            <span class="dif-cap-num">04</span>
+            <h4 class="dif-cap-name">Memória</h4>
+          </div>
+          <p class="dif-cap-desc">Contexto completo de cada lead preservado por semanas — preferências, objeções, histórico, agenda. Retoma a conversa exatamente onde parou.</p>
         </article>
       </div>
     </div>
@@ -8594,8 +8569,8 @@
           scrollTrigger: { trigger: '.dif-anatomy', start: 'top 82%' }
         });
         gsap.from('.dif-cap', {
-          opacity: 0, y: 22, duration: .65, stagger: .08, ease: 'power3.out',
-          scrollTrigger: { trigger: '.dif-grid', start: 'top 85%' }
+          opacity: 0, y: 22, duration: .7, stagger: .1, ease: 'power3.out',
+          scrollTrigger: { trigger: '.dif-cap-list', start: 'top 85%' }
         });
         gsap.from('.dif-insight', {
           opacity: 0, y: 26, duration: .85, ease: 'power3.out',
