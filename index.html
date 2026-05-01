@@ -5276,8 +5276,12 @@
       max-width: 240px;
     }
 
-    /* Head — single column, mais respiração horizontal pro headline */
+    /* Head — 2-col: headline esquerda, sub direita end-aligned */
     .dif-head {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: clamp(36px, 5vw, 80px);
+      align-items: end;
       max-width: 1280px;
       margin: 0 auto clamp(56px, 7vw, 88px);
       padding-bottom: clamp(36px, 4.5vw, 56px);
@@ -5294,7 +5298,7 @@
       display: inline-flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
     }
     .dif-pretitle::before {
       content: '';
@@ -5306,12 +5310,11 @@
     .dif-headline {
       font-family: var(--font-sans);
       font-weight: 700;
-      font-size: clamp(36px, 4.6vw, 68px);
+      font-size: clamp(38px, 4.8vw, 72px);
       line-height: 1;
       letter-spacing: -.038em;
       color: #0A0807;
-      max-width: 14ch;
-      margin: 0 0 28px;
+      margin: 0;
     }
     .dif-headline em {
       font-family: var(--font-serif);
@@ -5327,7 +5330,6 @@
       color: rgba(10, 8, 7, .78);
       padding-left: clamp(14px, 1.2vw, 20px);
       border-left: 2px solid var(--orange);
-      max-width: 680px;
       margin: 0;
     }
     .dif-sub strong {
@@ -5645,6 +5647,11 @@
       }
     }
     @media (max-width:860px) {
+      .dif-head {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        align-items: flex-start;
+      }
       .dif-cap--row,
       .dif-cap--hero {
         grid-template-columns: 1fr;
@@ -6135,13 +6142,15 @@
     <div class="dif-meta"><span>03 / DIFERENCIAÇÃO</span></div>
 
     <div class="dif-head">
-      <span class="dif-pretitle">O que é um agente de IA</span>
-      <h2 class="dif-headline">
-        Toda decisão da venda.<br>
-        <em>Menos a sua.</em>
-      </h2>
+      <div class="dif-head-left">
+        <span class="dif-pretitle">O que é um agente de IA</span>
+        <h2 class="dif-headline">
+          Não é automação.<br>
+          <em>É autonomia.</em>
+        </h2>
+      </div>
       <p class="dif-sub">
-        Qualificação, follow-up, agendamento, CRM — operados como <strong>uma única camada autônoma</strong>. Mesma profundidade para 1 ou 5.000 leads. <em>24/7, em paralelo, sem fadiga.</em>
+        Automação segue um fluxo pré-definido. <strong>Autonomia escolhe o fluxo a cada turno.</strong> Por isso o agente conduz a operação inteira — qualifica, agenda, retoma, sincroniza CRM e WhatsApp — <em>sem trilhos engessados, sem supervisão.</em>
       </p>
     </div>
 
