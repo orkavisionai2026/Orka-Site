@@ -3426,15 +3426,18 @@
     }
 
     /* =====================================================
-     DOBRA 06 — PROVA SOCIAL (cream · editorial · sober)
+     DOBRA 07 — PROVA SOCIAL / RESULTADOS  (dark · editorial · sober)
+     Convertido 2026-04-30: cream → dark (intercalação com Implantação
+     dark acima → Prova dark → Agenda cream abaixo).
      ===================================================== */
     .prova {
       position: relative;
       z-index: 5;
-      background: #FFF6F3;
-      color: #0A0807;
+      background: #060606;
+      color: var(--cream);
       padding: 88px clamp(28px, 4.4vw, 72px) 96px;
       overflow: hidden;
+      box-shadow: inset 0 1px 0 rgba(255, 246, 243, .06);
     }
 
     .prova-inner {
@@ -3452,42 +3455,44 @@
       gap: 48px;
       margin-bottom: 64px;
       padding-bottom: 28px;
-      border-bottom: 1px solid rgba(10, 8, 7, .12);
+      border-bottom: 1px solid rgba(255, 246, 243, .14);
     }
 
     .prova-meta {
       font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: .22em;
+      font-size: 13px;
+      letter-spacing: .26em;
       text-transform: uppercase;
-      color: rgba(10, 8, 7, .55);
+      color: var(--orange);
+      font-weight: 500;
       display: flex;
       align-items: center;
       gap: 14px;
-      margin-bottom: 18px;
+      margin-bottom: 22px;
     }
 
     .prova-meta::before {
       content: '';
-      width: 28px;
+      width: 32px;
       height: 1px;
-      background: rgba(10, 8, 7, .4)
+      background: var(--orange);
     }
 
     .prova-headline {
       font-family: var(--font-sans);
       font-weight: 700;
       font-size: clamp(34px, 4vw, 68px);
-      line-height: .96;
-      letter-spacing: -.035em;
-      color: #0A0807;
+      line-height: .98;
+      letter-spacing: -.038em;
+      color: var(--cream);
     }
 
     .prova-headline em {
       font-family: var(--font-serif);
       font-style: italic;
-      font-weight: 400;
+      font-weight: 200;
       color: var(--orange);
+      white-space: nowrap;
     }
 
     .prova-sidetag {
@@ -3495,7 +3500,7 @@
       font-size: 10px;
       letter-spacing: .22em;
       text-transform: uppercase;
-      color: rgba(10, 8, 7, .45);
+      color: rgba(255, 246, 243, .5);
       max-width: 200px;
       text-align: right;
       line-height: 1.7;
@@ -3513,7 +3518,7 @@
       align-items: baseline;
       gap: clamp(28px, 4vw, 64px);
       padding: 36px 0;
-      border-bottom: 1px solid rgba(10, 8, 7, .08);
+      border-bottom: 1px solid rgba(255, 246, 243, .10);
     }
 
     .prova-case:last-child {
@@ -3525,7 +3530,7 @@
       font-size: 11px;
       letter-spacing: .22em;
       text-transform: uppercase;
-      color: rgba(10, 8, 7, .42);
+      color: rgba(255, 246, 243, .45);
       align-self: flex-start;
       padding-top: .6em;
       min-width: 3.5ch;
@@ -3545,15 +3550,14 @@
       font-size: clamp(20px, 1.7vw, 28px);
       line-height: 1.32;
       letter-spacing: -.012em;
-      color: #0A0807;
+      color: var(--cream);
     }
 
     .prova-case-quote mark {
       background: none;
       color: var(--orange);
       font-style: italic;
-      /* very subtle baseline mark instead of yellow highlight */
-      border-bottom: 1px solid rgba(242, 54, 12, .35);
+      border-bottom: 1px solid rgba(242, 54, 12, .55);
       padding-bottom: 1px;
     }
 
@@ -3562,12 +3566,12 @@
       font-size: 11px;
       letter-spacing: .18em;
       text-transform: uppercase;
-      color: rgba(10, 8, 7, .55);
+      color: rgba(255, 246, 243, .55);
       line-height: 1.6;
     }
 
     .prova-case-author strong {
-      color: #0A0807;
+      color: var(--cream);
       font-weight: 600
     }
 
@@ -3585,7 +3589,7 @@
       font-size: clamp(36px, 3.6vw, 52px);
       line-height: 1;
       letter-spacing: -.025em;
-      color: #0A0807;
+      color: var(--orange);
       display: block;
       margin-bottom: 6px;
     }
@@ -3595,7 +3599,7 @@
       font-size: 9.5px;
       letter-spacing: .18em;
       text-transform: uppercase;
-      color: rgba(10, 8, 7, .5);
+      color: rgba(255, 246, 243, .55);
       line-height: 1.5;
       display: block;
     }
@@ -3608,12 +3612,12 @@
       gap: 24px;
       flex-wrap: wrap;
       padding-top: 24px;
-      border-top: 1px solid rgba(10, 8, 7, .08);
+      border-top: 1px solid rgba(255, 246, 243, .10);
     }
 
     .prova-footnote-line {
       font-size: 12px;
-      color: rgba(10, 8, 7, .5);
+      color: rgba(255, 246, 243, .55);
       font-style: italic;
       flex: 1;
       min-width: 240px;
@@ -3624,13 +3628,13 @@
       font-size: 10px;
       letter-spacing: .22em;
       text-transform: uppercase;
-      color: #0A0807;
+      color: var(--cream);
       white-space: nowrap;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      border-bottom: 1px solid rgba(10, 8, 7, .2);
+      border-bottom: 1px solid rgba(255, 246, 243, .25);
       padding-bottom: 4px;
       transition: color .25s ease, border-color .25s ease;
     }
@@ -3649,7 +3653,7 @@
     .prova-anchor {
       margin-top: 56px;
       padding-top: 36px;
-      border-top: 1px solid rgba(10, 8, 7, .08);
+      border-top: 1px solid rgba(255, 246, 243, .10);
     }
 
     .prova-anchor-eyebrow {
@@ -3657,7 +3661,7 @@
       font-size: 11px;
       letter-spacing: .22em;
       text-transform: uppercase;
-      color: rgba(10, 8, 7, .55);
+      color: rgba(255, 246, 243, .55);
       display: flex;
       align-items: center;
       gap: 14px;
@@ -3668,7 +3672,7 @@
       content: '';
       width: 28px;
       height: 1px;
-      background: rgba(10, 8, 7, .4);
+      background: rgba(255, 246, 243, .4);
     }
 
     .prova-anchor-grid {
@@ -3682,7 +3686,7 @@
       flex-direction: column;
       gap: 8px;
       padding-right: clamp(8px, 1.4vw, 18px);
-      border-right: 1px solid rgba(10, 8, 7, .08);
+      border-right: 1px solid rgba(255, 246, 243, .10);
     }
 
     .prova-anchor-item:last-child {
@@ -3696,7 +3700,7 @@
       font-size: clamp(28px, 2.8vw, 42px);
       line-height: 1;
       letter-spacing: -.025em;
-      color: #0A0807;
+      color: var(--cream);
     }
 
     .prova-anchor-brand {
@@ -3711,7 +3715,7 @@
     .prova-anchor-desc {
       font-size: 12.5px;
       line-height: 1.45;
-      color: rgba(10, 8, 7, .6);
+      color: rgba(255, 246, 243, .65);
     }
 
     .prova-anchor-caption {
@@ -3719,7 +3723,7 @@
       font-style: italic;
       font-size: clamp(15px, 1.1vw, 18px);
       line-height: 1.5;
-      color: rgba(10, 8, 7, .72);
+      color: rgba(255, 246, 243, .72);
       max-width: 760px;
       margin-top: 24px;
     }
@@ -5988,7 +5992,6 @@
 
       <!-- Scroll cue -->
       <div class="scroll-cue" aria-hidden="true">
-        <span>Role para mergulhar</span>
         <span class="line"></span>
       </div>
 
@@ -6906,10 +6909,10 @@
       <!-- Header -->
       <div class="prova-header">
         <div>
-          <p class="prova-meta">08 / Resultados</p>
+          <p class="prova-meta">07 / Resultados</p>
           <h2 class="prova-headline">
-            Imobiliárias que já<br>
-            estão em <em>órbita.</em>
+            Já está rodando.<br>
+            <em>Os números reais.</em>
           </h2>
         </div>
         <p class="prova-sidetag">
