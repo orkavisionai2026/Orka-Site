@@ -2646,64 +2646,6 @@
     }
 
     /* Bottom strap (KPI ribbon) */
-    /* Strap inferior — 4 KPIs com hierarquia clara:
-       num gigante serif (orange) → título sans → label mono. */
-    .agentes-strap {
-      margin-top: clamp(40px, 5vw, 64px);
-      padding-top: clamp(28px, 3.4vw, 40px);
-      border-top: 1px solid rgba(6, 6, 6, .1);
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0;
-    }
-
-    .agentes-strap .kpi {
-      padding: 4px clamp(20px, 2.4vw, 36px);
-      border-left: 1px solid rgba(6, 6, 6, .08);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .agentes-strap .kpi:first-child {
-      border-left: 0;
-      padding-left: 0;
-    }
-
-    .agentes-strap .kpi-num {
-      font-family: var(--font-serif);
-      font-style: italic;
-      font-weight: 300;
-      font-size: clamp(40px, 4.6vw, 64px);
-      line-height: .95;
-      color: var(--orange);
-      letter-spacing: -.025em;
-      display: inline-flex;
-      align-items: baseline;
-      gap: 2px;
-    }
-    .agentes-strap .kpi-num em {
-      font-style: italic;
-      color: inherit;
-      font-weight: 300;
-    }
-
-    .agentes-strap .kpi-title {
-      font-family: var(--font-sans);
-      font-weight: 600;
-      font-size: clamp(13.5px, 1.05vw, 16px);
-      line-height: 1.25;
-      color: #060606;
-      letter-spacing: -.01em;
-    }
-
-    .agentes-strap .kpi-label {
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      color: rgba(6, 6, 6, .55);
-      line-height: 1.4;
-    }
 
     /* Responsive */
     @media (max-width:1100px) {
@@ -2744,10 +2686,6 @@
 
       .agentes-sidetag {
         display: none
-      }
-
-      .agentes-strap {
-        grid-template-columns: repeat(2, 1fr)
       }
     }
 
@@ -6288,8 +6226,8 @@
           <span class="desc-tag"><span class="desc-tag-num">03</span> Agente de Reativação</span>
           <p>Lead frio não é lead morto. Recicla a base inteira e reabre conversas com <strong>a oferta certa, na hora certa</strong>.</p>
           <div class="desc-meta">
-            <span class="desc-meta-num">+60%</span>
-            <span class="desc-meta-label">reengajam · custo −60% vs. aquisição nova</span>
+            <span class="desc-meta-num">1/5</span>
+            <span class="desc-meta-label">do custo de adquirir um lead novo</span>
           </div>
         </div>
       </div>
@@ -6605,30 +6543,6 @@
         </li>
       </ul>
 
-    </div>
-
-    <!-- Strap inferior — KPIs / prova social -->
-    <div class="agentes-strap" aria-hidden="false">
-      <div class="kpi">
-        <span class="kpi-num"><em>8</em>s</span>
-        <span class="kpi-title">Resposta média ORKA</span>
-        <span class="kpi-label">24/7 · sem plantão · sem fila</span>
-      </div>
-      <div class="kpi">
-        <span class="kpi-num"><em>21</em>×</span>
-        <span class="kpi-title">Mais qualificação</span>
-        <span class="kpi-label">5min vs 30min · MIT + InsideSales</span>
-      </div>
-      <div class="kpi">
-        <span class="kpi-num"><em>42</em>h</span>
-        <span class="kpi-title">Resposta média do mercado</span>
-        <span class="kpi-label">HubSpot · 2.200+ empresas · benchmark</span>
-      </div>
-      <div class="kpi">
-        <span class="kpi-num"><em>0</em></span>
-        <span class="kpi-title">Leads esquecidos no funil</span>
-        <span class="kpi-label">Cada conversa retomada · sempre</span>
-      </div>
     </div>
 
   </section>
@@ -7795,8 +7709,8 @@
         .from('#agentes .agentes-device-wrap',
           { opacity: 0, x: 54, duration: .92, ease: 'power3.out' },
           '-=0.55')
-        .from(['#agentes .agentes-titles-col', '#agentes .agentes-desc', '#agentes .agentes-strap'],
-          { opacity: 0, y: 22, duration: .72, stagger: .065 },
+        .from(['#agentes .agentes-titles-col', '#agentes .agentes-desc'],
+          { opacity: 0, y: 22, duration: .72, stagger: .08 },
           '-=0.70');
     }
 
