@@ -1695,101 +1695,45 @@
 
     /* Heading row */
     .agentes-heading {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 48px;
-      margin-bottom: 36px;
-      padding-bottom: 22px;
+      margin-bottom: clamp(36px, 4.4vw, 56px);
+      padding-bottom: clamp(28px, 3.4vw, 40px);
       border-bottom: 1px solid rgba(6, 6, 6, .08);
     }
 
-    .agentes-title-wrap {
-      position: relative;
+    .agentes-pretitle {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      letter-spacing: .26em;
+      text-transform: uppercase;
+      font-weight: 500;
+      color: var(--orange);
       display: inline-flex;
-      align-items: flex-end;
-      gap: clamp(20px, 2.4vw, 42px);
-      min-width: 0;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .agentes-pretitle::before {
+      content: '';
+      width: 32px;
+      height: 1px;
+      background: var(--orange);
     }
 
-    .agentes-heading h2 {
-      flex: 0 0 auto;
+    .agentes-title {
       font-family: var(--font-sans);
-      font-weight: 800;
-      font-size: clamp(48px, 7.6vw, 128px);
-      line-height: .88;
-      letter-spacing: -.045em;
+      font-weight: 700;
+      font-size: clamp(38px, 4.8vw, 72px);
+      line-height: 1;
+      letter-spacing: -.038em;
       color: #060606;
       margin: 0;
     }
-
-    .agentes-title-echo {
-      position: relative;
-      z-index: 1;
+    .agentes-title em {
       font-family: var(--font-serif);
       font-style: italic;
-      font-weight: 400;
-      font-size: clamp(44px, 7vw, 118px);
-      line-height: .88;
-      letter-spacing: -.025em;
+      font-weight: 200;
       color: var(--orange);
-      pointer-events: none;
       white-space: nowrap;
-      margin-left: -.04em;
-    }
-
-    /* Motion ticker (right of heading) */
-    .agentes-motion {
-      position: relative;
-      width: clamp(200px, 24vw, 360px);
-      height: clamp(44px, 4vw, 64px);
-      overflow: hidden;
-      flex: 0 0 auto;
-      border-top: 1px solid rgba(6, 6, 6, .14);
-      border-bottom: 1px solid rgba(6, 6, 6, .14);
-    }
-
-    .agentes-motion-track {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      width: 200%;
-      animation: agentes-track 3.6s linear infinite;
-      will-change: transform;
-    }
-
-    .agentes-motion-track::before,
-    .agentes-motion-track::after {
-      content: "";
-      flex: 0 0 50%;
-      height: 100%;
-      background: repeating-linear-gradient(90deg,
-          rgba(6, 6, 6, 0) 0,
-          rgba(6, 6, 6, 0) 28px,
-          rgba(6, 6, 6, .18) 28px,
-          rgba(6, 6, 6, .18) 30px);
-    }
-
-    .agentes-motion::after {
-      content: 'STACK / FORWARD';
-      position: absolute;
-      right: 10px;
-      bottom: 8px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: .22em;
-      color: rgba(6, 6, 6, .5);
-      text-transform: uppercase;
-    }
-
-    @keyframes agentes-track {
-      from {
-        transform: translate3d(0, 0, 0)
-      }
-
-      to {
-        transform: translate3d(-50%, 0, 0)
-      }
     }
 
     /* 4-col grid — desc | device | titles | label */
@@ -1804,21 +1748,26 @@
       --active-h: 5rem;
     }
 
-    /* Left description column */
+    /* Left description column — agora com tag (num + nome do agente),
+       paragrafo legível, e meta com número grande separado da label */
     .agentes-desc {
       position: relative;
-      padding-top: 24px;
-      min-height: 160px;
+      padding-top: 12px;
+      min-height: 220px;
     }
 
     .agentes-desc .desc {
       position: absolute;
-      inset: 24px 0 0 0;
+      inset: 12px 0 0 0;
       opacity: 0;
       transform: translateY(10px);
       transition: opacity .55s cubic-bezier(.65, .05, .36, 1),
         transform .55s cubic-bezier(.65, .05, .36, 1);
       pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 18px;
     }
 
     .agentes-desc .desc.active {
@@ -1826,32 +1775,63 @@
       transform: translateY(0)
     }
 
-    .agentes-desc p {
-      font-family: var(--font-sans);
-      font-size: clamp(15px, 1.15vw, 18px);
-      line-height: 1.5;
-      letter-spacing: -.005em;
-      color: #1a1a1a;
-      font-weight: 400;
-      max-width: 340px;
-      margin-left: auto;
-      text-align: right;
-    }
-
-    .agentes-desc .desc-meta {
-      display: block;
-      margin-top: 18px;
+    .agentes-desc .desc-tag {
       font-family: var(--font-mono);
       font-size: 11px;
       letter-spacing: .22em;
       text-transform: uppercase;
-      color: rgba(6, 6, 6, .42);
-      text-align: right;
+      color: rgba(6, 6, 6, .55);
+      font-weight: 500;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .agentes-desc .desc-tag-num {
+      color: var(--orange);
+      font-weight: 600;
     }
 
-    .agentes-desc .desc-meta strong {
+    .agentes-desc .desc p {
+      font-family: var(--font-sans);
+      font-size: clamp(16px, 1.25vw, 19px);
+      line-height: 1.55;
+      letter-spacing: -.005em;
+      color: #060606;
+      font-weight: 400;
+      max-width: 360px;
+      margin: 0;
+      text-align: right;
+    }
+    .agentes-desc .desc p strong {
       color: var(--orange);
-      font-weight: 500
+      font-weight: 600;
+    }
+
+    .agentes-desc .desc-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(6, 6, 6, .12);
+      max-width: 360px;
+      width: 100%;
+    }
+    .agentes-desc .desc-meta-num {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(28px, 2.8vw, 40px);
+      line-height: 1;
+      color: var(--orange);
+      letter-spacing: -.02em;
+    }
+    .agentes-desc .desc-meta-label {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(6, 6, 6, .55);
     }
 
     /* Center: device */
@@ -2666,40 +2646,63 @@
     }
 
     /* Bottom strap (KPI ribbon) */
+    /* Strap inferior — 4 KPIs com hierarquia clara:
+       num gigante serif (orange) → título sans → label mono. */
     .agentes-strap {
-      margin-top: 36px;
-      padding-top: 20px;
-      border-top: 1px solid rgba(6, 6, 6, .08);
+      margin-top: clamp(40px, 5vw, 64px);
+      padding-top: clamp(28px, 3.4vw, 40px);
+      border-top: 1px solid rgba(6, 6, 6, .1);
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
+      gap: 0;
     }
 
     .agentes-strap .kpi {
+      padding: 4px clamp(20px, 2.4vw, 36px);
+      border-left: 1px solid rgba(6, 6, 6, .08);
       display: flex;
       flex-direction: column;
-      gap: 4px
+      gap: 10px;
+    }
+    .agentes-strap .kpi:first-child {
+      border-left: 0;
+      padding-left: 0;
     }
 
     .agentes-strap .kpi-num {
-      font-family: var(--font-sans);
-      font-weight: 700;
-      font-size: clamp(22px, 2.4vw, 34px);
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(40px, 4.6vw, 64px);
+      line-height: .95;
+      color: var(--orange);
       letter-spacing: -.025em;
-      color: #060606;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 2px;
+    }
+    .agentes-strap .kpi-num em {
+      font-style: italic;
+      color: inherit;
+      font-weight: 300;
     }
 
-    .agentes-strap .kpi-num em {
-      font-style: normal;
-      color: var(--orange)
+    .agentes-strap .kpi-title {
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: clamp(13.5px, 1.05vw, 16px);
+      line-height: 1.25;
+      color: #060606;
+      letter-spacing: -.01em;
     }
 
     .agentes-strap .kpi-label {
       font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: .22em;
+      font-size: 10.5px;
+      letter-spacing: .2em;
       text-transform: uppercase;
-      color: rgba(6, 6, 6, .5);
+      color: rgba(6, 6, 6, .55);
+      line-height: 1.4;
     }
 
     /* Responsive */
@@ -6253,13 +6256,11 @@
 
     <!-- Heading -->
     <div class="agentes-heading">
-      <div class="agentes-title-wrap">
-        <h2>Agentes</h2>
-        <span class="agentes-title-echo" aria-hidden="true">IA</span>
-      </div>
-      <div class="agentes-motion" aria-hidden="true">
-        <span class="agentes-motion-track"></span>
-      </div>
+      <span class="agentes-pretitle">Ecossistema Zenith</span>
+      <h2 class="agentes-title">
+        Três agentes de IA.<br>
+        <em>Uma operação inteira.</em>
+      </h2>
     </div>
 
     <!-- Grid -->
@@ -6268,20 +6269,28 @@
       <!-- Coluna 1 — Descrições -->
       <div class="agentes-desc">
         <div class="desc active" data-agent="atendimento">
-          <p>Cada conversa atendida em segundos. O agente qualifica o lead, captura dados e marca a visita <strong>antes
-              do concorrente acordar</strong>.</p>
-          <span class="desc-meta"><strong>Resposta média</strong> · 8s · 24/7</span>
+          <span class="desc-tag"><span class="desc-tag-num">01</span> Agente de Atendimento</span>
+          <p>Cada conversa atendida em segundos. Qualifica o lead, captura os dados e marca a visita <strong>antes do concorrente acordar</strong>.</p>
+          <div class="desc-meta">
+            <span class="desc-meta-num">8s</span>
+            <span class="desc-meta-label">resposta média · 24/7</span>
+          </div>
         </div>
         <div class="desc" data-agent="followup">
-          <p>Nenhum lead esquecido. O agente lembra do contexto, retoma a conversa e empurra a venda <strong>com
-              pertinência</strong> — não com pressão.</p>
-          <span class="desc-meta"><strong>Recuperação</strong> · 41% dos leads frios</span>
+          <span class="desc-tag"><span class="desc-tag-num">02</span> Agente de Follow-up</span>
+          <p>Nenhum lead esquecido. Lembra do contexto, retoma a conversa e conduz a venda <strong>com pertinência</strong> — sem pressão, sem ruído.</p>
+          <div class="desc-meta">
+            <span class="desc-meta-num">41%</span>
+            <span class="desc-meta-label">dos leads frios recuperados</span>
+          </div>
         </div>
         <div class="desc" data-agent="reativacao">
-          <p>Lead frio não é lead morto. O agente recicla a base inteira e reabre conversas com <strong>a oferta certa,
-              na hora certa</strong>.</p>
-          <span class="desc-meta"><strong>+60%</strong> dos leads frios reengajam · custo <strong>−60%</strong> vs.
-            aquisição nova</span>
+          <span class="desc-tag"><span class="desc-tag-num">03</span> Agente de Reativação</span>
+          <p>Lead frio não é lead morto. Recicla a base inteira e reabre conversas com <strong>a oferta certa, na hora certa</strong>.</p>
+          <div class="desc-meta">
+            <span class="desc-meta-num">+60%</span>
+            <span class="desc-meta-label">reengajam · custo −60% vs. aquisição nova</span>
+          </div>
         </div>
       </div>
 
@@ -6601,20 +6610,24 @@
     <!-- Strap inferior — KPIs / prova social -->
     <div class="agentes-strap" aria-hidden="false">
       <div class="kpi">
-        <span class="kpi-num"><em>21×</em> mais qualificação</span>
-        <span class="kpi-label">respondendo em 5min vs. 30min · MIT + InsideSales</span>
-      </div>
-      <div class="kpi">
-        <span class="kpi-num"><em>42h</em> resposta média do mercado</span>
-        <span class="kpi-label">benchmark global · HubSpot, 2.200+ empresas</span>
-      </div>
-      <div class="kpi">
-        <span class="kpi-num"><em>8s</em> resposta ORKA</span>
+        <span class="kpi-num"><em>8</em>s</span>
+        <span class="kpi-title">Resposta média ORKA</span>
         <span class="kpi-label">24/7 · sem plantão · sem fila</span>
       </div>
       <div class="kpi">
-        <span class="kpi-num"><em>+38</em> imobiliárias</span>
-        <span class="kpi-label">já rodando o Zenith em produção</span>
+        <span class="kpi-num"><em>21</em>×</span>
+        <span class="kpi-title">Mais qualificação</span>
+        <span class="kpi-label">5min vs 30min · MIT + InsideSales</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-num"><em>42</em>h</span>
+        <span class="kpi-title">Resposta média do mercado</span>
+        <span class="kpi-label">HubSpot · 2.200+ empresas · benchmark</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-num"><em>0</em></span>
+        <span class="kpi-title">Leads esquecidos no funil</span>
+        <span class="kpi-label">Cada conversa retomada · sempre</span>
       </div>
     </div>
 
@@ -7773,18 +7786,15 @@
       gsap.timeline({ defaults: { ease: 'power4.out' } })
         .from('#agentes .agentes-meta',
           { opacity: 0, x: -28, duration: .52 })
-        .from('#agentes .agentes-heading h2',
-          { clipPath: 'inset(0 100% 0 0)', duration: .80, ease: 'expo.out' },
-          '-=0.12')
-        .from('#agentes .agentes-title-echo',
-          { opacity: 0, x: 36, duration: .68 },
-          '-=0.52')
-        .from('#agentes .agentes-motion',
-          { opacity: 0, y: 14, duration: .48 },
-          '-=0.52')
+        .from('#agentes .agentes-pretitle',
+          { opacity: 0, y: 12, duration: .5 },
+          '-=0.30')
+        .from('#agentes .agentes-title',
+          { clipPath: 'inset(0 100% 0 0)', duration: .85, ease: 'expo.out' },
+          '-=0.30')
         .from('#agentes .agentes-device-wrap',
           { opacity: 0, x: 54, duration: .92, ease: 'power3.out' },
-          '-=0.68')
+          '-=0.55')
         .from(['#agentes .agentes-titles-col', '#agentes .agentes-desc', '#agentes .agentes-strap'],
           { opacity: 0, y: 22, duration: .72, stagger: .065 },
           '-=0.70');
