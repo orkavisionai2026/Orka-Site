@@ -1593,8 +1593,9 @@
       background: #FFF6F3;
       color: #060606;
       /* Padding-top reduzido — heading desceu pra dentro do grid (alinha
-         com topo do device), então não precisa mais reservar espaço acima. */
-      padding: 36px clamp(28px, 4.4vw, 72px) 56px clamp(48px, 6vw, 96px);
+         com topo do device), então não precisa mais reservar espaço acima.
+         Padding-bottom levemente maior — mais ar abaixo do telefone. */
+      padding: 36px clamp(28px, 4.4vw, 72px) clamp(72px, 8vw, 104px) clamp(48px, 6vw, 96px);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -1751,7 +1752,8 @@
     }
 
     /* Coluna esquerda do grid: heading no topo (alinha com topo do device),
-       desc no fundo (alinha com fundo do device) — space-between distribui. */
+       desc no fundo (alinha com fundo do device) — space-between distribui.
+       padding-bottom afasta o desc do fim do device, dá respiração visual. */
     .agentes-left {
       display: flex;
       flex-direction: column;
@@ -1759,6 +1761,7 @@
       gap: clamp(24px, 3vw, 48px);
       align-self: stretch;
       min-width: 0;
+      padding-bottom: clamp(40px, 5vw, 72px);
     }
 
     /* Left description column — agora com tag (num + nome do agente),
@@ -1855,12 +1858,15 @@
       align-items: flex-start;
     }
 
+    /* Brand lockup decorativo desativado — estava sobrepondo o texto
+       do desc na nova composição. Mantido o markup pra possível
+       reativação futura via display:block. */
     .agentes-brand-lockup {
+      display: none;
       position: absolute;
       right: calc(100% + 18px);
       bottom: 18px;
       pointer-events: none;
-      display: flex;
       flex-direction: column;
       align-items: center;
       gap: 10px;
