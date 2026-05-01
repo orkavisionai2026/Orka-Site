@@ -1,0 +1,591 @@
+<!--
+  ============================================================
+  ARQUIVO — DOBRA "VELOCIDADE" (problem-awareness 5min crisis)
+  ============================================================
+
+  Removido do index.html em 2026-04-30. Motivo: o tema cósmico-escuro
+  da velocidade era visualmente idêntico ao hero (mesmo #060606 +
+  radial-gradient laranja), causando "espaço morto" perceptivo na
+  transição hero → primeira dobra. Solução: hero passa direto pro
+  lacuna (cream), garantindo quebra visual nítida.
+
+  Conteúdo arquivado nesta ordem (cole tudo nos pontos correspondentes
+  do index.html caso queira reativar):
+
+    1. CSS principal da velocidade  → dentro de <style>, entre footer e dobra LACUNA
+    2. CSS do calculator            → dentro de <style>, depois da CSS de LACUNA
+    3. Selectors compartilhados     → ajustar listas de selectors no topo do <style>
+    4. HTML da section              → entre </section> do #hero e <section #lacuna>
+    5. JS — initVelocidadeStars     → script de awareness (cosmic field)
+    6. JS — gsap fade-ins velocidade → dentro de initAwarenessGSAP, antes do bloco lacuna
+    7. JS — initCalc (calculadora)   → script no fim do <body>
+  ============================================================
+-->
+
+
+<!-- ============================================================
+     1. CSS PRINCIPAL DA VELOCIDADE
+     Cole dentro do <style> principal, entre o footer e o bloco
+     de DOBRA 04 — LACUNA. (No último estado do index, ficava
+     entre as linhas 2497 e 2655.)
+     ============================================================ -->
+<style>
+  /* =====================================================
+     DOBRA 02 — VELOCIDADE  (Problem-awareness: 5min crisis)
+     Dark cosmic. Confronts the lead with the velocity gap.
+     ===================================================== */
+  .velocidade{
+    position:relative;z-index:8;
+    background:#060606;
+    color:var(--cream);
+    /* Padding-top eliminado — velocidade encosta direto no fim do hero,
+       sem espaço acima do meta tag / headline. */
+    padding:clamp(16px,2vw,28px) clamp(28px,4.4vw,72px) clamp(80px,10vw,128px);
+    overflow:hidden;
+  }
+  .velocidade::before{
+    content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse 70% 60% at 18% 28%, rgba(242,54,12,.10), transparent 70%),
+      radial-gradient(ellipse 60% 55% at 82% 78%, rgba(243,107,55,.07), transparent 75%);
+  }
+  .velocidade-stars{
+    position:absolute;inset:0;width:100%;height:100%;
+    z-index:0;opacity:.55;pointer-events:none;
+  }
+  .velocidade > *{position:relative;z-index:1}
+
+  .velocidade-meta{
+    font-family:var(--font-mono);
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--cream-mute);
+    display:flex;align-items:center;gap:14px;
+    /* Margem-bottom tight — meta tag encostada no headline */
+    margin:0 auto 20px;max-width:1280px;
+  }
+  .velocidade-meta::after{
+    content:'';flex:1;height:1px;background:var(--line);
+    max-width:240px;
+  }
+
+  .velocidade-intro{
+    display:grid;grid-template-columns:1.4fr 1fr;
+    gap:clamp(40px,5vw,88px);
+    align-items:end;
+    max-width:1280px;margin:0 auto clamp(56px,7vw,96px);
+    padding-bottom:clamp(40px,5vw,64px);
+    border-bottom:1px solid var(--line);
+  }
+  .velocidade-headline{
+    font-family:var(--font-sans);
+    font-weight:700;
+    font-size:clamp(40px,5.4vw,84px);
+    line-height:.96;letter-spacing:-.038em;
+    color:var(--cream);
+  }
+  .velocidade-headline em{
+    font-family:var(--font-serif);
+    font-style:italic;font-weight:400;
+    color:var(--orange);
+  }
+  .velocidade-sub{
+    display:flex;flex-direction:column;gap:14px;
+    font-size:var(--t-lead);line-height:1.55;
+    color:var(--cream-soft);
+  }
+  .velocidade-sub strong{color:var(--orange);font-weight:600}
+  .velocidade-source{
+    font-family:var(--font-mono);
+    font-size:var(--t-micro);letter-spacing:var(--track-meta);text-transform:uppercase;
+    color:var(--cream-mute);
+  }
+
+  /* Decay curve */
+  .velocidade-curve{
+    max-width:1280px;margin:0 auto clamp(56px,7vw,88px);
+  }
+  .curve-stage{position:relative}
+  .curve-svg{
+    width:100%;height:auto;display:block;
+    font-family:var(--font-mono);
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  }
+  .curve-grid line{stroke:rgba(255,246,243,.08);stroke-width:1;stroke-dasharray:2 5}
+  .curve-line{
+    stroke-dasharray:2400;stroke-dashoffset:2400;
+    transition:stroke-dashoffset 2.2s var(--ease-out-cubic);
+  }
+  .curve-area{opacity:0;transition:opacity 1.4s ease-out 1.0s}
+  .curve-marker{opacity:0;transition:opacity .55s ease-out}
+  .curve-marker text{
+    fill:var(--cream);font-size:11px;letter-spacing:.16em;
+  }
+  .curve-marker .mlabel-num{
+    fill:var(--orange);font-family:var(--font-serif);font-style:italic;
+    font-size:14px;letter-spacing:0;
+  }
+  .velocidade.is-visible .curve-line{stroke-dashoffset:0}
+  .velocidade.is-visible .curve-area{opacity:.55}
+  .velocidade.is-visible .curve-marker{opacity:1}
+  .velocidade.is-visible .curve-marker:nth-of-type(2){transition-delay:1.4s}
+  .velocidade.is-visible .curve-marker:nth-of-type(3){transition-delay:1.6s}
+  .velocidade.is-visible .curve-marker:nth-of-type(4){transition-delay:1.8s}
+  .velocidade.is-visible .curve-marker:nth-of-type(5){transition-delay:2.0s}
+
+  .curve-axes{
+    display:flex;justify-content:space-between;
+    font-family:var(--font-mono);
+    font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--cream-mute);
+    margin-top:14px;
+  }
+
+  /* Stat strip */
+  .velocidade-strip{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    gap:clamp(16px,2vw,28px);
+    max-width:1280px;margin:0 auto;
+  }
+  .vstat{
+    display:flex;flex-direction:column;gap:14px;
+    padding:28px 24px 24px;
+    border:1px solid var(--line);
+    background:rgba(255,246,243,.02);
+    border-radius:14px;
+    transition:border-color .35s var(--ease-quick), background .35s var(--ease-quick), transform .35s var(--ease-quick);
+  }
+  .vstat:hover{
+    border-color:rgba(242,54,12,.32);
+    background:rgba(242,54,12,.035);
+    transform:translateY(-2px);
+  }
+  .vstat-num{
+    font-family:var(--font-serif);
+    font-style:italic;font-weight:400;
+    font-size:clamp(36px,3.4vw,52px);line-height:1;
+    letter-spacing:-.025em;color:var(--orange);
+    display:block;
+  }
+  .vstat-desc{
+    font-size:var(--t-body);line-height:1.55;
+    color:var(--cream-soft);flex:1;
+  }
+  .vstat-source{
+    font-family:var(--font-mono);
+    font-size:var(--t-micro);letter-spacing:var(--track-meta);text-transform:uppercase;
+    color:var(--cream-mute);
+    padding-top:12px;
+    border-top:1px solid var(--line);
+  }
+
+  @media (max-width:960px){
+    .velocidade-intro{grid-template-columns:1fr;gap:32px;align-items:flex-start}
+    .velocidade-strip{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (max-width:600px){
+    .velocidade-strip{grid-template-columns:1fr}
+  }
+</style>
+
+
+<!-- ============================================================
+     2. CSS DO CALCULATOR (sub-feature de Velocidade)
+     Cole logo após a CSS de LACUNA (último estado: linhas 2828-2925).
+     ============================================================ -->
+<style>
+  /* =====================================================
+     CALCULADORA  (sub-feature of Velocidade)
+     "Quanto você joga fora por mês?" — interactive cost of
+     slow lead response. Lives below the strip in Velocidade.
+     ===================================================== */
+  .velocidade-calc{
+    margin:clamp(56px,7vw,88px) auto 0;max-width:1280px;
+    padding-top:clamp(36px,4vw,56px);
+    border-top:1px solid var(--line);
+  }
+  .velocidade-calc-eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--cream-mute);
+    display:flex;align-items:center;gap:14px;
+    margin-bottom:24px;
+  }
+  .velocidade-calc-eyebrow::before{
+    content:'';width:28px;height:1px;background:var(--line);
+  }
+  .velocidade-calc-grid{
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:clamp(32px,4vw,72px);
+    align-items:center;
+  }
+  .velocidade-calc-headline{
+    font-family:var(--font-sans);
+    font-weight:700;font-size:clamp(28px,3vw,44px);
+    line-height:1.05;letter-spacing:-.025em;
+    color:var(--cream);margin-bottom:24px;
+  }
+  .velocidade-calc-headline em{
+    font-family:var(--font-serif);font-style:italic;
+    font-weight:400;color:var(--orange);
+  }
+  .calc-inputs{display:flex;flex-direction:column;gap:24px}
+  .calc-input{display:flex;flex-direction:column;gap:10px}
+  .calc-input-label{
+    font-family:var(--font-mono);
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--cream-soft);
+    display:flex;justify-content:space-between;align-items:baseline;gap:14px;
+  }
+  .calc-input-value{
+    font-family:var(--font-serif);font-style:italic;
+    font-size:clamp(22px,1.8vw,30px);line-height:1;
+    color:var(--cream);letter-spacing:-.02em;
+  }
+  .calc-input-value em{color:var(--orange);font-style:italic}
+  .calc-slider{
+    -webkit-appearance:none;appearance:none;
+    width:100%;height:4px;
+    background:rgba(255,246,243,.12);
+    border-radius:2px;outline:none;cursor:pointer;
+  }
+  .calc-slider::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;
+    width:18px;height:18px;
+    background:var(--orange);
+    border:2px solid var(--cream);
+    border-radius:50%;cursor:pointer;
+    box-shadow:0 0 0 4px rgba(242,54,12,.18);
+    transition:transform .2s var(--ease-quick);
+  }
+  .calc-slider::-webkit-slider-thumb:hover{transform:scale(1.18)}
+  .calc-slider::-moz-range-thumb{
+    width:18px;height:18px;
+    background:var(--orange);
+    border:2px solid var(--cream);
+    border-radius:50%;cursor:pointer;
+  }
+  .calc-output{
+    display:flex;flex-direction:column;gap:14px;
+    padding:clamp(24px,2.6vw,36px) clamp(24px,2.6vw,36px);
+    border:1px solid rgba(242,54,12,.32);
+    background:rgba(242,54,12,.045);
+    border-radius:18px;
+  }
+  .calc-output-label{
+    font-family:var(--font-mono);
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--cream-soft);
+  }
+  .calc-output-num{
+    font-family:var(--font-serif);font-style:italic;
+    font-weight:400;
+    font-size:clamp(44px,5vw,80px);line-height:1;
+    color:var(--orange);letter-spacing:-.025em;
+  }
+  .calc-output-sub{
+    font-size:var(--t-body);line-height:1.55;
+    color:var(--cream-soft);
+    padding-top:14px;border-top:1px solid var(--line);
+  }
+  .calc-output-sub strong{color:var(--cream);font-weight:600}
+  @media (max-width:760px){
+    .velocidade-calc-grid{grid-template-columns:1fr;gap:36px}
+  }
+</style>
+
+
+<!-- ============================================================
+     3. SELECTORS COMPARTILHADOS
+     Adicionar de volta os selectors removidos das listas
+     compartilhadas no topo do <style>:
+
+     a) Em "Números tabulares" (regra font-feature-settings tnum/ss01),
+        adicionar de volta:  .vstat-num, .calc-output-num, .calc-input-value
+        e também:            .curve-marker text
+
+     b) Em "Fraunces variation-settings" (regra font-variation-settings),
+        adicionar de volta:  .vstat-num, .calc-output-num
+
+     c) Em "Display headlines — ativa wonk + soft alto" (regra
+        font-variation-settings com opsz 144), adicionar de volta:
+                              .velocidade-headline em
+     ============================================================ -->
+
+
+<!-- ============================================================
+     4. HTML DA SECTION VELOCIDADE
+     Cole entre </section> do #hero e <section class="lacuna" id="lacuna">.
+     ============================================================ -->
+<section class="velocidade" id="velocidade">
+  <svg class="velocidade-stars" id="velocidadeStars" preserveAspectRatio="none" aria-hidden="true"></svg>
+
+  <div class="velocidade-meta"><span>02 / VELOCIDADE</span></div>
+
+  <div class="velocidade-intro">
+    <h2 class="velocidade-headline">
+      O lead clicou no anúncio.<br>
+      Você tem <em>5 minutos.</em>
+    </h2>
+    <div class="velocidade-sub">
+      <p>Depois disso, a probabilidade de qualificá-lo cai <strong>21×</strong>. Após 30 minutos, <strong>100×</strong>. Após 1 hora, sua operação está disputando migalhas — o lead já dialoga com o concorrente.</p>
+      <span class="velocidade-source">Estudo MIT + InsideSales · 2.241 empresas</span>
+    </div>
+  </div>
+
+  <!-- Decay curve visualization -->
+  <div class="velocidade-curve" aria-hidden="false">
+    <div class="curve-stage">
+      <svg class="curve-svg" viewBox="0 0 1000 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Curva de decaimento da probabilidade de qualificação ao longo do tempo">
+        <defs>
+          <linearGradient id="curveGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stop-color="#F2360C" stop-opacity=".55"/>
+            <stop offset="100%" stop-color="#F2360C" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="curveLine" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"  stop-color="#F2360C"/>
+            <stop offset="50%" stop-color="#F36B37"/>
+            <stop offset="100%" stop-color="#F36B37" stop-opacity=".4"/>
+          </linearGradient>
+        </defs>
+
+        <g class="curve-grid">
+          <line x1="0" y1="60"  x2="1000" y2="60" />
+          <line x1="0" y1="180" x2="1000" y2="180" />
+          <line x1="0" y1="300" x2="1000" y2="300" />
+        </g>
+
+        <path class="curve-area"
+              d="M 0,30 C 80,40 160,90 280,180 C 400,270 600,320 1000,335 L 1000,360 L 0,360 Z"
+              fill="url(#curveGrad)"/>
+        <path class="curve-line"
+              d="M 0,30 C 80,40 160,90 280,180 C 400,270 600,320 1000,335"
+              fill="none" stroke="url(#curveLine)" stroke-width="2.5" stroke-linecap="round"/>
+
+        <g class="curve-marker">
+          <circle cx="80" cy="40" r="5" fill="#FFF6F3" stroke="#F2360C" stroke-width="2"/>
+          <text x="80" y="22" text-anchor="middle">5min</text>
+          <text x="80" y="-2" text-anchor="middle" class="mlabel-num">21× ↓</text>
+        </g>
+        <g class="curve-marker">
+          <circle cx="160" cy="92" r="4" fill="#FFF6F3" stroke="#F2360C" stroke-width="1.6"/>
+          <text x="160" y="76" text-anchor="middle">10min</text>
+        </g>
+        <g class="curve-marker">
+          <circle cx="280" cy="180" r="5" fill="#FFF6F3" stroke="#F2360C" stroke-width="2"/>
+          <text x="280" y="162" text-anchor="middle">30min</text>
+          <text x="280" y="142" text-anchor="middle" class="mlabel-num">100× ↓</text>
+        </g>
+        <g class="curve-marker">
+          <circle cx="500" cy="280" r="4" fill="#FFF6F3" stroke="#F2360C" stroke-width="1.6"/>
+          <text x="500" y="262" text-anchor="middle">1h</text>
+        </g>
+      </svg>
+
+      <div class="curve-axes">
+        <span>← probabilidade de qualificar</span>
+        <span>tempo até primeiro contato →</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stat strip: 4 cards -->
+  <div class="velocidade-strip">
+    <article class="vstat">
+      <span class="vstat-num"><em>62%</em></span>
+      <p class="vstat-desc">dos leads imobiliários no Brasil são perdidos por falta de follow-up.</p>
+      <span class="vstat-source">Sísmica · ABRAINC</span>
+    </article>
+    <article class="vstat">
+      <span class="vstat-num"><em>78%</em></span>
+      <p class="vstat-desc">dos clientes compram da <strong style="color:var(--cream)">primeira</strong> empresa que responde.</p>
+      <span class="vstat-source">MIT · InsideSales</span>
+    </article>
+    <article class="vstat">
+      <span class="vstat-num"><em>42h</em></span>
+      <p class="vstat-desc">é o tempo médio de resposta no benchmark global — quase dois dias.</p>
+      <span class="vstat-source">HubSpot · 2.200+ empresas</span>
+    </article>
+    <article class="vstat">
+      <span class="vstat-num"><em>R$ 292,3 bi</em></span>
+      <p class="vstat-desc">em VGL de lançamentos no Brasil em 2024 — recorde de demanda, recorde de desperdício.</p>
+      <span class="vstat-source">ABECIP · CNN Brasil</span>
+    </article>
+  </div>
+
+  <!-- Calculadora -->
+  <div class="velocidade-calc">
+    <p class="velocidade-calc-eyebrow">Calculadora · quanto custa a sua demora</p>
+    <div class="velocidade-calc-grid">
+      <div class="calc-inputs">
+        <h3 class="velocidade-calc-headline">
+          Quanto você joga fora <em>por mês.</em>
+        </h3>
+        <div class="calc-input">
+          <label class="calc-input-label" for="calcVolume">
+            <span>Leads recebidos por mês</span>
+            <span class="calc-input-value"><em id="calcVolumeOut">500</em></span>
+          </label>
+          <input type="range" id="calcVolume" class="calc-slider" data-lenis-prevent
+                 min="50" max="3000" step="50" value="500" />
+        </div>
+        <div class="calc-input">
+          <label class="calc-input-label" for="calcTempo">
+            <span>Tempo médio de resposta</span>
+            <span class="calc-input-value"><em id="calcTempoOut">30</em> min</span>
+          </label>
+          <input type="range" id="calcTempo" class="calc-slider" data-lenis-prevent
+                 min="1" max="240" step="1" value="30" />
+        </div>
+        <div class="calc-input">
+          <label class="calc-input-label" for="calcCpl">
+            <span>CPL médio (R$ por lead)</span>
+            <span class="calc-input-value">R$ <em id="calcCplOut">12</em></span>
+          </label>
+          <input type="range" id="calcCpl" class="calc-slider" data-lenis-prevent
+                 min="3" max="40" step="1" value="12" />
+        </div>
+      </div>
+
+      <div class="calc-output">
+        <span class="calc-output-label">Você joga fora por mês</span>
+        <span class="calc-output-num" id="calcMoney">R$ 3.600</span>
+        <span class="calc-output-sub">
+          Aproximadamente <strong id="calcLost">300</strong> leads desperdiçados — pelo seu tempo médio de resposta atual, contra a janela MIT de 5min. Curva calibrada em MIT/InsideSales + faixa de CPL Imoads (R$ 5–25).
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     5. JS — initVelocidadeStars (cosmic field SVG)
+     Cole no script de awareness, antes de initAwarenessReveal.
+     ============================================================ -->
+<script>
+(function initVelocidadeStars(){
+  const stars = document.getElementById('velocidadeStars');
+  if (!stars) return;
+  const W = 1440, H = 900;
+  stars.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const palette = ['#FFF6F3','#FFF6F3','#FFF6F3','#F36B37','#F2360C'];
+  let frag = '';
+  const N = 100;
+  for (let i = 0; i < N; i++){
+    const x = Math.random() * W;
+    const y = Math.random() * H;
+    const r = (Math.random() * 1.2 + 0.3).toFixed(2);
+    const c = palette[Math.floor(Math.random() * palette.length)];
+    const o = (0.25 + Math.random() * 0.5).toFixed(2);
+    const dur = (3 + Math.random() * 4).toFixed(1);
+    const delay = (Math.random() * 4).toFixed(1);
+    frag += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${r}" fill="${c}" opacity="${o}">`
+          + `<animate attributeName="opacity" values="${o};${(o*0.3).toFixed(2)};${o}" dur="${dur}s" begin="-${delay}s" repeatCount="indefinite"/>`
+          + `</circle>`;
+  }
+  stars.innerHTML = frag;
+})();
+</script>
+
+
+<!-- ============================================================
+     6. JS — Fade-ins GSAP da velocidade
+     Cole de volta dentro do IIFE initAwarenessGSAP, no início
+     (antes do bloco da .lacuna).
+     ============================================================ -->
+<script>
+  if (document.querySelector('.velocidade')){
+    gsap.from('.velocidade-headline, .velocidade-sub', {
+      opacity: 0, y: 28, duration: .85, stagger: .12, ease: 'power3.out',
+      scrollTrigger: { trigger: '.velocidade', start: 'top 75%' }
+    });
+    gsap.from('.vstat', {
+      opacity: 0, y: 22, duration: .65, stagger: .08, ease: 'power2.out',
+      scrollTrigger: { trigger: '.velocidade-strip', start: 'top 85%' }
+    });
+    gsap.from('.velocidade-calc', {
+      opacity: 0, y: 24, duration: .8, ease: 'power3.out',
+      scrollTrigger: { trigger: '.velocidade-calc', start: 'top 85%' }
+    });
+  }
+</script>
+
+<!-- Também: em initAwarenessReveal, adicionar '.velocidade' de
+     volta ao querySelectorAll:
+       const targets = document.querySelectorAll('.velocidade, .lacuna');
+-->
+
+
+<!-- ============================================================
+     7. JS — initCalc (calculadora "leads perdidos por mês")
+     Cole como script independente no final do <body>.
+     ============================================================ -->
+<script>
+/* =====================================================
+   CALCULADORA — leads perdidos por mês.
+   Live-update lossRate from MIT decay curve (5/10/30/60min
+   piecewise) × volume × CPL médio. Live updates as user
+   drags any of the 3 sliders.
+   ===================================================== */
+(function initCalc(){
+  const volumeIn = document.getElementById('calcVolume');
+  const tempoIn  = document.getElementById('calcTempo');
+  const cplIn    = document.getElementById('calcCpl');
+  const volumeOut = document.getElementById('calcVolumeOut');
+  const tempoOut  = document.getElementById('calcTempoOut');
+  const cplOut    = document.getElementById('calcCplOut');
+  const moneyOut  = document.getElementById('calcMoney');
+  const lostOut   = document.getElementById('calcLost');
+  if (!volumeIn || !tempoIn || !cplIn) return;
+
+  /* Loss-rate piecewise from MIT/InsideSales:
+       5min → 10% perdido (baseline ágil, ainda há perda residual)
+       10min → 30%
+       30min → 60%
+       60min → 78%
+       >60min → 85% (assintótico)
+     Linear interpolation between checkpoints. */
+  function lossRate(tempoMin){
+    const t = Math.max(1, tempoMin);
+    const points = [[1,.08],[5,.10],[10,.30],[30,.60],[60,.78],[240,.88]];
+    for (let i = 0; i < points.length - 1; i++){
+      const [x1,y1] = points[i], [x2,y2] = points[i+1];
+      if (t <= x2){
+        const k = (t - x1) / (x2 - x1);
+        return y1 + (y2 - y1) * k;
+      }
+    }
+    return points[points.length-1][1];
+  }
+
+  function fmtMoney(n){
+    return 'R$ ' + Math.round(n).toLocaleString('pt-BR');
+  }
+  function fmtNum(n){
+    return Math.round(n).toLocaleString('pt-BR');
+  }
+
+  function update(){
+    const volume = parseInt(volumeIn.value, 10) || 0;
+    const tempo  = parseInt(tempoIn.value, 10)  || 1;
+    const cpl    = parseInt(cplIn.value, 10)    || 0;
+
+    const rate   = lossRate(tempo);
+    const lost   = volume * rate;
+    const money  = lost * cpl;
+
+    if (volumeOut) volumeOut.textContent = fmtNum(volume);
+    if (tempoOut)  tempoOut.textContent  = fmtNum(tempo);
+    if (cplOut)    cplOut.textContent    = fmtNum(cpl);
+    if (moneyOut)  moneyOut.textContent  = fmtMoney(money);
+    if (lostOut)   lostOut.textContent   = fmtNum(lost);
+  }
+
+  ['input','change'].forEach(ev => {
+    volumeIn.addEventListener(ev, update);
+    tempoIn.addEventListener(ev, update);
+    cplIn.addEventListener(ev, update);
+  });
+  update();
+})();
+</script>
